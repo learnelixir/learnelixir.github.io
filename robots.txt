@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://learnelixir.github.io/sitemap.xml 
+Sitemap: http://learnelixir.com/sitemap.xml 
