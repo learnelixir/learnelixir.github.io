@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Learn Elixir]]></title>
+  <title><![CDATA[Learn Elixir Language]]></title>
   <link href="http://learnelixir.github.io/atom.xml" rel="self"/>
   <link href="http://learnelixir.github.io/"/>
-  <updated>2014-10-05T10:48:47+08:00</updated>
+  <updated>2014-10-05T10:53:14+08:00</updated>
   <id>http://learnelixir.github.io/</id>
   <author>
     <name><![CDATA[James Huynh]]></name>
