@@ -1,0 +1,613 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Book Listing App With Elixir, Phoenix, Postgres and Ecto - Learn Elixir</title>
+  <meta name="author" content="James Huynh">
+
+  
+  <meta name="description" content="Create Elixir Book Store Project From the phoenix installation folder 1
+$ mix phoenix.new book_store ../ Now enter the project folder and get all the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://learnelixir.github.io/blog/2014/10/04/build-web-app-with-elixir">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Learn Elixir" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Learn Elixir</a></h1>
+  
+    <h2>Elixir for Programmer.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:learnelixir.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Book Listing App With Elixir, Phoenix, Postgres and Ecto</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-04T23:22:42+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:22 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>Create Elixir Book Store Project</h3>
+
+<p>From the phoenix installation folder</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix phoenix.new book_store ../
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now enter the project folder and get all the dependencies and start the phoenix project</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ../book_store
+</span><span class='line'><span class="nv">$ </span>mix <span class="k">do</span> deps.get, compile
+</span><span class='line'><span class="nv">$ </span>mix phoenix.start
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Open the browser, and go to the url <code>http://localhost:4000</code></p>
+
+<p><img class="left" src="/images/build-web-app-with-elixir/phoenix_page.png" width="800" height="510" title="image" alt="images"></p>
+
+<h3>Add Ecto To The Project</h3>
+
+<p>From the project root folder, open file <code>mix.exs</code>, scroll down to the end of the file you will see <code>defp deps do</code> function definition. You will need to add in <code>postgrex</code> and <code>ecto</code> dependencies</p>
+
+<ul>
+<li><code>postgrex</code> (<a href="https://github.com/ericmj/postgrex">https://github.com/ericmj/postgrex</a>) is the PostgresSQL driver for Elixir</li>
+<li><code>ecto</code> (<a href="https://github.com/elixir-lang/ecto">https://github.com/elixir-lang/ecto</a>) is a database wrapper and language integrated query for Elixir</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
+</span><span class='line'>  <span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.4.1&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.5&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="p">]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the same file, you will also need to update the application function definition to include <code>postgrex</code> and <code>ecto</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">application</span> <span class="k">do</span>
+</span><span class='line'>  <span class="p">[</span>
+</span><span class='line'>    <span class="ss">mod</span><span class="p">:</span> <span class="p">{</span> <span class="nc">BookStore</span><span class="p">,</span> <span class="p">[]</span> <span class="p">},</span>
+</span><span class='line'>    <span class="ss">applications</span><span class="p">:</span> <span class="p">[</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">:cowboy</span><span class="p">,</span> <span class="ss">:logger</span><span class="p">,</span> <span class="ss">:postgrex</span><span class="p">,</span> <span class="ss">:ecto</span><span class="p">]</span>
+</span><span class='line'>  <span class="p">]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Run the following commands in the terminal to get all the dependencies.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix deps.get
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Create A Repo</h3>
+
+<p>A repo is a basic interfacte to a database (which is postgres). You will need to open <code>web/models/repo.ex</code> and add the following code</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">BookStore.Repo</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Ecto.Repo</span><span class="p">,</span> <span class="ss">adapter</span><span class="p">:</span> <span class="nc">Ecto.Adapters.Postgres</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">conf</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">parse_url</span> <span class="s2">&quot;ecto://postgresuser:password@localhost/book_store&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">priv</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">app_dir</span><span class="p">(</span><span class="ss">:book_store</span><span class="p">,</span> <span class="s2">&quot;priv/repo&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We have defined PostgreSQL connection with a URL format, what you will need to do is to change the <code>postgresuser</code> and <code>password</code> to be the real postgres username and password on your database</p>
+
+<p>Since we are going to use the migration feature, we will need to have <code>priv</code> function. Inside this function, we will need to specify where is the migration script is saved, which is inside <code>priv/repo</code> directory</p>
+
+<p>The next that we must do is to make sure that our Repo module is started with our application, and is supervised. Open <code>lib/book_store.ex</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">BookStore</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Application</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># See http://elixir-lang.org/docs/stable/elixir/Application.html</span>
+</span><span class='line'>  <span class="c1"># for more information on OTP Applications</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">start</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="n">_args</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="kn">import</span> <span class="nc">Supervisor.Spec</span><span class="p">,</span> <span class="ss">warn</span><span class="p">:</span> <span class="no">false</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">children</span> <span class="p">=</span> <span class="p">[</span>
+</span><span class='line'>      <span class="c1"># Define workers and child supervisors to be supervised</span>
+</span><span class='line'>      <span class="n">worker</span><span class="p">(</span><span class="nc">BookStore.Repo</span><span class="p">,</span> <span class="p">[])</span>
+</span><span class='line'>    <span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">opts</span> <span class="p">=</span> <span class="p">[</span><span class="ss">strategy</span><span class="p">:</span> <span class="ss">:one_for_one</span><span class="p">,</span> <span class="ss">name</span><span class="p">:</span> <span class="nc">BookStore.Supervisor</span><span class="p">]</span>
+</span><span class='line'>    <span class="nc">Supervisor</span><span class="p">.</span><span class="n">start_link</span><span class="p">(</span><span class="n">children</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that <code>line 11</code> is the only line that we add inside this file</p>
+
+<p>To make sure that everything is good, let&rsquo;s compile the project:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix compile
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, let&rsquo;s create the <code>book_store</code> database in postgres</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>createdb book_store
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Create a model</h3>
+
+<p>Create model file <code>web/models/books.ex</code> with the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">BookStore.Books</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Ecto.Model</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">schema</span> <span class="s2">&quot;books&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:title</span><span class="p">,</span> <span class="ss">:string</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:description</span><span class="p">,</span> <span class="ss">:string</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:author</span><span class="p">,</span> <span class="ss">:string</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:publisher</span><span class="p">,</span> <span class="ss">:string</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Generate Migration Script</h3>
+
+<p>We will also need to create a database migration for books model by using the following command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix ecto.gen.migration BookStore.Repo create_book
+</span><span class='line'>Compiled lib/book_store.ex
+</span><span class='line'>Compiled web/models/repo.ex
+</span><span class='line'>Generated book_store.app
+</span><span class='line'>* creating priv/repo/migrations
+</span><span class='line'>* creating priv/repo/migrations/20141005013526_create_book.exs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now open the just generated migration file <code>priv/repo/migrations/20141005013526_create_book.exs</code> and change with the following code</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">BookStore.Repo.Migrations.CreateBook</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Ecto.Migration</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">up</span> <span class="k">do</span>
+</span><span class='line'>    <span class="p">[</span><span class="s2">&quot;CREATE TABLE books(id serial primary key, title varchar(125), description text, author varchar(255), publisher varchar(255))&quot;</span><span class="p">,</span>
+</span><span class='line'>     <span class="s2">&quot;INSERT INTO books(title, description, author, publisher) VALUES (&#39;Programming Elixir&#39;, &#39;Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun&#39;, &#39;Dave Thomas&#39;, &#39;The Pragmatic Bookshelf&#39;)&quot;</span>
+</span><span class='line'>    <span class="p">]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">down</span> <span class="k">do</span>
+</span><span class='line'>    <span class="s2">&quot;DROP TABLE books&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Inside this migration file, you will see up and down function. <code>up</code> function is run when you run the database migration, <code>down</code> function is run when you revert or rollback this database migration</p>
+
+<p>Now run the migration</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix ecto.migrate BookStore.Repo
+</span><span class='line'>* running UP _build/dev/lib/book_store/priv/repo/migrations/20141005013526_create_book.exs<span class="sb">``</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Create A Query</h3>
+
+<p>Create <code>web/models/queries.ex</code> folder.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">BookStore.Queries</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">import</span> <span class="nc">Ecto.Query</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">books_query</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">query</span> <span class="p">=</span> <span class="n">from</span> <span class="n">book</span> <span class="ow">in</span> <span class="nc">BookStore.Books</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">select</span><span class="p">:</span> <span class="n">book</span>
+</span><span class='line'>    <span class="nc">BookStore.Repo</span><span class="p">.</span><span class="n">all</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Route books index page to Book controller index action</h3>
+
+<p>Open file <code>web/router.ex</code>, we will need to map the root route to <code>BookController</code>. Note that in Phoenix, controller name is singular + <code>Controller</code> whereas in Rails, it is <code>BookController</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">BookStore.Router</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Router</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">get</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="nc">BookStore.BookController</span><span class="p">,</span> <span class="ss">:index</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:books</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Create BookController and get all books</h3>
+
+<p>Create file <code>book_controller.ex</code> inside <code>web/controllers</code> folder with the following source code</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">BookStore.BookController</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Controller</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">index</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">_params</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">books</span> <span class="p">=</span> <span class="nc">BookStore.Queries</span><span class="p">.</span><span class="n">books_query</span>
+</span><span class='line'>    <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="ss">books</span><span class="p">:</span> <span class="n">books</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Create books index page view</h3>
+
+<p>Next thing we will need to do is to create an index page for books listing. First, create folder book inside <code>web/template</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir web/templates/book
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Second, create a book view file - <code>web/views/book_view.ex</code> with the following content</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">BookStore.BookView</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">BookStore.Views</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, create file <code>web/template/book/index.html.eex</code> and paste in the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;h1&gt;</span>Our Books<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;table</span> <span class="na">class=</span><span class="s">&#39;table table-bodered table-striped&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;thead&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;th&gt;</span>#<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;th&gt;</span>Title<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;th&gt;</span>Description<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;th&gt;</span>Author<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;th&gt;</span>Publisher<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/thead&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;tbody&gt;</span>
+</span><span class='line'>    <span class="err">&lt;</span>%= for book <span class="nt">&lt;-</span> <span class="err">@</span><span class="na">books</span> <span class="na">do</span> <span class="err">%</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;td&gt;</span><span class="err">&lt;</span>%= book.id %&gt;<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;td&gt;</span><span class="err">&lt;</span>%= book.title %&gt;<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;td&gt;</span><span class="err">&lt;</span>%= book.description %&gt;<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;td&gt;</span><span class="err">&lt;</span>%= book.author %&gt;<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;td&gt;</span><span class="err">&lt;</span>%= book.publisher %&gt;<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>    <span class="err">&lt;</span>% end %&gt;
+</span><span class='line'>  <span class="nt">&lt;/tbody&gt;</span>
+</span><span class='line'><span class="nt">&lt;/table&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Refresh the browser and voila, this is what we will get:</p>
+
+<p><img class="left" src="/images/build-web-app-with-elixir/complete.png" width="800" height="346" title="image" alt="images"></p>
+
+<h3>Common Pitfall</h3>
+
+<p>I seldom hit the following error when trying to restart phoenix although all the codes are correct</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">=</span>INFO <span class="nv">REPORT</span><span class="o">====</span> 5-Oct-2014::09:57:47 <span class="o">===</span>
+</span><span class='line'>    application: logger
+</span><span class='line'>    exited: stopped
+</span><span class='line'>    <span class="nb">type</span>: temporary
+</span><span class='line'>** <span class="o">(</span>Mix<span class="o">)</span> Could not start application book_store: exited in: BookStore.start<span class="o">(</span>:normal, <span class="o">[])</span>
+</span><span class='line'>    ** <span class="o">(</span>EXIT<span class="o">)</span> an exception was raised:
+</span><span class='line'>        ** <span class="o">(</span>UndefinedFunctionError<span class="o">)</span> undefined <span class="k">function</span>: BookStore.start/2 <span class="o">(</span>module BookStore is not available<span class="o">)</span>
+</span><span class='line'>            BookStore.start<span class="o">(</span>:normal, <span class="o">[])</span>
+</span><span class='line'>            <span class="o">(</span>kernel<span class="o">)</span> application_master.erl:272: :application_master.start_it_old/4
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To fix this, you will need to clean compile all your elixir code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix clean
+</span><span class='line'><span class="nv">$ </span>mix compile
+</span><span class='line'><span class="nv">$ </span>mix phoenix.start
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">James Huynh</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-10-04T23:22:42+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:22 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://learnelixir.github.io/blog/2014/10/04/build-web-app-with-elixir/" data-via="jameshuynh" data-counturl="http://learnelixir.github.io/blog/2014/10/04/build-web-app-with-elixir/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/10/04/build-web-app-with-elixir/">Book Listing App With Elixir, Phoenix, Postgres and Ecto</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - James Huynh -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
