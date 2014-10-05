@@ -1,23 +1,23 @@
 ---
 layout: post
-title: "Build Web App with Elixir"
+title: "Book Listing App with Elixir, Phoenix, Postgres and Ecto"
 date: 2014-10-04 23:22:42 +0800
 comments: true
 categories: 
 ---
 
-### Create Elixir Jobs Project
+### Create Elixir Book Store Project
 
 From the phoenix installation folder
 
 ```bash
-$ mix phoenix.new elixir_jobs ../
+$ mix phoenix.new book_store ../
 ```
 
 Now enter the project folder and get all the dependencies and start the phoenix project
 
 ```bash
-$ cd ../elixir_jobs
+$ cd ../book_store
 $ mix do deps.get, compile
 $ mix phoenix.start
 ```
@@ -49,7 +49,7 @@ In the same file, you will also need to update the application function definiti
 ```elixir
 def application do
   [ 
-    mod: { ElixirJobs, [] },
+    mod: { BookStore, [] },
     applications: [:phoenix, :cowboy, :logger, :postgrex, :ecto]
   ] 
 end 
@@ -66,15 +66,15 @@ $ mix deps.get
 A repo is a basic interfacte to a database (which is postgres). You will need to open ``web/models/repo.ex`` and add the following code
 
 ```elixir
-defmodule ElixirJobs.Repo do
+defmodule BookStore.Repo do
   use Ecto.Repo, adapter: Ecto.Adapters.Postgres
 
   def conf do
-    parse_url "ecto://postgresuser:password@localhost/elixir_jobs"
+    parse_url "ecto://postgresuser:password@localhost/book_store"
   end
 
   def priv do
-    app_dir(:elixir_jobs, "priv/repo")
+    app_dir(:book_store, "priv/repo")
   end
 end
 ```
@@ -83,10 +83,10 @@ We have defined PostgreSQL connection with a URL format, what you will need to d
 
 Since we are going to use the migration feature, we will need to have ``priv`` function. Inside this function, we will need to specify where is the migration script is saved, which is inside ``priv/repo`` directory
 
-The next that we must do is to make sure that our Repo module is started with our application, and is supervised. Open ``lib/elixir_jobs.ex``.
+The next that we must do is to make sure that our Repo module is started with our application, and is supervised. Open ``lib/book_store.ex``.
 
 ```elixir
-defmodule ElixirJobs do
+defmodule BookStore do
   use Application
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
@@ -96,10 +96,10 @@ defmodule ElixirJobs do
 
     children = [
       # Define workers and child supervisors to be supervised
-      worker(ElixirJobs.Repo, [])
+      worker(BookStore.Repo, [])
     ]
 
-    opts = [strategy: :one_for_one, name: ElixirJobs.Supervisor]
+    opts = [strategy: :one_for_one, name: BookStore.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end
@@ -113,57 +113,56 @@ To make sure that everything is good, let's compile the project:
 $ mix compile
 ```
 
-Next, let's create the ``elixir_jobs`` database in postgres
+Next, let's create the ``book_store`` database in postgres
 
 ```bash
-$ createdb elixir_jobs
+$ createdb book_store 
 ```
 
 ### Create a model
 
-Create model file ``web/models/jobs.ex`` with the following code:
+Create model file ``web/models/books.ex`` with the following code:
 
 ```elixir
-defmodule ElixirJobs.Jobs do
+defmodule BookStore.Books do
   use Ecto.Model
 
-  schema "jobs" do
+  schema "books" do
     field :title, :string
-    field :job_type, :string
     field :description, :string
-    field :status, :string
+    field :author, :string
+    field :publisher, :string
   end
 end
 ```
 
 ### Generate Migration Script
 
-We will also need to create a database migration for jobs model by using the following command:
+We will also need to create a database migration for books model by using the following command:
 
 ```bash
-$ mix ecto.gen.migration ElixirJobs.Repo create_job
-Compiled lib/elixir_jobs.ex
+$ mix ecto.gen.migration BookStore.Repo create_book
+Compiled lib/book_store.ex
 Compiled web/models/repo.ex
-Compiled web/models/jobs.ex
-Generated elixir_jobs.app
+Generated book_store.app
 * creating priv/repo/migrations
-* creating priv/repo/migrations/20141004162815_create_job.exs
+* creating priv/repo/migrations/20141005013526_create_book.exs
 ```
 
-Now open the just generated migration file ``priv/repo/migrations/20141004162815_create_job.exs`` and change with the following code
+Now open the just generated migration file ``priv/repo/migrations/20141005013526_create_book.exs`` and change with the following code
 
 ```elixir
-defmodule ElixirJobs.Repo.Migrations.CreateJob do
+defmodule BookStore.Repo.Migrations.CreateBook do
   use Ecto.Migration
 
   def up do
-    ["CREATE TABLE jobs(id serial primary key, title varchar(125), job_type varchar(50), description text, status varchar(50))",
-     "INSERT INTO jobs(title, job_type, description, status) VALUES ('Elixir Expert Needed', 'Remote', 'Elixir expert needed for writing article about Elixir every single week or two.', 'Part Time')"
+    ["CREATE TABLE books(id serial primary key, title varchar(125), description text, author varchar(255), publisher varchar(255))",
+     "INSERT INTO books(title, description, author, publisher) VALUES ('Programming Elixir', 'Programming Elixir: Functional |> Concurrent |> Pragmatic |> Fun', 'Dave Thomas', 'The Pragmatic Bookshelf')"
     ]
   end
 
   def down do
-    "DROP TABLE jobs"
+    "DROP TABLE books"
   end
 end
 ```
@@ -173,74 +172,74 @@ Inside this migration file, you will see up and down function. ``up`` function i
 Now run the migration
 
 ```bash
-$ mix ecto.migrate ElixirJobs.Repo
-* running UP _build/dev/lib/elixir_jobs/priv/repo/migrations/20141004162815_create_job.exs
+$ mix ecto.migrate BookStore.Repo
+* running UP _build/dev/lib/book_store/priv/repo/migrations/20141005013526_create_book.exs``
 ```
 
 ### Create A Query
 
-Create a file called ``queries.ex`` inside the ``web/models`` folder. 
+Create ``web/models/queries.ex`` folder. 
 
 ```elixir
-defmodule ElixirJobs.Queries do
+defmodule BookStore.Queries do
   import Ecto.Query
 
-  def jobs_query do
-    query = from job in ElixirJobs.Jobs,
-            select: job
-    ElixirJobs.Repo.all(query)
+  def books_query do
+    query = from book in BookStore.Books,
+            select: book 
+    BookStore.Repo.all(query)
   end
 end
 ```
 
-### Route jobs index page to Jobs controller index action
+### Route books index page to Book controller index action
 
-Open file ``web/router.ex``, we will need to map the root route to ``JobController``. Note that in Phoenix, controller name is singular + ``Controller``. In Rails, it is ``JobsController``
+Open file ``web/router.ex``, we will need to map the root route to ``BookController``. Note that in Phoenix, controller name is singular + ``Controller`` whereas in Rails, it is ``BookController``
 
 ```elixir
-defmodule ElixirJobs.Router do
+defmodule BookStore.Router do
   use Phoenix.Router
 
-  get "/", ElixirJobs.JobController, :index, as: :jobs
+  get "/", BookStore.BookController, :index, as: :books
 
 end
 ```
 
-### Create JobController and get all jobs
+### Create BookController and get all books 
 
-Create file ``job_controller.ex`` inside ``web/controllers`` folder with the following source code
+Create file ``book_controller.ex`` inside ``web/controllers`` folder with the following source code
 
 ```elixir
-defmodule ElixirJobs.JobController do
+defmodule BookStore.BookController do
   use Phoenix.Controller
 
   def index(conn, _params) do
-    jobs = ElixirJobs.Queries.jobs_query
-    render conn, "index", jobs: jobs
+    books = BookStore.Queries.books_query
+    render conn, "index", books: books 
   end
 end
 ```
 
-### Create jobs index page view
+### Create books index page view
 
-Next thing we will need to do is to create an index page for jobs listing. First, create folder job inside ``web/template``. 
+Next thing we will need to do is to create an index page for books listing. First, create folder book inside ``web/template``. 
 
 ```bash
-mkdir web/templates/job
+mkdir web/templates/book
 ```
 
-Second, create a job view file - ``web/views/job_view.ex`` with the following content
+Second, create a book view file - ``web/views/book_view.ex`` with the following content
 
 ```elixir
-defmodule ElixirJobs.JobView do
-  use ElixirJobs.Views
+defmodule BookStore.BookView do
+  use BookStore.Views
 end
 ```
 
-Finally, create file ``web/template/job/index.html.eex`` and paste in the following code:
+Finally, create file ``web/template/book/index.html.eex`` and paste in the following code:
 
 ```html
-<h1>List of Jobs</h1>
+<h1>Our Books</h1>
 
 <table class='table table-bodered table-striped'>
   <thead>
@@ -248,21 +247,50 @@ Finally, create file ``web/template/job/index.html.eex`` and paste in the follow
       <th>#</th>
       <th>Title</th>
       <th>Description</th>
+      <th>Author</th>
+      <th>Publisher</th>
     </tr>
   </thead>
   <tbody>
-    <%= for job <- @jobs do %>
+    <%= for book <- @books do %>
       <tr>
-        <td><%= job.id %></td>
-        <td><%= job.title %></td>
-        <td><%= job.description %></td>
+        <td><%= book.id %></td>
+        <td><%= book.title %></td>
+        <td><%= book.description %></td>
+        <td><%= book.author %></td>
+        <td><%= book.publisher %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
 ```
 
-Refresh the browser and this is what we get:
+Refresh the browser and voila, this is what we will get:
 
 {% img left /images/build-web-app-with-elixir/complete.png 800 346 'image' 'images' %}
+
+
+### Common Pitfall
+
+I seldom hit the following error when trying to restart phoenix although all the codes are correct 
+```bash
+=INFO REPORT==== 5-Oct-2014::09:57:47 ===
+    application: logger
+    exited: stopped
+    type: temporary
+** (Mix) Could not start application book_store: exited in: BookStore.start(:normal, [])
+    ** (EXIT) an exception was raised:
+        ** (UndefinedFunctionError) undefined function: BookStore.start/2 (module BookStore is not available)
+            BookStore.start(:normal, [])
+            (kernel) application_master.erl:272: :application_master.start_it_old/4
+```
+
+To fix this, you will need to clean compile all your elixir code: 
+
+```bash
+$ mix clean
+$ mix compile
+$ mix phoenix.start
+```
+
 
