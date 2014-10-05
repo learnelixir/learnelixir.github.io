@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Learn Elixir Language]]></title>
-  <link href="http://learnelixir.com/atom.xml" rel="self"/>
-  <link href="http://learnelixir.com/"/>
-  <updated>2014-10-05T11:59:49+08:00</updated>
-  <id>http://learnelixir.com/</id>
+  <title><![CDATA[Learn Elixir]]></title>
+  <link href="http://learnelixir.github.io/atom.xml" rel="self"/>
+  <link href="http://learnelixir.github.io/"/>
+  <updated>2014-10-05T12:05:15+08:00</updated>
+  <id>http://learnelixir.github.io/</id>
   <author>
     <name><![CDATA[James Huynh]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Book Listing App With Elixir, Phoenix, Postgres and Ecto]]></title>
-    <link href="http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/"/>
+    <link href="http://learnelixir.github.io/blog/2014/10/04/build-web-app-with-elixir/"/>
     <updated>2014-10-04T23:22:42+08:00</updated>
-    <id>http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir</id>
+    <id>http://learnelixir.github.io/blog/2014/10/04/build-web-app-with-elixir</id>
     <content type="html"><![CDATA[<h3>Create Elixir Book Store Project</h3>
 
 <p>From the phoenix installation folder</p>
@@ -40,7 +40,7 @@
 
 <p>Open the browser, and go to the url <code>http://localhost:4000</code></p>
 
-<p><img class="left" src="http://learnelixir.com/images/build-web-app-with-elixir/phoenix_page.png" width="800" height="510" title="image" alt="images"></p>
+<p><img class="left" src="http://learnelixir.github.io/images/build-web-app-with-elixir/phoenix_page.png" width="800" height="510" title="image" alt="images"></p>
 
 <h3>Add Ecto To The Project</h3>
 
@@ -413,7 +413,7 @@
 
 <p>Refresh the browser and voila, this is what we will get:</p>
 
-<p><img class="left" src="http://learnelixir.com/images/build-web-app-with-elixir/complete.png" width="800" height="346" title="image" alt="images"></p>
+<p><img class="left" src="http://learnelixir.github.io/images/build-web-app-with-elixir/complete.png" width="800" height="346" title="image" alt="images"></p>
 
 <h3>Common Pitfall</h3>
 
