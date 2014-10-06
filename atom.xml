@@ -4,7 +4,7 @@
   <title><![CDATA[Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-05T12:07:45+08:00</updated>
+  <updated>2014-10-06T11:04:05+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[James Huynh]]></name>
@@ -20,14 +20,14 @@
     <id>http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir</id>
     <content type="html"><![CDATA[<h3>Create Elixir Book Store Project</h3>
 
-<p>From the phoenix installation folder</p>
+<p>From the phoenix installation folder, run the following command:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix phoenix.new book_store ../
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Now enter the project folder and get all the dependencies and start the phoenix project</p>
+<p>Now enter the project folder and get all the dependencies and start the phoenix project:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -44,7 +44,7 @@
 
 <h3>Add Ecto To The Project</h3>
 
-<p>From the project root folder, open file <code>mix.exs</code>, scroll down to the end of the file you will see <code>defp deps do</code> function definition. You will need to add in <code>postgrex</code> and <code>ecto</code> dependencies</p>
+<p>From the project root folder, open file <code>mix.exs</code>, scroll down to the end of the file, then you will see <code>defp deps do</code> function definition. You will need to add in <code>postgrex</code> and <code>ecto</code> dependencies</p>
 
 <ul>
 <li><code>postgrex</code> (<a href="https://github.com/ericmj/postgrex">https://github.com/ericmj/postgrex</a>) is the PostgresSQL driver for Elixir</li>
@@ -97,7 +97,7 @@
 
 <h3>Create A Repo</h3>
 
-<p>A repo is a basic interfacte to a database (which is postgres). You will need to open <code>web/models/repo.ex</code> and add the following code</p>
+<p>A repo is a basic interfacte to a database (which is postgres). Open <code>web/models/repo.ex</code> and add the following code</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -124,11 +124,11 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>We have defined PostgreSQL connection with a URL format, what you will need to do is to change the <code>postgresuser</code> and <code>password</code> to be the real postgres username and password on your database</p>
+<p>We have defined PostgreSQL connection with a URL format, what you will need to do is to change the <code>postgresuser</code> and <code>password</code> to be the real postgres username and password on your database.</p>
 
-<p>Since we are going to use the migration feature, we will need to have <code>priv</code> function. Inside this function, we will need to specify where is the migration script is saved, which is inside <code>priv/repo</code> directory</p>
+<p>Since we are going to use the migration feature, we will need to have <code>priv</code> function. Inside this function, we will need to specify where is the migration script is saved, which is inside <code>priv/repo</code> directory.</p>
 
-<p>The next that we must do is to make sure that our Repo module is started with our application, and is supervised. Open <code>lib/book_store.ex</code>.</p>
+<p>The next step that we must do is to make sure that our Repo module is started with our application, and is supervised. Open <code>lib/book_store.ex</code>.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -298,7 +298,7 @@
 
 <h3>Route books index page to Book controller index action</h3>
 
-<p>Open file <code>web/router.ex</code>, we will need to map the root route to <code>BookController</code>. Note that in Phoenix, controller name is singular + <code>Controller</code> whereas in Rails, it is <code>BookController</code></p>
+<p>Open file <code>web/router.ex</code>, we will need to map the root route to <code>BookController</code>. Note that in Phoenix, controller name is singular + <code>Controller</code> whereas in Rails, it is <code>BooksController</code></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -449,8 +449,6 @@
 </span><span class='line'><span class="nv">$ </span>mix compile
 </span><span class='line'><span class="nv">$ </span>mix phoenix.start
 </span></code></pre></td></tr></table></div></figure>
-
-
 
 ]]></content>
   </entry>
