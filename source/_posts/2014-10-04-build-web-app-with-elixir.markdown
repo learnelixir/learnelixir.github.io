@@ -8,13 +8,13 @@ categories:
 
 ### Create Elixir Book Store Project
 
-From the phoenix installation folder
+From the phoenix installation folder, run the following command:
 
 ```bash
 $ mix phoenix.new book_store ../
 ```
 
-Now enter the project folder and get all the dependencies and start the phoenix project
+Now enter the project folder and get all the dependencies and start the phoenix project:
 
 ```bash
 $ cd ../book_store
@@ -28,7 +28,7 @@ Open the browser, and go to the url ``http://localhost:4000``
 
 ### Add Ecto To The Project
 
-From the project root folder, open file ``mix.exs``, scroll down to the end of the file you will see ``defp deps do`` function definition. You will need to add in ``postgrex`` and ``ecto`` dependencies
+From the project root folder, open file ``mix.exs``, scroll down to the end of the file, then you will see ``defp deps do`` function definition. You will need to add in ``postgrex`` and ``ecto`` dependencies
 
 - ``postgrex`` (https://github.com/ericmj/postgrex) is the PostgresSQL driver for Elixir
 - ``ecto`` (https://github.com/elixir-lang/ecto) is a database wrapper and language integrated query for Elixir 
@@ -63,7 +63,7 @@ $ mix deps.get
 
 ### Create A Repo
 
-A repo is a basic interfacte to a database (which is postgres). You will need to open ``web/models/repo.ex`` and add the following code
+A repo is a basic interfacte to a database (which is postgres). Open ``web/models/repo.ex`` and add the following code
 
 ```elixir
 defmodule BookStore.Repo do
@@ -79,11 +79,11 @@ defmodule BookStore.Repo do
 end
 ```
 
-We have defined PostgreSQL connection with a URL format, what you will need to do is to change the ``postgresuser`` and ``password`` to be the real postgres username and password on your database
+We have defined PostgreSQL connection with a URL format, what you will need to do is to change the ``postgresuser`` and ``password`` to be the real postgres username and password on your database.
 
-Since we are going to use the migration feature, we will need to have ``priv`` function. Inside this function, we will need to specify where is the migration script is saved, which is inside ``priv/repo`` directory
+Since we are going to use the migration feature, we will need to have ``priv`` function. Inside this function, we will need to specify where is the migration script is saved, which is inside ``priv/repo`` directory.
 
-The next that we must do is to make sure that our Repo module is started with our application, and is supervised. Open ``lib/book_store.ex``.
+The next step that we must do is to make sure that our Repo module is started with our application, and is supervised. Open ``lib/book_store.ex``.
 
 ```elixir
 defmodule BookStore do
@@ -194,7 +194,7 @@ end
 
 ### Route books index page to Book controller index action
 
-Open file ``web/router.ex``, we will need to map the root route to ``BookController``. Note that in Phoenix, controller name is singular + ``Controller`` whereas in Rails, it is ``BookController``
+Open file ``web/router.ex``, we will need to map the root route to ``BookController``. Note that in Phoenix, controller name is singular + ``Controller`` whereas in Rails, it is ``BooksController``
 
 ```elixir
 defmodule BookStore.Router do
@@ -292,5 +292,3 @@ $ mix clean
 $ mix compile
 $ mix phoenix.start
 ```
-
-
