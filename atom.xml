@@ -4,7 +4,7 @@
   <title><![CDATA[Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-06T11:04:05+08:00</updated>
+  <updated>2014-10-06T11:31:26+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[James Huynh]]></name>
@@ -340,7 +340,7 @@
 
 <h3>Create books index page view</h3>
 
-<p>Next thing we will need to do is to create an index page for books listing. First, create folder book inside <code>web/template</code>.</p>
+<p>Next thing that we will need to do is to create an index page for books listing. First, create folder <code>book</code> inside <code>web/template</code>.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir web/templates/book
