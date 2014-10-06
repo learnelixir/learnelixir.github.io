@@ -222,7 +222,7 @@ end
 
 ### Create books index page view
 
-Next thing we will need to do is to create an index page for books listing. First, create folder book inside ``web/template``. 
+Next thing that we will need to do is to create an index page for books listing. First, create folder ``book`` inside ``web/template``. 
 
 ```bash
 mkdir web/templates/book
