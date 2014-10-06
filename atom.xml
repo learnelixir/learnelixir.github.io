@@ -4,7 +4,7 @@
   <title><![CDATA[Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-07T07:29:44+08:00</updated>
+  <updated>2014-10-07T07:38:57+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[James Huynh]]></name>
@@ -512,7 +512,7 @@
     <link href="http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/"/>
     <updated>2014-10-04T23:22:42+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir</id>
-    <content type="html"><![CDATA[<p>In this article, let&rsquo;s go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postrgres and Ecto. I hope you will enjoy :-)</p>
+    <content type="html"><![CDATA[<p>In this article, let&rsquo;s go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postgres and Ecto. I hope you will enjoy :-)</p>
 
 <!--more-->
 
