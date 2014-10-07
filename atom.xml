@@ -4,7 +4,7 @@
   <title><![CDATA[Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-08T07:57:44+08:00</updated>
+  <updated>2014-10-08T07:58:48+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[James Huynh]]></name>
@@ -18,7 +18,7 @@
     <link href="http://learnelixir.com/blog/2014/10/08/playing-with-model-in-elixir-phoenix-console/"/>
     <updated>2014-10-08T07:20:21+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/08/playing-with-model-in-elixir-phoenix-console</id>
-    <content type="html"><![CDATA[<p>You will need to have the source code of this article <a href="http://octopress.dev/blog/2014/10/04/build-web-app-with-elixir/">http://octopress.dev/blog/2014/10/04/build-web-app-with-elixir/</a> before being able to follow this article. So basically, after you finish that article, you will have a model Book. Let turn on elixir console to play around with this model. To turn on elixir console with phoenix, type the following command</p>
+    <content type="html"><![CDATA[<p>You will need to have the source code of this article <a href="http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/">http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/</a> before being able to follow this article. So basically, after you finish that article, you will have a model Book. Let turn on elixir console to play around with this model. To turn on elixir console with phoenix, type the following command</p>
 
 <!-- more -->
 
