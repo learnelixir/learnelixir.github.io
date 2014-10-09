@@ -7,7 +7,8 @@ title: Learn Elixir Language
 subtitle: Elixir Language, Phoenix Framework and Me.
 author: James Huynh 
 simple_search: https://www.google.com/search
-description:
+description: Elixir Language, Phoenix and Me.
+keywords: "elixir, phoenix, ecto, erlang, test, web framework"
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in

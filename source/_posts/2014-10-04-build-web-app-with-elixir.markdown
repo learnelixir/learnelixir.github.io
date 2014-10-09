@@ -4,7 +4,13 @@ title: "Book Listing App with Elixir, Phoenix, Postgres and Ecto"
 date: 2014-10-04 23:22:42 +0800
 comments: true
 categories: 
+description: "Build a simple book listing app using Elixir, Phoenix, Postgres and Ecto"
+keywords: "phoenix, elixir, postgres, ecto, web app"
 ---
+
+In this article, let's go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postgres and Ecto. I hope you will enjoy :-)
+
+<!--more-->
 
 ### Create Elixir Book Store Project
 
