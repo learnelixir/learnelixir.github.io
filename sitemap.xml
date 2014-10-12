@@ -3,6 +3,14 @@
   
   
   <url>
+    <loc>http://learnelixir.com/blog/2014/10/11/ecto-vs-active-record/</loc>
+    
+    <lastmod>2014-10-11T21:37:22+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://learnelixir.com/blog/2014/10/10/experience-pipe-operator-in-elixir/</loc>
     
     <lastmod>2014-10-10T21:09:55+08:00</lastmod>
@@ -43,26 +51,33 @@
   </url>
   
   <url>
-    <loc>http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/</loc>
+    <loc>http://learnelixir.com/blog/2014/10/05/build-web-app-with-elixir/</loc>
     
-    <lastmod>2014-10-04T23:22:42+08:00</lastmod>
+    <lastmod>2014-10-05T23:22:42+08:00</lastmod>
     
     <priority>0.8</priority>
   </url>
   
   
   <url>
+    <loc>http://learnelixir.com/</loc>
+    <lastmod>2014-10-13T00:10:34+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
     <loc>http://learnelixir.com/blog/archives/</loc>
-    <lastmod>2014-10-10T21:59:29+08:00</lastmod>
+    <lastmod>2014-10-13T00:10:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>http://learnelixir.com/</loc>
-    <lastmod>2014-10-10T21:59:29+08:00</lastmod>
+    <loc>http://learnelixir.com/posts/</loc>
+    <lastmod>2014-10-13T00:10:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <priority>0.7</priority>
   </url>
   
   

@@ -1,0 +1,385 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>All Posts - <img src='/images/logo.png' title='Learn Elixir Language'/></title>
+  <meta name="author" content="<a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>&#8221;>
+
+  
+  <meta name="description" content="All Posts Ecto vs Active Record This post is about comparing the feature and performance between Elixir&rsquo;s Ecto library - database wrapper and &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://learnelixir.com/posts">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="<img src='/images/logo.png' title='Learn Elixir Language'/>&#8221; type=&#8221;application/atom+xml&#8221;>
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-55420151-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/"><img src='/images/logo.png' title='Learn Elixir Language'/></a></h1>
+  
+    <h2>Elixir Language, Phoenix Framework and Me.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscription">
+  <li><a href="https://github.com/learnelixir" rel="subscribe-github" title="@learnelixir on GitHub">GitHub</a></li>
+</ul>
+  
+  
+  
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:learnelixir.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="all-posts">
+  <div class="container">
+    <div class="row">
+      <div class="list-title col-md-offset-2 col-md-8">
+        <h4>All Posts</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="article-list">
+    <div class="container">
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/11/ecto-vs-active-record/">Ecto vs Active Record</a></h2>
+  
+  <p>
+    <p>This post is about comparing the feature and performance between Elixir&rsquo;s Ecto library - database wrapper and languge integrated query for Elixir and Ruby on Rails Active Record.</p>
+
+
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-10-11T21:37:22+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:37 pm</span></time>
+    
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/11/ecto-vs-active-record/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/10/experience-pipe-operator-in-elixir/">Experience Pipe Operator in Elixir</a></h2>
+  
+  <p>
+    <p>Pipe operator in Elixir is new to me. When I first saw it, I thought it was weird. However, after I read some Elixir code and experience myself, it is quite an interesting thing to use. Here&rsquo;s why:</p>
+
+
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-10-10T21:09:55+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:09 pm</span></time>
+    
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/10/experience-pipe-operator-in-elixir/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/09/anonymous-function-in-elixir/">Anonymous Function in Elixir</a></h2>
+  
+  <p>
+    <p>This is one of my favorite topic when talking about anonymous function. The reason why is that anonymous function in Elixir is a very simple way to express something without having to turn on a text editor. I can specify an anonymous function right away in an Elixir console and test it straight away. Here&rsquo;s how:</p>
+
+
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-10-09T08:05:11+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>8:05 am</span></time>
+    
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/09/anonymous-function-in-elixir/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/08/playing-with-model-in-elixir-phoenix-console/">Playing With Model in Elixir Phoenix Console</a></h2>
+  
+  <p>
+    <p>You will need to have the source code of this article <a href="http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/">http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/</a> before being able to follow this article. So basically, after you finish that article, you will have a model Book. Let turn on elixir console to play around with this model. To turn on elixir console with phoenix, type the following command</p>
+
+
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-10-08T07:20:21+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>7:20 am</span></time>
+    
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/08/playing-with-model-in-elixir-phoenix-console/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/07/have-fun-with-pattern-matching-in-elixir/">Have Fun With Pattern Matching in Elixir</a></h2>
+  
+  <p>
+    <p>In this article, we will look deeper into pattern matching in Elixir. Coming from prologue background, I think pattern matching is quite a fun thing to do. Prologue is a too hard core language for this kind of thing, whereas Elixir is mixing just well between normal programming language and pattern matching&hellip;</p>
+
+
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-10-07T22:28:03+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:28 pm</span></time>
+    
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/07/have-fun-with-pattern-matching-in-elixir/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/06/basic-testing-with-elixir/">Basic Testing With Elixir</a></h2>
+  
+  <p>
+    <p>In this article, we will go through some basic testing syntax with elixir. Elixir is a language that very well supports unit test and I totally love it when I first see it on the video. Let&rsquo;s start by writing a simple assertion</p>
+
+
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-10-06T22:31:16+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:31 pm</span></time>
+    
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/06/basic-testing-with-elixir/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/05/build-web-app-with-elixir/">Book Listing App With Elixir, Phoenix, Postgres and Ecto</a></h2>
+  
+  <p>
+    <p>In this article, let&rsquo;s go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postgres and Ecto. I hope you will enjoy :-)</p>
+
+
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-10-05T23:22:42+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:22 pm</span></time>
+    
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/05/build-web-app-with-elixir/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a> -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'learnelixir';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

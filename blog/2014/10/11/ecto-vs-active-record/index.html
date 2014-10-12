@@ -1,0 +1,900 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ecto vs Active Record - <img src='/images/logo.png' title='Learn Elixir Language'/></title>
+  <meta name="author" content="<a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>&#8221;>
+
+  
+  <meta name="description" content="Ecto vs Active Record">
+  <meta name="keywords" content="ecto, active record, vs">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://learnelixir.com/blog/2014/10/11/ecto-vs-active-record">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="<img src='/images/logo.png' title='Learn Elixir Language'/>&#8221; type=&#8221;application/atom+xml&#8221;>
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-55420151-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/"><img src='/images/logo.png' title='Learn Elixir Language'/></a></h1>
+  
+    <h2>Elixir Language, Phoenix Framework and Me.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscription">
+  <li><a href="https://github.com/learnelixir" rel="subscribe-github" title="@learnelixir on GitHub">GitHub</a></li>
+</ul>
+  
+  
+  
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:learnelixir.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Ecto vs Active Record</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-11T21:37:22+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:37 pm</span></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://learnelixir.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This post is about comparing the feature and performance between Elixir&rsquo;s Ecto library - database wrapper and languge integrated query for Elixir and Ruby on Rails Active Record.</p>
+
+<!-- more -->
+
+
+<h3>Round 1: Database Migration</h3>
+
+<h4>Active Record</h4>
+
+<p>In Ruby on Rails Active Record, we can generate a migration for a model by following these steps:</p>
+
+<h5><em>Step 1</em>: Generate model file and migration file</h5>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>rails g model book title:string description:text author:string publisher:string
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And the content of the migration file is as following</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">CreateBooks</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">change</span>
+</span><span class='line'>    <span class="n">create_table</span> <span class="ss">:books</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:name</span>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">text</span> <span class="ss">:description</span>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:author</span>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:publisher</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">timestamps</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5><em>Step 2</em>: Create the database</h5>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>bundle <span class="nb">exec </span>rake db:create
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5><em>Step 3</em>: Run the migration</h5>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>bundle <span class="nb">exec </span>rake db:migrate
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s all for Active Record</p>
+
+<h4>Ecto</h4>
+
+<p>Assuming that you have already put in <code>ecto</code> and <code>postgrex</code> dependencies and already run <code>mix deps.get</code>, here are the steps:</p>
+
+<h5><em>Step 1</em>: Create Repo file by manually adding web/models/repo.ex file witht the following content</h5>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">BookStoreElixir.Repo</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Ecto.Repo</span><span class="p">,</span> <span class="ss">adapter</span><span class="p">:</span> <span class="nc">Ecto.Adapters.Postgres</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">conf</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">parse_url</span> <span class="s2">&quot;ecto://postgresuser:password@localhost/book_store_elixir&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">priv</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">app_dir</span><span class="p">(</span><span class="ss">:book_store_elixir</span><span class="p">,</span> <span class="s2">&quot;priv/repo&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5><em>Step 2</em>: Create the Postgres Database</h5>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>createdb book_store_elixir --encoding<span class="o">=</span><span class="s1">&#39;utf-8&#39;</span> --locale<span class="o">=</span>en_US.UTF-8 --template<span class="o">=</span>template0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5><em>Step 3</em>: Create model file <code>web/models/book.ex</code> with the following code:</h5>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">BookStoreElixir.Book</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Ecto.Model</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">schema</span> <span class="s2">&quot;books&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:title</span><span class="p">,</span> <span class="ss">:string</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:description</span><span class="p">,</span> <span class="ss">:string</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:author</span><span class="p">,</span> <span class="ss">:string</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:publisher</span><span class="p">,</span> <span class="ss">:string</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5><em>Step 4</em>: Generate a migration file from terminal</h5>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix ecto.gen.migration BookStoreElixir.Repo create_book
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5><em>Step 5</em>: Edit the newly generated migration file</h5>
+
+<p>There is a need a type the SQL to create the table here:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim priv/repo/migrations/20141011143244_create_book.exs
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">BookStoreElixir.Repo.Migrations.CreateBook</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Ecto.Migration</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">up</span> <span class="k">do</span>
+</span><span class='line'>    <span class="s2">&quot;CREATE TABLE books(id serial primary key, title varchar(125), </span>
+</span><span class='line'><span class="s2">                  description text, author varchar(255), publisher varchar(255))&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">down</span> <span class="k">do</span>
+</span><span class='line'>    <span class="s2">&quot;DROP TABLE books&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5><em>Step 6</em>: Run the migration file</h5>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix ecto.migrate BookStoreElixir.Repo
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5><em>Step 7</em>: Add <code>BookStoreElixir.Repo</code> as a worker in line 11 of <code>lib/book_store_elixir.ex</code></h5>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">BookStoreElixir</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Application</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># See http://elixir-lang.org/docs/stable/elixir/Application.html</span>
+</span><span class='line'>  <span class="c1"># for more information on OTP Applications</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">start</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="n">_args</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="kn">import</span> <span class="nc">Supervisor.Spec</span><span class="p">,</span> <span class="ss">warn</span><span class="p">:</span> <span class="no">false</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">children</span> <span class="p">=</span> <span class="p">[</span>
+</span><span class='line'>      <span class="c1"># Define workers and child supervisors to be supervised</span>
+</span><span class='line'>      <span class="n">worker</span><span class="p">(</span><span class="nc">BookStoreElixir.Repo</span><span class="p">,</span> <span class="p">[])</span>
+</span><span class='line'>    <span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">opts</span> <span class="p">=</span> <span class="p">[</span><span class="ss">strategy</span><span class="p">:</span> <span class="ss">:one_for_one</span><span class="p">,</span> <span class="ss">name</span><span class="p">:</span> <span class="nc">BookStoreElixir.Supervisor</span><span class="p">]</span>
+</span><span class='line'>    <span class="nc">Supervisor</span><span class="p">.</span><span class="n">start_link</span><span class="p">(</span><span class="n">children</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Conclusion for Database Migration:</h5>
+
+<p>Active Record wins as there are fewer number of steps (3 steps in Active Record vs 7 steps in Ecto). Ecto will need to have more mix tasks in order to be more on par with Active Record.</p>
+
+<h3>Round 2: Database CRUD (Create, Read, Update, Delete) operations Syntax</h3>
+
+<h4>1 - Create</h4>
+
+<h5>Active Record</h5>
+
+<p>To create a new record in Active Record, we will use <code>create</code> command on <code>Book</code> model</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="no">Book</span><span class="o">.</span><span class="n">create</span><span class="p">({</span><span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Ruby 1.9 &amp; 2.0&quot;</span><span class="p">,</span> <span class="ss">author</span><span class="p">:</span> <span class="s2">&quot;Dave Thomas, with Chad Fowler and Andy Hunt&quot;</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;The Pragmatic Bokshelf&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Ruby is the fastest growing and most exciting dynamic language out there. If you need to get working programs delivered fast, you should add Ruby to your toolbox.&quot;</span><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Ecto</h5>
+
+<p>To create a new record in Ecto, we will use <code>insert</code> command on Book <code>Repo</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="kn">alias</span> <span class="nc">BookStoreElixir.Repo</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="kn">alias</span> <span class="nc">BookStoreElixir.Book</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">BookStoreElixir.Repo</span><span class="p">.</span><span class="n">insert</span><span class="p">({</span><span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Ruby 1.9 &amp; 2.0&quot;</span><span class="p">,</span> <span class="ss">author</span><span class="p">:</span> <span class="s2">&quot;Dave Thomas, with Chad Fowler and Andy Hunt&quot;</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;The Pragmatic Bokshelf&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Ruby is the fastest growing and most exciting dynamic language out there. If you need to get working programs delivered fast, you should add Ruby to your toolbox.&quot;</span><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Syntax wise, they are quite similar. Although Active Record code seems to be a bit neater but it can be considered a draw for creation syntax.</p>
+
+<h4>2 - Read</h4>
+
+<h5>Active Record</h5>
+
+<p>In Active Record, you can perform quite an entensive list of queries by using <code>where</code>, <code>order</code>, <code>limit</code>, <code>offset</code>, <code>group</code>, <code>join</code>, <code>having</code>, <code>select</code>, <code>pluck</code>, <code>includes</code>. For instance</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="no">Book</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;title LIKE ?&quot;</span><span class="p">,</span> <span class="s2">&quot;%Programming%&quot;</span><span class="p">)</span> <span class="p">\</span>
+</span><span class='line'>         <span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="ss">:desc</span><span class="p">)</span> <span class="p">\</span>
+</span><span class='line'>         <span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">\</span>
+</span><span class='line'>         <span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">\</span>
+</span><span class='line'>         <span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="p">\</span>
+</span><span class='line'>         <span class="o">.</span><span class="n">having</span><span class="p">(</span><span class="s2">&quot;books.id &gt;= 1&quot;</span><span class="p">)</span> <span class="p">\</span>
+</span><span class='line'>         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="ss">:id</span><span class="p">)</span> <span class="p">\</span>
+</span><span class='line'>         <span class="o">.</span><span class="n">pluck</span><span class="p">(</span><span class="ss">:id</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pretty amazing that Active Record can do chaining in combine into 1 single query.</p>
+
+<h5>Ecto</h5>
+
+<p>There are 2 types of writing Query in Ecto</p>
+
+<ul>
+<li><em>First Way</em>: Using query syntax provide by Ecto</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="kn">alias</span> <span class="nc">BookStoreElixir.Book</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="kn">alias</span> <span class="nc">BookStoreElixir.Repo</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="kn">import</span> <span class="nc">Ecto.Query</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">from</span> <span class="n">book</span> <span class="ow">in</span> <span class="nc">BookStoreElixir.Book</span><span class="p">,</span> <span class="ss">select</span><span class="p">:</span> <span class="n">book</span><span class="p">.</span><span class="n">id</span><span class="p">,</span> <span class="err">\</span>
+</span><span class='line'>                                        <span class="ss">where</span><span class="p">:</span> <span class="n">like</span><span class="p">(</span><span class="n">book</span><span class="p">.</span><span class="n">title</span><span class="p">,</span> <span class="s2">&quot;%Programming%&quot;</span><span class="p">),</span> <span class="err">\</span>
+</span><span class='line'>                                        <span class="ss">order_by</span><span class="p">:</span> <span class="p">[</span><span class="ss">desc</span><span class="p">:</span> <span class="n">book</span><span class="p">.</span><span class="n">id</span><span class="p">],</span> <span class="err">\</span>
+</span><span class='line'>                                        <span class="ss">limit</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="err">\</span>
+</span><span class='line'>                                        <span class="ss">offset</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="err">\</span>
+</span><span class='line'>                                        <span class="ss">group_by</span><span class="p">:</span> <span class="n">book</span><span class="p">.</span><span class="n">id</span><span class="p">,</span> <span class="err">\</span>
+</span><span class='line'>                                        <span class="ss">having</span><span class="p">:</span> <span class="n">book</span><span class="p">.</span><span class="n">id</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">all</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><em>Second Way</em>: Using chaining by utilising Elixir Pipe will make query just like Active Record:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="kn">alias</span> <span class="nc">BookStoreElixir.Book</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="kn">alias</span> <span class="nc">BookStoreElixir.Repo</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="kn">import</span> <span class="nc">Ecto.Query</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">query</span> <span class="p">=</span> <span class="nc">Book</span> <span class="o">|&gt;</span> <span class="n">select</span><span class="p">([</span><span class="n">book</span><span class="p">],</span> <span class="n">book</span><span class="p">.</span><span class="n">id</span><span class="p">)</span> <span class="err">\</span>
+</span><span class='line'>                  <span class="o">|&gt;</span> <span class="n">where</span><span class="p">([</span><span class="n">book</span><span class="p">],</span> <span class="n">like</span><span class="p">(</span><span class="n">book</span><span class="p">.</span><span class="n">title</span><span class="p">,</span> <span class="s2">&quot;%Programming%&quot;</span><span class="p">))</span> <span class="err">\</span>
+</span><span class='line'>                  <span class="o">|&gt;</span> <span class="n">order_by</span><span class="p">([</span><span class="n">book</span><span class="p">],</span> <span class="ss">desc</span><span class="p">:</span> <span class="n">book</span><span class="p">.</span><span class="n">id</span><span class="p">)</span> <span class="err">\</span>
+</span><span class='line'>                  <span class="o">|&gt;</span> <span class="n">limit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="err">\</span>
+</span><span class='line'>                  <span class="o">|&gt;</span> <span class="n">offset</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="err">\</span>
+</span><span class='line'>                  <span class="o">|&gt;</span> <span class="n">group_by</span><span class="p">([</span><span class="n">book</span><span class="p">],</span> <span class="n">book</span><span class="p">.</span><span class="n">id</span><span class="p">)</span> <span class="err">\</span>
+</span><span class='line'>                  <span class="o">|&gt;</span> <span class="n">having</span><span class="p">([</span><span class="n">book</span><span class="p">],</span> <span class="n">book</span><span class="p">.</span><span class="n">id</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">all</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Syntax wise, both Ecto and Active Record have shown that they are quite expressive in showing the data transformation through a series of query functions. However, Active Record syntax is still considered better in this Round as it is showing an easier approach. Although, the second way of query that we use for Elixir Ecto is pretty closed to Active Record syntax, it still exhibits a more wordy syntax than Active Record. Albeit, Elixir Ecto is using a nice approach by letting programmer to have access to a &ldquo;so called&rdquo; object instance in the query - <code>having[book, book.id &gt;= 1)</code> vs <code>"having("books.id &gt;= 1")</code></p>
+
+<h4>3 - Update</h4>
+
+<h4>Active Record</h4>
+
+<p>To update a record, we will use <code>update_attributes</code> on <code>Book</code> instance</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">book</span> <span class="o">=</span> <span class="no">Book</span><span class="o">.</span><span class="n">first</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">book</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">({</span><span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Ruby9 &amp;ss 2.0 (4th edition)&quot;</span><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Ecto</h4>
+
+<p>To update a record, we will use <code>`update</code> on <code>BookStoreElixir.Repo</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="kn">alias</span> <span class="nc">BookStoreElixir.Book</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="kn">alias</span> <span class="nc">BookStoreElixir.Repo</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">book</span> <span class="p">=</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">one</span><span class="p">(</span><span class="nc">Book</span><span class="p">)</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">update</span><span class="p">(%{</span><span class="n">book</span> <span class="p">|</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Ruby9 &amp;ss 2.0 (4th edition)&quot;</span><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Both Ecto and Active Record have exhibited almost the same level of code when updating a record. Hence, it is a draw.</p>
+
+<h4>4 - Delete</h4>
+
+<h4>Active Record</h4>
+
+<p>To delete a record, we will use <code>destroy</code> on a <code>Book</code> instance</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">book</span> <span class="o">=</span> <span class="no">Book</span><span class="o">.</span><span class="n">first</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">book</span><span class="o">.</span><span class="n">destroy</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Ecto</h4>
+
+<p>To delete a record, we will use <code>delete</code> on <code>BookStoreElixir.repo</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="kn">alias</span> <span class="nc">BookStoreElixir.Book</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="kn">alias</span> <span class="nc">BookStoreElixir.Repo</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">book</span> <span class="p">=</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">one</span><span class="p">(</span><span class="nc">Book</span><span class="p">)</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">delete</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Both Ecto and Active Record have exhibited almost the same level of code when delete a record. Hence, it is a draw.</p>
+
+<p>So for this Round 2, Active Record is the <strong>winner</strong> (1 vs 0).</p>
+
+<h3>Round 3: Speed of Creation</h3>
+
+<p>Note that this is tested on my local machine. The result here is just for your reference, and should not be treated as an official benchmark.
+I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and Elixir application are running with Postgres 9.3.5. For Rails, environment in Rails 4.1.4 has been preloaded with Spring, hence there is a not a need for system to spend time to load the Rails environment. Further more, the Rails code was run with the log mode the same as on production - i.e. no query log was printed out.</p>
+
+<h4>Active Record</h4>
+
+<p>Here is the code inside <code>db/seeds.rb</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># first round 100, second round 10,000, third round 1,000,000</span>
+</span><span class='line'><span class="n">number_of_records</span> <span class="o">=</span> <span class="mi">100</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">.</span><span class="n">.number_of_records</span>
+</span><span class='line'>  <span class="no">Book</span><span class="o">.</span><span class="n">create</span><span class="p">({</span><span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Book Title </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Description </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">author</span><span class="p">:</span> <span class="s2">&quot;Author </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;Publisher </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">})</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here is how I run it:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">time </span>bundle <span class="nb">exec </span>rake db:seed
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here are the results of 3 running rounds (with creating 100, 10,000 records and 1 million records). Each time database drop, creation and migration were performed before hand.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>real0m1.706s
+</span><span class='line'>user0m1.401s
+</span><span class='line'>sys0m0.229s
+</span><span class='line'>
+</span><span class='line'>real  0m12.328s
+</span><span class='line'>user  0m7.820s
+</span><span class='line'>sys 0m1.041s
+</span><span class='line'>
+</span><span class='line'>real  17m52.272s
+</span><span class='line'>user  10m41.534s
+</span><span class='line'>sys 1m20.044s
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Active Record took <strong>1.706 seconds</strong>,  <strong>12.328 seconds</strong> and a whooping <strong>17 minutes 52.272 seconds</strong> to complete 100, 10,000 and 1 million record creation run.</p>
+
+<h4>Ecto</h4>
+
+<p>I create a file seeds.ex inside the elixir project folder with the following content</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kn">alias</span> <span class="nc">BookStoreElixir.Book</span>
+</span><span class='line'><span class="kn">alias</span> <span class="nc">BookStoreElixir.Repo</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># First round 100, second round 10,000, third round 1,000,000</span>
+</span><span class='line'><span class="n">number_of_records</span> <span class="p">=</span> <span class="mi">100</span>
+</span><span class='line'><span class="n">range</span> <span class="p">=</span> <span class="mi">1</span><span class="p">..</span><span class="mi">100</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="p">&lt;-</span> <span class="n">range</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">book</span> <span class="p">=</span> <span class="p">%</span><span class="nc">Book</span><span class="p">{</span><span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Book Title </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Description </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">author</span><span class="p">:</span> <span class="s2">&quot;Author </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;Publisher </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="nc">Repo</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then run this seeds</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">time </span>mix run seeds.ex
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And here is the reusult of 3 runs:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>real  0m0.624s
+</span><span class='line'>user  0m0.513s
+</span><span class='line'>sys 0m0.187s
+</span><span class='line'>
+</span><span class='line'>real  0m5.109s
+</span><span class='line'>user  0m2.459s
+</span><span class='line'>sys 0m1.002s
+</span><span class='line'>
+</span><span class='line'>real  6m15.161s
+</span><span class='line'>user  3m19.126s
+</span><span class='line'>sys 2m53.117s
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ecto took merely <strong>0.624 seconds</strong>, <strong>5.109 seconds</strong> and <strong>6 minutes 15.161 seconds</strong> to complete the same 3 runs of creation 100, 10,000 and 1 million records.</p>
+
+<p>Here is the chart that shows the performance of Ecto vs Active Record through 3 runs:</p>
+
+<p><img class="center" src="/images/ecto_vs_active_record/creation_chart.png" width="710" height="467" title="image" alt="images"></p>
+
+<p>Ecto is approximately <strong>62%</strong> faster than Active Record. Hence, Ecto is the winner in this round.</p>
+
+<h4>Round 4: Speed of Updating</h4>
+
+<p>We will now run updating on 100, 10,000 and 1 million records in each database each. We will update the records, one by one to have a new book title. As usual, let&rsquo;s start with Active Record first</p>
+
+<h5>Active Record</h5>
+
+<p>Now in my <code>db/seeds.rb</code> file, I will change it like following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Book</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">book</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">book</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">({</span><span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;New Book Title </span><span class="si">#{</span><span class="n">book</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And run this file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">time </span>bundle <span class="nb">exec </span>rake db:seed
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>real  0m1.725s
+</span><span class='line'>user  0m1.423s
+</span><span class='line'>sys 0m0.243s
+</span><span class='line'>
+</span><span class='line'>real  0m12.414s
+</span><span class='line'>user  0m6.936s
+</span><span class='line'>sys 0m1.109s
+</span><span class='line'>
+</span><span class='line'>real  23m30.364s
+</span><span class='line'>user  15m22.126s
+</span><span class='line'>sys 1m26.698s
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Active Record took <strong>1.725 seconds</strong>, <strong>12.414 seconds</strong> and <strong>23 minutes, 30.364 seconds</strong> to update all 100, 10,000 and 1 million records respectively.</p>
+
+<h5>Ecto</h5>
+
+<p>We will change the <code>seeds.ex</code> file to following</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kn">alias</span> <span class="nc">BookStoreElixir.Book</span>
+</span><span class='line'><span class="kn">alias</span> <span class="nc">BookStoreElixir.Repo</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># range = 1..10000</span>
+</span><span class='line'><span class="c1"># for i &lt;- range do</span>
+</span><span class='line'><span class="c1">#  book = %Book{title: &quot;Book Title #{i}&quot;, description: &quot;Description #{i}&quot;, author: &quot;Author #{i}&quot;, publisher: &quot;Publisher #{i}&quot;}</span>
+</span><span class='line'><span class="c1">#  Repo.insert(book)</span>
+</span><span class='line'><span class="c1"># end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="n">book</span> <span class="p">&lt;-</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">all</span><span class="p">(</span><span class="nc">Book</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">book</span> <span class="p">=</span> <span class="p">%{</span><span class="n">book</span> <span class="p">|</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;New Book Title </span><span class="si">#{</span><span class="n">book</span><span class="p">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="nc">Repo</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Before you can run this file, you will need to do a bit modification on <code>postgrex</code> library as this library is throwing a time out if a query spends more than 5 seconds to complete. <code>Repo.all(Book)</code> will definitely take up more than 5 seconds to load up the entire collection of books into the memory</p>
+
+<p>From the project folder, what I did was edit file <code>deps/ecto/lib/ecto/adapters/postgres.ex</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim deps/ecto/lib/ecto/adapters/postgres.ex
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then search for <code>@timeout 5000</code> and replace by <code>@timeout :infinity</code></p>
+
+<p>Now you can run and time the running time of this file</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">time </span>mix run seeds.ex
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here are the result of 3 runs:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>real  0m0.606s
+</span><span class='line'>user  0m0.509s
+</span><span class='line'>sys 0m0.184s
+</span><span class='line'>
+</span><span class='line'>real  0m5.495s
+</span><span class='line'>user  0m2.515s
+</span><span class='line'>sys 0m1.071s
+</span><span class='line'>
+</span><span class='line'>real  7m12.016s
+</span><span class='line'>user  3m49.446s
+</span><span class='line'>sys 3m7.004s
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ecto took merely <strong>0.606 seconds</strong>, <strong>5.495 seconds</strong> and <strong>7 minutes, 12 seconds</strong> to update 100, 10,000 records and 1 million records respectively. Apparently, Ecto is the winner.</p>
+
+<p>Here is the chart showing the above elapsed time:</p>
+
+<p><img class="center" src="/images/ecto_vs_active_record/update_chart.png" width="633" height="444" title="image" alt="images"></p>
+
+<h3>Conclusion</h3>
+
+<p>With the fact that Active Record and Ecto each has 2 wons, it is concluded to be a draw between Active Record and Ecto. Ecto seems to be very promising library, which provides a very interesting way to write a database query. The steps to setup and the syntax of Ecto will definitely improve in the future.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-10-11T21:37:22+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:37 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://learnelixir.com/blog/2014/10/11/ecto-vs-active-record/" data-via="learnelixir" data-counturl="http://learnelixir.com/blog/2014/10/11/ecto-vs-active-record/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/10/experience-pipe-operator-in-elixir/" title="Previous Post: Experience Pipe Operator in Elixir">&laquo; Experience Pipe Operator in Elixir</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a> -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'learnelixir';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://learnelixir.com/blog/2014/10/11/ecto-vs-active-record/';
+        var disqus_url = 'http://learnelixir.com/blog/2014/10/11/ecto-vs-active-record/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
