@@ -4,7 +4,7 @@
   <title><![CDATA[Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-13T00:31:56+08:00</updated>
+  <updated>2014-10-13T23:59:29+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -12,6 +12,153 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Quote and Unquote in Elixir]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/13/quote-and-unquote-in-elixir/"/>
+    <updated>2014-10-13T22:35:08+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/13/quote-and-unquote-in-elixir</id>
+    <content type="html"><![CDATA[<p>Quote and Unquote function in Elixir can be confusing in the beginning. However, once you know them quite well, they can become very handy. In this article, we will look deeper into Quote and Unquote and see how it can help in doing some meta programming.</p>
+
+<!-- more -->
+
+
+<h3>Quote</h3>
+
+<p>Quote is a function in Elixir which is used to break an expression into an abstract syntax tree (AST). This AST is an internal presentation an expression in a compiler, which will be then used to evaluate the expression to a value. For instance</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="k">quote</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span>
+</span><span class='line'><span class="p">{</span><span class="ss">:+</span><span class="p">,</span> <span class="p">[</span><span class="ss">context</span><span class="p">:</span> <span class="nc">Elixir</span><span class="p">,</span> <span class="ss">import</span><span class="p">:</span> <span class="nc">Kernel</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So the expression <code>1 + 2</code> is presented as a tuple of 3 elements in Elixir compiler:</p>
+
+<ul>
+<li>A symbol of plus sign (<code>:+</code>) or can be called the function name</li>
+<li>A keyword list containing meta data (<code>[context: Elixir, import: Kernel]</code>)</li>
+<li>The argument list (<code>[1, 2]</code>)</li>
+</ul>
+
+
+<p>Ignoring the keyword list containing meta data, it can be understood as an abstract syntax tree, where the function name is the root node and the 2 arguments are the leaves of the tree</p>
+
+<p><img class="center" src="http://learnelixir.com/images/quote_and_unquote/ast1.png" width="250" height="250" title="image" alt="images"></p>
+
+<p>If now we try on a more complex expression <code>1 + 2 * 3</code>, it will present a more complex abstract syntax tree</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="k">quote</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">3</span>
+</span><span class='line'><span class="p">{</span><span class="ss">:+</span><span class="p">,</span> <span class="p">[</span><span class="ss">context</span><span class="p">:</span> <span class="nc">Elixir</span><span class="p">,</span> <span class="ss">import</span><span class="p">:</span> <span class="nc">Kernel</span><span class="p">],</span>
+</span><span class='line'> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="ss">:*</span><span class="p">,</span> <span class="p">[</span><span class="ss">context</span><span class="p">:</span> <span class="nc">Elixir</span><span class="p">,</span> <span class="ss">import</span><span class="p">:</span> <span class="nc">Kernel</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img class="center" src="http://learnelixir.com/images/quote_and_unquote/ast2.png" width="325" height="400" title="image" alt="images"></p>
+
+<p>So when evaluating this expression, Elixir compile will travel upward starting from the most left leave. For example, the AST tree above will be evaluated as <code>(2 * 3) + 1</code>. In order to evaluate a quoted expression Elixir, we need to use <code>Code.eval_quoted</code> function. For instance:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Code</span><span class="p">.</span><span class="n">eval_quoted</span><span class="p">(</span><span class="k">quote</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span><span class="mi">7</span><span class="p">,</span> <span class="p">[]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>Code.eval_quoted</code> function call returns a tuple of the evaluation value and a map of all variable resulted from the evaluation</p>
+
+<p>Quote can be used with function called as well. For instance:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="k">quote</span> <span class="ss">do</span><span class="p">:</span> <span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span><span class="ss">:sum</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So quote function is like putting an expression between a quote so that it can be used later on. It is like storing expression into a string, but it will not be useful if we do not supply in variable in the quote body. So let&rsquo;s try to define some variable and use those in quote body:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">a</span> <span class="p">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">b</span> <span class="p">=</span> <span class="mi">2</span>
+</span><span class='line'><span class="mi">2</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Code</span><span class="p">.</span><span class="n">eval_quoted</span><span class="p">(</span><span class="k">quote</span> <span class="ss">do</span><span class="p">:</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+</span><span class='line'><span class="o">**</span> <span class="p">(</span><span class="nc">CompileError</span><span class="p">)</span> <span class="n">nofile</span><span class="err">:</span><span class="mi">1</span><span class="err">:</span> <span class="n">undefined</span> <span class="n">function</span> <span class="n">a</span><span class="o">/</span><span class="mi">0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It will give you an error on undefined function a. This happens because when <code>Code.eval_quoted</code>, it does not know any <code>a</code> value, and the a here is not the same variable that we defined outside ealier. In order for a to be understood in the quote, we will need to use function unquote</p>
+
+<h3>Unquote</h3>
+
+<p>So here, how it should be written if a variable is referred to outside of the scope of quote:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">a</span> <span class="p">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">b</span> <span class="p">=</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">b</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="k">quote</span> <span class="ss">do</span><span class="p">:</span> <span class="k">unquote</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="k">unquote</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span><span class="ss">:+</span><span class="p">,</span> <span class="p">[</span><span class="ss">context</span><span class="p">:</span> <span class="nc">Elixir</span><span class="p">,</span> <span class="ss">import</span><span class="p">:</span> <span class="nc">Kernel</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, the value of a and b are now evaluated correctly <strong>before</strong> Elixir construct the abstract syntax tree and these values are actually computed at compiled time. We can try out to test this. Let say, we define a function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">a</span> <span class="p">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">b</span> <span class="p">=</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">b</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">fun</span> <span class="p">=</span> <span class="k">fn</span> <span class="p">-&gt;</span> <span class="k">quote</span> <span class="k">do</span>
+</span><span class='line'>   <span class="k">unquote</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="k">unquote</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="p">{</span><span class="ss">:+</span><span class="p">,</span> <span class="p">[</span><span class="ss">context</span><span class="p">:</span> <span class="nc">Elixir</span><span class="p">,</span> <span class="ss">import</span><span class="p">:</span> <span class="nc">Kernel</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So now we try to change an <code>a</code> value:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">a</span> <span class="p">=</span> <span class="mi">10</span>
+</span><span class='line'><span class="mi">10</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">fun</span><span class="p">.</span><span class="n">call</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span><span class="ss">:+</span><span class="p">,</span> <span class="p">[</span><span class="ss">context</span><span class="p">:</span> <span class="nc">Elixir</span><span class="p">,</span> <span class="ss">import</span><span class="p">:</span> <span class="nc">Kernel</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, although a&rsquo;s value is change but the funtioncal representing <code>a + b</code> still reflecting the original value of a and b.</p>
+
+<p>That&rsquo;s all for now. I hope you enjoy this article. I would like to share more to utilise all these things to do meta programming in Elixir :-)</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ecto vs Active Record]]></title>

@@ -1,0 +1,368 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Quote and Unquote in Elixir - Learn Elixir Language</title>
+  <meta name="author" content="<a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>&#8221;>
+
+  
+  <meta name="description" content="Quote and Unquote in Elixir">
+  <meta name="keywords" content="quote, unquote, meta programming">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://learnelixir.com/blog/2014/10/13/quote-and-unquote-in-elixir">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Learn Elixir Language" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-55420151-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/"><img src='/images/logo.png' title='Learn Elixir Language'/></a></h1>
+  
+    <h2>Elixir Language, Phoenix Framework and Me.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscription">
+  <li><a href="https://github.com/learnelixir" rel="subscribe-github" title="@learnelixir on GitHub">GitHub</a></li>
+</ul>
+  
+  
+  
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:learnelixir.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Quote and Unquote in Elixir</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-13T22:35:08+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:35 pm</span></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://learnelixir.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Quote and Unquote function in Elixir can be confusing in the beginning. However, once you know them quite well, they can become very handy. In this article, we will look deeper into Quote and Unquote and see how it can help in doing some meta programming.</p>
+
+<!-- more -->
+
+
+<h3>Quote</h3>
+
+<p>Quote is a function in Elixir which is used to break an expression into an abstract syntax tree (AST). This AST is an internal presentation an expression in a compiler, which will be then used to evaluate the expression to a value. For instance</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="k">quote</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span>
+</span><span class='line'><span class="p">{</span><span class="ss">:+</span><span class="p">,</span> <span class="p">[</span><span class="ss">context</span><span class="p">:</span> <span class="nc">Elixir</span><span class="p">,</span> <span class="ss">import</span><span class="p">:</span> <span class="nc">Kernel</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So the expression <code>1 + 2</code> is presented as a tuple of 3 elements in Elixir compiler:</p>
+
+<ul>
+<li>A symbol of plus sign (<code>:+</code>) or can be called the function name</li>
+<li>A keyword list containing meta data (<code>[context: Elixir, import: Kernel]</code>)</li>
+<li>The argument list (<code>[1, 2]</code>)</li>
+</ul>
+
+
+<p>Ignoring the keyword list containing meta data, it can be understood as an abstract syntax tree, where the function name is the root node and the 2 arguments are the leaves of the tree</p>
+
+<p><img class="center" src="/images/quote_and_unquote/ast1.png" width="250" height="250" title="image" alt="images"></p>
+
+<p>If now we try on a more complex expression <code>1 + 2 * 3</code>, it will present a more complex abstract syntax tree</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="k">quote</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">3</span>
+</span><span class='line'><span class="p">{</span><span class="ss">:+</span><span class="p">,</span> <span class="p">[</span><span class="ss">context</span><span class="p">:</span> <span class="nc">Elixir</span><span class="p">,</span> <span class="ss">import</span><span class="p">:</span> <span class="nc">Kernel</span><span class="p">],</span>
+</span><span class='line'> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="ss">:*</span><span class="p">,</span> <span class="p">[</span><span class="ss">context</span><span class="p">:</span> <span class="nc">Elixir</span><span class="p">,</span> <span class="ss">import</span><span class="p">:</span> <span class="nc">Kernel</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img class="center" src="/images/quote_and_unquote/ast2.png" width="325" height="400" title="image" alt="images"></p>
+
+<p>So when evaluating this expression, Elixir compile will travel upward starting from the most left leave. For example, the AST tree above will be evaluated as <code>(2 * 3) + 1</code>. In order to evaluate a quoted expression Elixir, we need to use <code>Code.eval_quoted</code> function. For instance:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Code</span><span class="p">.</span><span class="n">eval_quoted</span><span class="p">(</span><span class="k">quote</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span><span class="mi">7</span><span class="p">,</span> <span class="p">[]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>Code.eval_quoted</code> function call returns a tuple of the evaluation value and a map of all variable resulted from the evaluation</p>
+
+<p>Quote can be used with function called as well. For instance:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="k">quote</span> <span class="ss">do</span><span class="p">:</span> <span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span><span class="ss">:sum</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So quote function is like putting an expression between a quote so that it can be used later on. It is like storing expression into a string, but it will not be useful if we do not supply in variable in the quote body. So let&rsquo;s try to define some variable and use those in quote body:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">a</span> <span class="p">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">b</span> <span class="p">=</span> <span class="mi">2</span>
+</span><span class='line'><span class="mi">2</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Code</span><span class="p">.</span><span class="n">eval_quoted</span><span class="p">(</span><span class="k">quote</span> <span class="ss">do</span><span class="p">:</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+</span><span class='line'><span class="o">**</span> <span class="p">(</span><span class="nc">CompileError</span><span class="p">)</span> <span class="n">nofile</span><span class="err">:</span><span class="mi">1</span><span class="err">:</span> <span class="n">undefined</span> <span class="n">function</span> <span class="n">a</span><span class="o">/</span><span class="mi">0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It will give you an error on undefined function a. This happens because when <code>Code.eval_quoted</code>, it does not know any <code>a</code> value, and the a here is not the same variable that we defined outside ealier. In order for a to be understood in the quote, we will need to use function unquote</p>
+
+<h3>Unquote</h3>
+
+<p>So here, how it should be written if a variable is referred to outside of the scope of quote:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">a</span> <span class="p">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">b</span> <span class="p">=</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">b</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="k">quote</span> <span class="ss">do</span><span class="p">:</span> <span class="k">unquote</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="k">unquote</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span><span class="ss">:+</span><span class="p">,</span> <span class="p">[</span><span class="ss">context</span><span class="p">:</span> <span class="nc">Elixir</span><span class="p">,</span> <span class="ss">import</span><span class="p">:</span> <span class="nc">Kernel</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, the value of a and b are now evaluated correctly <strong>before</strong> Elixir construct the abstract syntax tree and these values are actually computed at compiled time. We can try out to test this. Let say, we define a function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">a</span> <span class="p">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">b</span> <span class="p">=</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">b</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">fun</span> <span class="p">=</span> <span class="k">fn</span> <span class="p">-&gt;</span> <span class="k">quote</span> <span class="k">do</span>
+</span><span class='line'>   <span class="k">unquote</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="k">unquote</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="p">{</span><span class="ss">:+</span><span class="p">,</span> <span class="p">[</span><span class="ss">context</span><span class="p">:</span> <span class="nc">Elixir</span><span class="p">,</span> <span class="ss">import</span><span class="p">:</span> <span class="nc">Kernel</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So now we try to change an <code>a</code> value:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">a</span> <span class="p">=</span> <span class="mi">10</span>
+</span><span class='line'><span class="mi">10</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">fun</span><span class="p">.</span><span class="n">call</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span><span class="ss">:+</span><span class="p">,</span> <span class="p">[</span><span class="ss">context</span><span class="p">:</span> <span class="nc">Elixir</span><span class="p">,</span> <span class="ss">import</span><span class="p">:</span> <span class="nc">Kernel</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, although a&rsquo;s value is change but the funtioncal representing <code>a + b</code> still reflecting the original value of a and b.</p>
+
+<p>That&rsquo;s all for now. I hope you enjoy this article. I would like to share more to utilise all these things to do meta programming in Elixir :-)</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-10-13T22:35:08+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:35 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://learnelixir.com/blog/2014/10/13/quote-and-unquote-in-elixir/" data-via="learnelixir" data-counturl="http://learnelixir.com/blog/2014/10/13/quote-and-unquote-in-elixir/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/11/ecto-vs-active-record/" title="Previous Post: Ecto vs Active Record">&laquo; Ecto vs Active Record</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a> -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'learnelixir';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://learnelixir.com/blog/2014/10/13/quote-and-unquote-in-elixir/';
+        var disqus_url = 'http://learnelixir.com/blog/2014/10/13/quote-and-unquote-in-elixir/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
