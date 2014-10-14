@@ -1,0 +1,476 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Spawn Process and Concurrency in Elixir - Learn Elixir Language</title>
+  <meta name="author" content="<a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>&#8221;>
+
+  
+  <meta name="description" content="Spawn Process and Concurrency in Elixir">
+  <meta name="keywords" content="elixir, concurrency, spawn, process">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://learnelixir.com/blog/2014/10/14/spawn-process-and-concurrency-in-elixir">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Learn Elixir Language" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-55420151-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/"><img src='/images/logo.png' title='Learn Elixir Language'/></a></h1>
+  
+    <h2>Elixir Language, Phoenix Framework and Me.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscription">
+  <li><a href="https://github.com/learnelixir" rel="subscribe-github" title="@learnelixir on GitHub">GitHub</a></li>
+</ul>
+  
+  
+  
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:learnelixir.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Spawn Process and Concurrency in Elixir</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-14T23:36:28+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:36 pm</span></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://learnelixir.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Concurrency in Elixir can be achieved by using 3 things. They are <strong>spawning process</strong>, <strong>sending messages</strong> and <strong>receiving messages</strong>. Let&rsquo;s look at how we can spawn a new process in Elixir</p>
+
+<!-- more -->
+
+
+<h3>Spawning Process</h3>
+
+<p>To spawn a new process in Elixir, we will first need to define a function and call <code>spawn</code>. This function can be an anonymous function or a function defined in a module.</p>
+
+<h4>Spawn process from Anonymous function</h4>
+
+<p>For instance, if we have:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">fun</span> <span class="p">=</span> <span class="k">fn</span> <span class="p">-&gt;</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">end</span>
+</span><span class='line'><span class="c1">#Function&lt;20.90072148/0 in :erl_eval.expr/5&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can then call spawn on this function</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">pid</span> <span class="p">=</span> <span class="n">spawn</span><span class="p">(</span><span class="n">fun</span><span class="p">)</span>
+</span><span class='line'><span class="c1">#PID&lt;0.56.0&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>spawn</code> function will return you a <code>PID</code> struct with pid number of the spawn process inside. This process is then by killed by itself after finish running.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Process</span><span class="p">.</span><span class="n">alive?</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
+</span><span class='line'><span class="no">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Another way to spawn is calling spawn/3 a function defined in <code>defmodule</code>. For example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">Fib</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">0</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">pid</span> <span class="p">=</span> <span class="n">spawn</span><span class="p">(</span><span class="nc">Fib</span><span class="p">,</span> <span class="ss">:fib</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The first argument is the module name, second argument is function name and the last argument is the list of the arguments. Later we will see how this <code>spawn</code> can be used. Before that, let move on to how to send a message to a process.</p>
+
+<h4>Sending Messages</h4>
+
+<p>We can send a message to a running process in Elixir. The most obvious example is sending a message to the process running your <code>iex</code>. The <code>iex</code> is actually a process itself and when we call <code>self()</code>, it will return the PID number:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">self_pid</span> <span class="p">=</span> <span class="n">self</span><span class="p">()</span>
+</span><span class='line'><span class="c1">#PID&lt;0.53.0&gt;</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Process</span><span class="p">.</span><span class="n">alive?</span><span class="p">(</span><span class="n">self_pid</span><span class="p">)</span>
+</span><span class='line'><span class="no">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Since the process is alive, we can send a message to this process by triggering <code>send/2</code> function</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">send</span> <span class="n">self</span><span class="p">(),</span> <span class="p">{</span><span class="ss">:any</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>send</code> takes 2 argument, the first one is the PID of the process that you would like to send the message to and the second argument is the message in a form of a tuple. It can be any tuple.</p>
+
+<h3>Receiving Messages</h3>
+
+<p>Receiving messages in Elixir can be called anywhere after the <code>send</code> command is triggered. When a message is sent to a process, the message is stored in that process <strong>mailbox</strong> and waits there. When <code>receive</code> function is called, that message will then be retrieved.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">send</span> <span class="n">self</span><span class="p">(),</span> <span class="p">{</span><span class="ss">:any</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">}</span>
+</span><span class='line'><span class="p">{</span><span class="ss">:any</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">}</span>
+</span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="k">receive</span> <span class="k">do</span>
+</span><span class='line'>       <span class="p">{</span><span class="ss">:any</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">}</span> <span class="p">-&gt;</span> <span class="s2">&quot;We have received a message&quot;</span>
+</span><span class='line'>     <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>How these 3 things <strong>spawn processes</strong>, <strong>sending messages</strong> and <strong>receiving messages</strong> can work together? Let&rsquo;s take a look at the following code to generate a fibonacci number by supplying a sequence number</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">Fib</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">0</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After we defined this module <code>Fib</code>, we can just call:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Fib</span><span class="p">.</span><span class="n">fib</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'><span class="mi">55</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, let make Fib module a bit more interesting by making use of the <strong>spawn processes</strong>, <strong>sending messages</strong> and <strong>receiving messages</strong>. Let define a new module called CFib</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">CFib</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">0</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now in <code>fib(n)</code> function definition, instead of just calling the the calculation on <code>n - 1</code> and <code>n - 2</code>, we will make these 2 calculations as 2 processes running concurrently.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">calculate_fib</span> <span class="p">=</span> <span class="k">fn</span> <span class="n">n</span> <span class="p">-&gt;</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">end</span>
+</span><span class='line'>  <span class="n">spawn</span><span class="p">(</span><span class="bp">__MODULE__</span><span class="p">,</span> <span class="ss">:fib_at_child</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">calculate_fib</span><span class="p">,</span> <span class="n">self</span><span class="p">])</span>
+</span><span class='line'>  <span class="n">spawn</span><span class="p">(</span><span class="bp">__MODULE__</span><span class="p">,</span> <span class="ss">:fib_at_child</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">calculate_fib</span><span class="p">,</span> <span class="n">self</span><span class="p">])</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">def</span> <span class="n">fib_at_child</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">send</span> <span class="n">parent</span><span class="p">,</span> <span class="p">[</span><span class="n">self</span><span class="p">,</span> <span class="n">func</span><span class="p">.(</span><span class="n">sequence</span><span class="p">)]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Inside <code>fib</code> function, we have spawned 2 processes for function <code>fib_at_child</code> with arguments <code>n - 1</code> and <code>n - 2</code> respectively, the anonymous to calculate fibonacci based on a sequence number and the parent process itself. We have also defined an extra function call <code>fib_at_child</code> which will be used to execute the function on the sequence number and send back the result of the calculation back to the parent process. Take note that the function <code>fib_at_child</code> now is running at the child process instead of the parent process. That is the reason why we will need to use <code>send</code> function to send back the result to parent.</p>
+
+<p>The last step is to receive the result at the original process and add the two results</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">calculate_fib</span> <span class="p">=</span> <span class="k">fn</span> <span class="n">n</span> <span class="p">-&gt;</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">end</span>
+</span><span class='line'>  <span class="n">first_pid</span> <span class="p">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">__MODULE__</span><span class="p">,</span> <span class="ss">:fib_at_child</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">calculate_fib</span><span class="p">,</span> <span class="n">self</span><span class="p">])</span>
+</span><span class='line'>  <span class="n">second_pid</span> <span class="p">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">__MODULE__</span><span class="p">,</span> <span class="ss">:fib_at_child</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">calculate_fib</span><span class="p">,</span> <span class="n">self</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">fib_of_n_1</span> <span class="p">=</span> <span class="k">receive</span> <span class="ss">do</span><span class="p">:</span> <span class="p">{</span><span class="o">^</span><span class="n">first_pid</span><span class="p">,</span> <span class="n">value</span><span class="p">}</span> <span class="p">-&gt;</span> <span class="n">value</span>
+</span><span class='line'>  <span class="n">fib_of_n_2</span> <span class="p">=</span> <span class="k">receive</span> <span class="ss">do</span><span class="p">:</span> <span class="p">{</span><span class="o">^</span><span class="n">second_pid</span><span class="p">,</span> <span class="n">value</span><span class="p">}</span> <span class="p">-&gt;</span> <span class="n">value</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">fib_of_n_1</span> <span class="o">+</span> <span class="n">fib_of_n_2</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">def</span> <span class="n">fib_at_child</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">send</span> <span class="n">parent</span><span class="p">,</span> <span class="p">{</span><span class="n">self</span><span class="p">,</span> <span class="n">func</span><span class="p">.(</span><span class="n">sequence</span><span class="p">)}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And here is the complete program of CFib</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">CFib</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">0</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">calculate_fib</span> <span class="p">=</span> <span class="k">fn</span> <span class="n">n</span> <span class="p">-&gt;</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">end</span>
+</span><span class='line'>      <span class="n">first_pid</span> <span class="p">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">__MODULE__</span><span class="p">,</span> <span class="ss">:fib_at_child</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">calculate_fib</span><span class="p">,</span> <span class="n">self</span><span class="p">])</span>
+</span><span class='line'>      <span class="n">second_pid</span> <span class="p">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">__MODULE__</span><span class="p">,</span> <span class="ss">:fib_at_child</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">calculate_fib</span><span class="p">,</span> <span class="n">self</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">fib_of_n_1</span> <span class="p">=</span> <span class="k">receive</span> <span class="ss">do</span><span class="p">:</span> <span class="p">({</span><span class="o">^</span><span class="n">first_pid</span><span class="p">,</span> <span class="n">value</span><span class="p">}</span> <span class="p">-&gt;</span> <span class="n">value</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">fib_of_n_2</span> <span class="p">=</span> <span class="k">receive</span> <span class="ss">do</span><span class="p">:</span> <span class="p">({</span><span class="o">^</span><span class="n">second_pid</span><span class="p">,</span> <span class="n">value</span><span class="p">}</span> <span class="p">-&gt;</span> <span class="n">value</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">fib_of_n_1</span> <span class="o">+</span> <span class="n">fib_of_n_2</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fib_at_child</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">send</span> <span class="n">parent</span><span class="p">,</span> <span class="p">{</span><span class="n">self</span><span class="p">,</span> <span class="n">func</span><span class="p">.(</span><span class="n">sequence</span><span class="p">)}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">CFib</span><span class="p">.</span><span class="n">fib</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="c1"># 55</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s all for this article. I hope you enjoyed this. Happy coding :-)</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-10-14T23:36:28+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:36 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://learnelixir.com/blog/2014/10/14/spawn-process-and-concurrency-in-elixir/" data-via="learnelixir" data-counturl="http://learnelixir.com/blog/2014/10/14/spawn-process-and-concurrency-in-elixir/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/13/quote-and-unquote-in-elixir/" title="Previous Post: Quote and Unquote in Elixir">&laquo; Quote and Unquote in Elixir</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a> -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'learnelixir';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://learnelixir.com/blog/2014/10/14/spawn-process-and-concurrency-in-elixir/';
+        var disqus_url = 'http://learnelixir.com/blog/2014/10/14/spawn-process-and-concurrency-in-elixir/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
