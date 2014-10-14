@@ -280,7 +280,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Inside <code>fib</code> function, we have spawned 2 processes for function <code>fib_at_child</code> with arguments <code>n - 1</code> and <code>n - 2</code> respectively, the anonymous to calculate fibonacci based on a sequence number and the parent process itself. We have also defined an extra function call <code>fib_at_child</code> which will be used to execute the function on the sequence number and send back the result of the calculation back to the parent process. Take note that the function <code>fib_at_child</code> now is running at the child process instead of the parent process. That is the reason why we will need to use <code>send</code> function to send back the result to parent.</p>
+<p>Inside <code>fib</code> function, we have spawned 2 processes for function <code>fib_at_child</code> with arguments <code>n - 1</code> and <code>n - 2</code> respectively, the anonymous function to calculate fibonacci based on a sequence number and the parent process itself. We have also defined an extra function call <code>fib_at_child</code> which will be used to execute the function on the sequence number and send back the result of the calculation back to the parent process. Take note that the function <code>fib_at_child</code> now is running at the child process instead of the parent process. That is the reason why we will need to use <code>send</code> function to send back the result to parent.</p>
 
 <p>The last step is to receive the result at the original process and add the two results</p>
 
