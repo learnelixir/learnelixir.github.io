@@ -4,7 +4,7 @@
   <title><![CDATA[Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-16T08:19:57+08:00</updated>
+  <updated>2014-10-17T08:15:29+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -12,6 +12,530 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Deploy Phoenix Application a Ubuntu Server With Nginx]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-a-ubuntu-server-with-nginx/"/>
+    <updated>2014-10-16T22:26:46+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-a-ubuntu-server-with-nginx</id>
+    <content type="html"><![CDATA[<p>In previous article, we have already learned how to deploy a Phoenix Application to Heroku server. I am actually quite curious to see how Elixir, and Phoenix can work with nginx server. That&rsquo;s the reason why I try to dig into this topic. Here are the steps that I managed to find out how to automate the deployment process and run the application on nginx server.</p>
+
+<!-- more -->
+
+
+<h3>Step to set create a basic Phoenix application.</h3>
+
+<p>You can skip this section if you already have a Phoenix application to deploy</p>
+
+<p>From phoenix installation folder, run the following command. You can name it any name as long as you remember to use the same app name in subsequent steps.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix phoenix.new my_awesome_app ../
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Enter this new application folder and install all the dependencies</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ../my_awesome_app
+</span><span class='line'>mix <span class="k">do</span> deps.get, compile
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is a miminal number of steps to setup a phoenix application. Eventually, you will need to add more code to build it up. Moving forward, let&rsquo;s deploy this application.</p>
+
+<h3>Deploy and Deploy</h3>
+
+<h4>Step 1: Install capistrano and capify</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>gem install capistrano --version<span class="o">=</span>2.15.5
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>then capify it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>capify .
+</span><span class='line'><span class="o">[</span>add<span class="o">]</span> writing <span class="s1">&#39;./Capfile&#39;</span>
+</span><span class='line'><span class="o">[</span>add<span class="o">]</span> writing <span class="s1">&#39;./config/deploy.rb&#39;</span>
+</span><span class='line'><span class="o">[</span><span class="k">done</span><span class="o">]</span> capified!
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and create a folder for multi staging deploy later.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mkdir config/deploy
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Step 2: Add exrm to the dependencies</h4>
+
+<p>Exrm stands for Elixir Release Management. It is a very nice tool to help release this phoenix app into a runnable standalone application. Everytime we deploy, we will need to run <code>mix release</code> to generate a ready-to-run application. Exrm will help us to handle the release process nicely.</p>
+
+<p>To start, you will need to add <code>exrm</code> into <code>mix.exs</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
+</span><span class='line'>  <span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.4.1&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:exrm</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.14.11&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="p">]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And install</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix deps.get
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Step 3: Change the way the application starts</h4>
+
+<p>Add in <strong>line 12</strong> to the application file in lib folder. In my case it is <code>lib/my_awesome_app.ex</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">MyAwesomeApp</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Application</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># See http://elixir-lang.org/docs/stable/elixir/Application.html</span>
+</span><span class='line'>  <span class="c1"># for more information on OTP Applications</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">start</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="n">_args</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="kn">import</span> <span class="nc">Supervisor.Spec</span><span class="p">,</span> <span class="ss">warn</span><span class="p">:</span> <span class="no">false</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">children</span> <span class="p">=</span> <span class="p">[</span>
+</span><span class='line'>      <span class="c1"># Define workers and child supervisors to be supervised</span>
+</span><span class='line'>      <span class="c1"># worker(TestApp.Worker, [arg1, arg2, arg3])</span>
+</span><span class='line'>      <span class="n">worker</span><span class="p">(</span><span class="nc">MyAwesomeApp.Router</span><span class="p">,</span> <span class="p">[],</span> <span class="ss">function</span><span class="p">:</span> <span class="ss">:start</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nc">IO</span><span class="p">.</span><span class="n">puts</span> <span class="p">(</span><span class="n">inspect</span> <span class="n">children</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">opts</span> <span class="p">=</span> <span class="p">[</span><span class="ss">strategy</span><span class="p">:</span> <span class="ss">:one_for_one</span><span class="p">,</span> <span class="ss">name</span><span class="p">:</span> <span class="nc">MyAwesomeApp.Supervisor</span><span class="p">]</span>
+</span><span class='line'>    <span class="nc">Supervisor</span><span class="p">.</span><span class="n">start_link</span><span class="p">(</span><span class="n">children</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After adding line 12, your application in development mode will no longer be able to start the normal way - <code>mix phoenix.start</code>. It will crash immediately like below.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Running MyAwesomeApp.Router with Cowboy on port 4000
+</span><span class='line'>** <span class="o">(</span>CaseClauseError<span class="o">)</span> no <span class="k">case</span> clause matching: <span class="o">{</span>:error, <span class="o">{</span>:already_started, <span class="c">#PID&lt;0.149.0&gt;}}</span>
+</span><span class='line'>    <span class="o">(</span>phoenix<span class="o">)</span> lib/phoenix/router.ex:78: Phoenix.Router.start_adapter/2
+</span><span class='line'>    <span class="o">(</span>phoenix<span class="o">)</span> lib/mix/tasks/phoenix/start.ex:12: Mix.Tasks.Phoenix.Start.run/1
+</span><span class='line'>    <span class="o">(</span>mix<span class="o">)</span> lib/mix/cli.ex:55: Mix.CLI.run_task/2
+</span><span class='line'>    <span class="o">(</span>elixir<span class="o">)</span> src/elixir_lexical.erl:17: :elixir_lexical.run/3
+</span><span class='line'>    <span class="o">(</span>elixir<span class="o">)</span> lib/code.ex:316: Code.require_file/2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To fix this issue, you will need to run the phoenix server using the command below in development mode:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>iex -S mix phoenix.start
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Step 3: Push all the source code to a git repository</h4>
+
+<p>Create a git place for your code to be stored in online. For my case, I have created a public github project at <code>git@github.com:learnelixir/my-awesome-app.git</code></p>
+
+<p>Then from the application root folder, type the following commands to add the git remote url. Remember to change the git url accordingly</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git init
+</span><span class='line'><span class="nv">$ </span>git remote add origin git@github.com:learnelixir/my-awesome-app.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then push everything up to this repo</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git add . <span class="o">&amp;&amp;</span> git commit -am <span class="s2">&quot;initial commit&quot;</span>
+</span><span class='line'><span class="nv">$ </span>git push origin master
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Step 4: Install erlang and elixir on ubuntu server</h4>
+
+<p>Login to your server, and run the following command to install erlang and elixir environment:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="err">$</span> <span class="n">wget</span> <span class="n">http</span><span class="ss">:/</span><span class="o">/</span><span class="n">packages</span><span class="p">.</span><span class="n">erlang</span><span class="o">-</span><span class="n">solutions</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">erlang</span><span class="o">-</span><span class="n">solutions_1</span><span class="p">.</span><span class="mi">0</span><span class="n">_all</span><span class="p">.</span><span class="n">deb</span>
+</span><span class='line'><span class="err">$</span> <span class="n">sudo</span> <span class="n">dpkg</span> <span class="o">-</span><span class="n">i</span> <span class="n">erlang</span><span class="o">-</span><span class="n">solutions_1</span><span class="p">.</span><span class="mi">0</span><span class="n">_all</span><span class="p">.</span><span class="n">deb</span>
+</span><span class='line'><span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
+</span><span class='line'><span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">erlang</span>
+</span><span class='line'><span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">elixir</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Step 5: Adjust your locale to UTF8</h4>
+
+<p>Elixir is quite particular about the locale issue. It will give a lot of warnings later when we deploy if we do not set it up now. You can start by running the following commands:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">export </span><span class="nv">LANGUAGE</span><span class="o">=</span>en_US.UTF-8
+</span><span class='line'><span class="nv">$ </span><span class="nb">export </span><span class="nv">LANG</span><span class="o">=</span>en_US.UTF-8
+</span><span class='line'><span class="nv">$ </span><span class="nb">export </span><span class="nv">LC_ALL</span><span class="o">=</span>en_US.UTF-8
+</span><span class='line'><span class="nv">$ </span>locale-gen en_US.UTF-8
+</span><span class='line'><span class="nv">$ </span>sudo apt-get install locales
+</span><span class='line'><span class="nv">$ </span>sudo dpkg-reconfigure locales
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then put the following export lines at the end of <code>~/.profile</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">export </span><span class="nv">LANGUAGE</span><span class="o">=</span>en_US.UTF-8
+</span><span class='line'><span class="nb">export </span><span class="nv">LANG</span><span class="o">=</span>en_US.UTF-8
+</span><span class='line'><span class="nb">export </span><span class="nv">LC_ALL</span><span class="o">=</span>en_US.UTF-8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, put the following code at the end of <code>/etc/environment</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">LC_ALL</span><span class="o">=</span>en_US.UTF-8
+</span><span class='line'><span class="nv">LANG</span><span class="o">=</span>en_US.UTF-8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Step 5: Edit config/deploy.rb</h4>
+
+<p>Edit <code>config/deploy.rb</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim config/deploy.rb
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And paste in the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;capistrano/ext/multistage&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">set</span> <span class="ss">:stages</span><span class="p">,</span> <span class="o">[</span><span class="s2">&quot;staging&quot;</span><span class="p">,</span> <span class="s2">&quot;production&quot;</span><span class="o">]</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:default_stage</span><span class="p">,</span> <span class="s2">&quot;production&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">set</span> <span class="ss">:keep_releases</span><span class="p">,</span> <span class="mi">5</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:application</span><span class="p">,</span> <span class="s2">&quot;My Awesome App&quot;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:repository</span><span class="p">,</span>  <span class="s2">&quot;git@github.com:learnelixir/my-awesome-app.git&quot;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:scm</span><span class="p">,</span> <span class="ss">:git</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:branch</span><span class="p">,</span> <span class="ss">:master</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:use_sudo</span><span class="p">,</span> <span class="kp">false</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">set</span> <span class="ss">:normalize_asset_timestamps</span><span class="p">,</span> <span class="kp">false</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:deploy_via</span><span class="p">,</span> <span class="ss">:remote_cache</span>
+</span><span class='line'><span class="n">after</span> <span class="s2">&quot;deploy:update&quot;</span><span class="p">,</span> <span class="s2">&quot;deploy:cleanup&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">after</span> <span class="s2">&quot;deploy:update&quot;</span><span class="p">,</span> <span class="s2">&quot;deploy:build&quot;</span><span class="p">,</span> <span class="s2">&quot;deploy:cleanup&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">namespace</span> <span class="ss">:assets</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:precompile</span><span class="p">,</span> <span class="ss">roles</span><span class="p">:</span> <span class="ss">:web</span> <span class="k">do</span>
+</span><span class='line'>    <span class="c1"># do nothing</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">is_application_running?</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">pid</span> <span class="o">=</span> <span class="n">capture</span><span class="p">(</span><span class="sx">%Q{ps ax -o pid= -o command=|</span>
+</span><span class='line'><span class="sx">      grep &quot;/home/app/www/my_awesome_app/current/rel/my_awesome_app/.*/[b]eam&quot;|awk &#39;{print $1}&#39;}</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">pid</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">namespace</span> <span class="ss">:deploy</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:is_running</span><span class="p">,</span> <span class="ss">roles</span><span class="p">:</span> <span class="ss">:web</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">is_running</span> <span class="o">=</span> <span class="n">is_application_running?</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">is_running</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="s2">&quot;Application is running&quot;</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="s2">&quot;Application is NOT running&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:build</span><span class="p">,</span> <span class="ss">roles</span><span class="p">:</span> <span class="ss">:web</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">run</span> <span class="s2">&quot;cd </span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2"> &amp;&amp; mix deps.get &amp;&amp; MIX_ENV=</span><span class="si">#{</span><span class="n">mix_env</span><span class="si">}</span><span class="s2"> mix release&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:restart</span><span class="p">,</span> <span class="ss">roles</span><span class="p">:</span> <span class="ss">:web</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">is_application_running?</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">run</span> <span class="s2">&quot;cd </span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">/rel/my_awesome_app/bin &amp;&amp; ./my_awesome_app stop&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="n">run</span> <span class="s2">&quot;cd </span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">/rel/my_awesome_app/bin &amp;&amp; ./my_awesome_app start&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:start</span><span class="p">,</span> <span class="ss">roles</span><span class="p">:</span> <span class="ss">:web</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">run</span> <span class="s2">&quot;cd </span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">/rel/my_awesome_app/bin &amp;&amp; ./my_awesome_app start&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:stop</span><span class="p">,</span> <span class="ss">roles</span><span class="p">:</span> <span class="ss">:web</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">run</span> <span class="s2">&quot;cd </span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">/rel/my_awesome_app/bin &amp;&amp; ./my_awesome_app stop&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We have re-written 3 default task in capistrano. They are <code>restart</code>, <code>start</code> and <code>stop</code>. These are used to run the script which was generated in step 2. Note that this script is generated by the command <code>`mix release</code> on line 41. You will need to change the application name accordingly. In my case, the application name is <code>my_awesome_app</code>.</p>
+
+<p>Besides <code>cap deploy</code>, here the commands that you can run with this capistrano:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>cap deploy:is_running <span class="c"># tell you if the application is running</span>
+</span><span class='line'><span class="nv">$ </span>cap deploy:stop       <span class="c"># stop the application</span>
+</span><span class='line'><span class="nv">$ </span>cap deploy:start      <span class="c"># start the application</span>
+</span><span class='line'><span class="nv">$ </span>cap deploy:restart    <span class="c"># restart the application</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Step 6: Create production.rb file inside config/deploy folder</h4>
+
+<p>Create <code>`config/deploy/production.rb</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim config/deploy/production.rb
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then paste in the following code. You will need to change the server IP address in <code>xx.xx.xx.xx</code>, and replace the server username in <code>`&lt;user&gt;</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">server</span> <span class="s2">&quot;xx.xx.xx.xx&quot;</span><span class="p">,</span> <span class="ss">:app</span><span class="p">,</span> <span class="ss">:web</span><span class="p">,</span> <span class="ss">:db</span><span class="p">,</span> <span class="ss">:primary</span> <span class="o">=&gt;</span> <span class="kp">true</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:user</span><span class="p">,</span> <span class="s1">&#39;&lt;user&gt;&#39;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:branch</span><span class="p">,</span> <span class="ss">:master</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:mix_env</span><span class="p">,</span> <span class="ss">:prod</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:deploy_to</span><span class="p">,</span> <span class="s2">&quot;/home/&lt;user&gt;/www/my_awesome_app&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can also create <code>staging.rb</code> inside <code>config/deploy</code> folder as well for your staging environment.</p>
+
+<h4>Step 7: Run deploy setup and actual deploy</h4>
+
+<p>Run the following command to initialize the capistrano folder structure for you for future deployments:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>cap deploy:setup
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then launch the actual deployment and wait. On the first time, the server will take some times to install all the dependencies:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>cap deploy
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Step 8: Connect with nginx server</h4>
+
+<p>Create the nginx configuration file on your nginx <code>sites-available</code> folder. In this case, it is <code>/etc/nginx/sites-available/my_awesome_app.com</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim /etc/nginx/sites-available/my-awesome-app.com
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Paste in the following code. Note that <strong>you will need to change the IP Address of your server on line 6 and the Domain name on line 7 to match with your server config</strong>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>upstream my_awesome_app <span class="o">{</span>
+</span><span class='line'>  server 127.0.0.1:4000<span class="p">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>server <span class="o">{</span>
+</span><span class='line'>  listen xx.xx.xx.xx:80<span class="p">;</span>
+</span><span class='line'>  server_name app-url.com app-url.com<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  try_files <span class="nv">$uri</span>/index.html <span class="nv">$uri</span> @my_awesome_app<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  location @my_awesome_app <span class="o">{</span>
+</span><span class='line'>    proxy_set_header Host <span class="nv">$http_host</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span>!-f <span class="nv">$request_filename</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      proxy_pass http://my_awesome_app<span class="p">;</span>
+</span><span class='line'>      <span class="nb">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  error_page <span class="m">500</span> <span class="m">502</span> <span class="m">503</span> <span class="m">504</span> /500.html<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  access_log  /var/log/nginx/my_awesome_app.log<span class="p">;</span>
+</span><span class='line'>  error_log  /var/log/nginx/my_awesome_app.log<span class="p">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I leave the default port 4000 on my phoenix configuration. But you can change it inside your <code>config/prod.exs</code></p>
+
+<p>Then link this file to the same file name in <code>/etc/nginx/sites-enabled</code>. Note that by using <code>ln</code> command, source file always come first.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo ln -nfs /etc/nginx/sites-available/my-awesome-app.com <span class="se">\</span>
+</span><span class='line'>             /etc/nginx/sites-enabled/my-awesome-app.com
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Test the nginx config:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo /etc/init.d/nginx configtest
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If everything is okay, restart the nginx server:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo /etc/init.d/nginx restart
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>Now after so many steps, finally I can enjoy my small victory by visiting the site and see it has been deployed up :-)</p>
+
+<p><img class="center" src="http://learnelixir.com/images/deploy_app_to_server/ubuntu.png" width="800" height="509" title="image" alt="images"></p>
+
+<p>Happy Deploying!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Deploy Phonenix Application to Heroku]]></title>

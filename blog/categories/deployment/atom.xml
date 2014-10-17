@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Deployment | Learn Elixir Language]]></title>
+  <link href="http://learnelixir.com/blog/categories/deployment/atom.xml" rel="self"/>
+  <link href="http://learnelixir.com/"/>
+  <updated>2014-10-17T08:15:29+08:00</updated>
+  <id>http://learnelixir.com/</id>
+  <author>
+    <name><![CDATA[Learn Elixir]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Deploy Phoenix Application a Ubuntu Server With Nginx]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-a-ubuntu-server-with-nginx/"/>
+    <updated>2014-10-16T22:26:46+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-a-ubuntu-server-with-nginx</id>
+    <content type="html"><![CDATA[<p>In previous article, we have already learned how to deploy a Phoenix Application to Heroku server. I am actually quite curious to see how Elixir, and Phoenix can work with nginx server. That&rsquo;s the reason why I try to dig into this topic. Here are the steps that I managed to find out how to automate the deployment process and run the application on nginx server.</p>
+
+<!-- more -->
+
+
+<h3>Step to set create a basic Phoenix application.</h3>
+
+<p>You can skip this section if you already have a Phoenix application to deploy</p>
+
+<p>From phoenix installation folder, run the following command. You can name it any name as long as you remember to use the same app name in subsequent steps.</p>
+
+<pre><code class="bash">$ mix phoenix.new my_awesome_app ../
+</code></pre>
+
+<p>Enter this new application folder and install all the dependencies</p>
+
+<pre><code class="bash">$ cd ../my_awesome_app
+mix do deps.get, compile
+</code></pre>
+
+<p>This is a miminal number of steps to setup a phoenix application. Eventually, you will need to add more code to build it up. Moving forward, let&rsquo;s deploy this application.</p>
+
+<h3>Deploy and Deploy</h3>
+
+<h4>Step 1: Install capistrano and capify</h4>
+
+<pre><code class="bash">$ gem install capistrano --version=2.15.5 
+</code></pre>
+
+<p>then capify it.</p>
+
+<pre><code class="bash">$ capify . 
+[add] writing './Capfile'
+[add] writing './config/deploy.rb'
+[done] capified!
+</code></pre>
+
+<p>and create a folder for multi staging deploy later.</p>
+
+<pre><code class="bash">$ mkdir config/deploy
+</code></pre>
+
+<h4>Step 2: Add exrm to the dependencies</h4>
+
+<p>Exrm stands for Elixir Release Management. It is a very nice tool to help release this phoenix app into a runnable standalone application. Everytime we deploy, we will need to run <code>mix release</code> to generate a ready-to-run application. Exrm will help us to handle the release process nicely.</p>
+
+<p>To start, you will need to add <code>exrm</code> into <code>mix.exs</code></p>
+
+<pre><code class="elixir">defp deps do
+  [   
+    {:phoenix, "0.4.1"},
+    {:cowboy, "~&gt; 1.0.0"},
+    {:exrm, "~&gt; 0.14.11"}
+  ]   
+end
+</code></pre>
+
+<p>And install</p>
+
+<pre><code class="bash">$ mix deps.get
+</code></pre>
+
+<h4>Step 3: Change the way the application starts</h4>
+
+<p>Add in <strong>line 12</strong> to the application file in lib folder. In my case it is <code>lib/my_awesome_app.ex</code></p>
+
+<pre><code class="elixir">defmodule MyAwesomeApp do
+  use Application
+
+  # See http://elixir-lang.org/docs/stable/elixir/Application.html
+  # for more information on OTP Applications
+  def start(_type, _args) do
+    import Supervisor.Spec, warn: false
+
+    children = [
+      # Define workers and child supervisors to be supervised
+      # worker(TestApp.Worker, [arg1, arg2, arg3])
+      worker(MyAwesomeApp.Router, [], function: :start)
+    ]
+
+    IO.puts (inspect children)
+
+    opts = [strategy: :one_for_one, name: MyAwesomeApp.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+end
+</code></pre>
+
+<p>After adding line 12, your application in development mode will no longer be able to start the normal way - <code>mix phoenix.start</code>. It will crash immediately like below.</p>
+
+<pre><code class="bash">Running MyAwesomeApp.Router with Cowboy on port 4000
+** (CaseClauseError) no case clause matching: {:error, {:already_started, #PID&lt;0.149.0&gt;}}
+    (phoenix) lib/phoenix/router.ex:78: Phoenix.Router.start_adapter/2
+    (phoenix) lib/mix/tasks/phoenix/start.ex:12: Mix.Tasks.Phoenix.Start.run/1
+    (mix) lib/mix/cli.ex:55: Mix.CLI.run_task/2
+    (elixir) src/elixir_lexical.erl:17: :elixir_lexical.run/3
+    (elixir) lib/code.ex:316: Code.require_file/2
+</code></pre>
+
+<p>To fix this issue, you will need to run the phoenix server using the command below in development mode:</p>
+
+<pre><code class="bash">$ iex -S mix phoenix.start
+</code></pre>
+
+<h4>Step 3: Push all the source code to a git repository</h4>
+
+<p>Create a git place for your code to be stored in online. For my case, I have created a public github project at <code>git@github.com:learnelixir/my-awesome-app.git</code></p>
+
+<p>Then from the application root folder, type the following commands to add the git remote url. Remember to change the git url accordingly</p>
+
+<pre><code class="bash">$ git init
+$ git remote add origin git@github.com:learnelixir/my-awesome-app.git
+</code></pre>
+
+<p>Then push everything up to this repo</p>
+
+<pre><code class="bash">$ git add . &amp;&amp; git commit -am "initial commit"
+$ git push origin master
+</code></pre>
+
+<h4>Step 4: Install erlang and elixir on ubuntu server</h4>
+
+<p>Login to your server, and run the following command to install erlang and elixir environment:</p>
+
+<pre><code class="elixir">$ wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb 
+$ sudo dpkg -i erlang-solutions_1.0_all.deb
+$ sudo apt-get update
+$ sudo apt-get install erlang
+$ sudo apt-get install elixir
+</code></pre>
+
+<h4>Step 5: Adjust your locale to UTF8</h4>
+
+<p>Elixir is quite particular about the locale issue. It will give a lot of warnings later when we deploy if we do not set it up now. You can start by running the following commands:</p>
+
+<pre><code class="bash">$ export LANGUAGE=en_US.UTF-8
+$ export LANG=en_US.UTF-8
+$ export LC_ALL=en_US.UTF-8
+$ locale-gen en_US.UTF-8
+$ sudo apt-get install locales
+$ sudo dpkg-reconfigure locales
+</code></pre>
+
+<p>Then put the following export lines at the end of <code>~/.profile</code>:</p>
+
+<pre><code class="bash">export LANGUAGE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+</code></pre>
+
+<p>Finally, put the following code at the end of <code>/etc/environment</code>:</p>
+
+<pre><code class="bash">LC_ALL=en_US.UTF-8
+LANG=en_US.UTF-8
+</code></pre>
+
+<h4>Step 5: Edit config/deploy.rb</h4>
+
+<p>Edit <code>config/deploy.rb</code> file:</p>
+
+<pre><code class="bash">$ vim config/deploy.rb
+</code></pre>
+
+<p>And paste in the following code:</p>
+
+<pre><code class="ruby">require 'capistrano/ext/multistage'
+
+set :stages, ["staging", "production"]
+set :default_stage, "production"
+
+set :keep_releases, 5
+set :application, "My Awesome App"
+set :repository,  "git@github.com:learnelixir/my-awesome-app.git"
+set :scm, :git
+set :branch, :master 
+set :use_sudo, false
+
+set :normalize_asset_timestamps, false
+set :deploy_via, :remote_cache
+after "deploy:update", "deploy:cleanup"
+
+after "deploy:update", "deploy:build", "deploy:cleanup"
+
+namespace :assets do
+  task :precompile, roles: :web do
+    # do nothing
+  end
+end
+
+def is_application_running?(current_path)
+  pid = capture(%Q{ps ax -o pid= -o command=|
+      grep "/home/app/www/my_awesome_app/current/rel/my_awesome_app/.*/[b]eam"|awk '{print $1}'})
+  return pid != ""
+end
+
+namespace :deploy do
+  task :is_running, roles: :web do
+    is_running = is_application_running?(current_path)
+    if is_running
+      puts "Application is running"
+    else
+      puts "Application is NOT running"
+    end
+  end
+
+  task :build, roles: :web do
+    run "cd #{current_path} &amp;&amp; mix deps.get &amp;&amp; MIX_ENV=#{mix_env} mix release"
+  end 
+
+  task :restart, roles: :web do
+    if is_application_running?(current_path)
+      run "cd #{current_path}/rel/my_awesome_app/bin &amp;&amp; ./my_awesome_app stop" 
+    end 
+    run "cd #{current_path}/rel/my_awesome_app/bin &amp;&amp; ./my_awesome_app start"
+  end
+
+  task :start, roles: :web do
+    run "cd #{current_path}/rel/my_awesome_app/bin &amp;&amp; ./my_awesome_app start"
+  end
+
+  task :stop, roles: :web do
+    run "cd #{current_path}/rel/my_awesome_app/bin &amp;&amp; ./my_awesome_app stop"
+  end
+end
+</code></pre>
+
+<p>We have re-written 3 default task in capistrano. They are <code>restart</code>, <code>start</code> and <code>stop</code>. These are used to run the script which was generated in step 2. Note that this script is generated by the command <code>`mix release</code> on line 41. You will need to change the application name accordingly. In my case, the application name is <code>my_awesome_app</code>.</p>
+
+<p>Besides <code>cap deploy</code>, here the commands that you can run with this capistrano:</p>
+
+<pre><code class="bash">$ cap deploy:is_running # tell you if the application is running
+$ cap deploy:stop       # stop the application
+$ cap deploy:start      # start the application
+$ cap deploy:restart    # restart the application
+</code></pre>
+
+<h4>Step 6: Create production.rb file inside config/deploy folder</h4>
+
+<p>Create <code>`config/deploy/production.rb</code> file:</p>
+
+<pre><code>$ vim config/deploy/production.rb
+</code></pre>
+
+<p>Then paste in the following code. You will need to change the server IP address in <code>xx.xx.xx.xx</code>, and replace the server username in <code>`&lt;user&gt;</code>:</p>
+
+<pre><code class="ruby">server "xx.xx.xx.xx", :app, :web, :db, :primary =&gt; true
+set :user, '&lt;user&gt;'
+set :branch, :master
+set :mix_env, :prod
+set :deploy_to, "/home/&lt;user&gt;/www/my_awesome_app"
+</code></pre>
+
+<p>You can also create <code>staging.rb</code> inside <code>config/deploy</code> folder as well for your staging environment.</p>
+
+<h4>Step 7: Run deploy setup and actual deploy</h4>
+
+<p>Run the following command to initialize the capistrano folder structure for you for future deployments:</p>
+
+<pre><code class="bash">$ cap deploy:setup
+</code></pre>
+
+<p>Then launch the actual deployment and wait. On the first time, the server will take some times to install all the dependencies:</p>
+
+<pre><code class="bash">$ cap deploy
+</code></pre>
+
+<h4>Step 8: Connect with nginx server</h4>
+
+<p>Create the nginx configuration file on your nginx <code>sites-available</code> folder. In this case, it is <code>/etc/nginx/sites-available/my_awesome_app.com</code></p>
+
+<pre><code class="bash">$ vim /etc/nginx/sites-available/my-awesome-app.com
+</code></pre>
+
+<p>Paste in the following code. Note that <strong>you will need to change the IP Address of your server on line 6 and the Domain name on line 7 to match with your server config</strong>:</p>
+
+<pre><code class="bash">upstream my_awesome_app {
+  server 127.0.0.1:4000;
+}
+
+server {
+  listen xx.xx.xx.xx:80;
+  server_name app-url.com app-url.com;
+
+  try_files $uri/index.html $uri @my_awesome_app;
+
+  location @my_awesome_app {
+    proxy_set_header Host $http_host;
+    if (!-f $request_filename) {
+      proxy_pass http://my_awesome_app;
+      break;
+    }
+  }
+  error_page 500 502 503 504 /500.html;
+
+  access_log  /var/log/nginx/my_awesome_app.log;
+  error_log  /var/log/nginx/my_awesome_app.log;
+}
+</code></pre>
+
+<p>I leave the default port 4000 on my phoenix configuration. But you can change it inside your <code>config/prod.exs</code></p>
+
+<p>Then link this file to the same file name in <code>/etc/nginx/sites-enabled</code>. Note that by using <code>ln</code> command, source file always come first.</p>
+
+<pre><code class="bash">sudo ln -nfs /etc/nginx/sites-available/my-awesome-app.com \
+             /etc/nginx/sites-enabled/my-awesome-app.com
+</code></pre>
+
+<p>Test the nginx config:</p>
+
+<pre><code class="bash">$ sudo /etc/init.d/nginx configtest
+</code></pre>
+
+<p>If everything is okay, restart the nginx server:</p>
+
+<pre><code class="bash">$ sudo /etc/init.d/nginx restart
+</code></pre>
+
+<h3>Conclusion</h3>
+
+<p>Now after so many steps, finally I can enjoy my small victory by visiting the site and see it has been deployed up :-)</p>
+
+<p><img class="center" src="/images/deploy_app_to_server/ubuntu.png" width="800" height="509" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+
+<p>Happy Deploying!</p>
+]]></content>
+  </entry>
+  
+</feed>
