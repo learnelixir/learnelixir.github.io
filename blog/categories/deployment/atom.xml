@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Deployment | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/deployment/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-17T08:18:21+08:00</updated>
+  <updated>2014-10-17T08:19:23+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Deploy Phoenix Application to a Ubuntu Server]]></title>
-    <link href="http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server-with-nginx/"/>
+    <link href="http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server/"/>
     <updated>2014-10-16T22:26:46+08:00</updated>
-    <id>http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server-with-nginx</id>
+    <id>http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server</id>
     <content type="html"><![CDATA[<p>In previous article, we have already learned how to deploy a Phoenix Application to Heroku server. I am actually quite curious to see how Elixir, and Phoenix can work with nginx server. That&rsquo;s the reason why I try to dig into this topic. Here are the steps that I managed to find out how to automate the deployment process and run the application on nginx server.</p>
 
 <!-- more -->
