@@ -4,7 +4,7 @@
   <title><![CDATA[Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-22T20:07:23+08:00</updated>
+  <updated>2014-10-22T20:08:16+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -865,7 +865,7 @@
 
 <p>and use following code content:</p>
 
-<p>Note that line 1 to 13 are for errors displaying. In addition, in this form&rsquo;s action, we are actually checking if the hardware is a new record by looking into its id. If it is, we will just render the create path. otherwise, the update path will be used. Anoter note is from line 21 - 23 where we need to put extra hidden field with <code>PATCH</code> method so that it can be sent over the HTTP request. For <code>PATCH</code>, <code>PUT</code> and <code>DELETE</code>, it cannot be specified inside a HTML form method attribute.</p>
+<p>Note that line 1 to 13 are for errors displaying. In addition, in this form&rsquo;s action, we are actually checking if the hardware is a new record by looking into its id. If it is, we will just render the create path. otherwise, the update path will be used. Anoter note is from line 21 - 23 where we need to put extra hidden field with <code>PATCH</code> method so that it can be sent over the HTTP request. For <code>PATCH</code>, <code>PUT</code> and <code>DELETE</code> methods, they cannot be specified inside a HTML form method attribute.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
