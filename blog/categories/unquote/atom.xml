@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Unquote | Learn Elixir Language]]></title>
+  <link href="http://learnelixir.com/blog/categories/unquote/atom.xml" rel="self"/>
+  <link href="http://learnelixir.com/"/>
+  <updated>2014-10-22T13:35:57+08:00</updated>
+  <id>http://learnelixir.com/</id>
+  <author>
+    <name><![CDATA[Learn Elixir]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Quote and Unquote in Elixir]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/13/quote-and-unquote-in-elixir/"/>
+    <updated>2014-10-13T22:35:08+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/13/quote-and-unquote-in-elixir</id>
+    <content type="html"><![CDATA[<p>Quote and Unquote function in Elixir can be confusing in the beginning. However, once you know them quite well, they can become very handy. In this article, we will look deeper into Quote and Unquote and see how it can help in doing some meta programming.</p>
+
+<!-- more -->
+
+
+<h3>Quote</h3>
+
+<p>Quote is a function in Elixir which is used to break an expression into an abstract syntax tree (AST). This AST is an internal presentation an expression in a compiler, which will be then used to evaluate the expression to a value. For instance</p>
+
+<pre><code class="elixir">iex&gt; quote do: 1 + 2
+{:+, [context: Elixir, import: Kernel], [1, 2]}
+</code></pre>
+
+<p>So the expression <code>1 + 2</code> is presented as a tuple of 3 elements in Elixir compiler:</p>
+
+<ul>
+<li>A symbol of plus sign (<code>:+</code>) or can be called the function name</li>
+<li>A keyword list containing meta data (<code>[context: Elixir, import: Kernel]</code>)</li>
+<li>The argument list (<code>[1, 2]</code>)</li>
+</ul>
+
+
+<p>Ignoring the keyword list containing meta data, it can be understood as an abstract syntax tree, where the function name is the root node and the 2 arguments are the leaves of the tree</p>
+
+<p><img class="center" src="/images/quote_and_unquote/ast1.png" width="250" height="250" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+
+<p>If now we try on a more complex expression <code>1 + 2 * 3</code>, it will present a more complex abstract syntax tree</p>
+
+<pre><code class="elixir">iex&gt; quote do: 1 + 2 * 3
+{:+, [context: Elixir, import: Kernel],
+ [1, {:*, [context: Elixir, import: Kernel], [2, 3]}]}
+</code></pre>
+
+<p><img class="center" src="/images/quote_and_unquote/ast2.png" width="325" height="400" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+
+<p>When evaluating this expression, Elixir compiler will travel upward starting from the most left leaf. For example, the AST tree above will be evaluated as <code>(2 * 3) + 1</code>.</p>
+
+<p>In order to evaluate a quoted expression Elixir, we need to use <code>Code.eval_quoted</code> function. For instance:</p>
+
+<pre><code class="elixir">iex&gt; Code.eval_quoted(quote do: 1 + 2 * 3)
+{7, []}
+</code></pre>
+
+<p><code>Code.eval_quoted</code> function call returns a tuple of the evaluation value and a map of all variable resulted from the evaluation. 7 in tis case is the value of the evaluation and since there is no variable binding in this case, empty array will be returned.</p>
+
+<p>Quote can be used with function call as well. For instance:</p>
+
+<pre><code class="elixir">iex&gt; quote do: sum(1, 2, 3)
+{:sum, [], [1, 2, 3]}
+</code></pre>
+
+<p>Quote function is like a function which is used to put an expression between a quote so that it can be used later on.</p>
+
+<p>Next let&rsquo;s try to define some variables and use those in quote body:</p>
+
+<pre><code class="elixir">iex&gt; a = 1
+1
+iex&gt; b = 2
+2
+iex&gt; Code.eval_quoted(quote do: a + b)
+** (CompileError) nofile:1: undefined function a/0
+</code></pre>
+
+<p>The <code>eval_quoted</code> function call will give you an error on undefined function a. This happens because when <code>Code.eval_quoted</code> is called, it does not know any <code>a</code> value, because the a here is not the same variable that we defined outside ealier. In order to refer a variable defined outside quote, unquote function needs to be used</p>
+
+<h3>Unquote</h3>
+
+<p>So here, how it should be written if a variable is referred to outside of the scope of quote:</p>
+
+<pre><code class="elixir">iex&gt; a = 1
+1
+iex&gt; b = 2
+b
+iex&gt; quote do: unquote(a) + unquote(b)
+{:+, [context: Elixir, import: Kernel], [1, 2]}
+</code></pre>
+
+<p>As you can see, the value of a and b are now evaluated correctly <strong>before</strong> Elixir construct the abstract syntax tree and these values are actually computed at <strong>compiled time</strong> and not <strong>runtime</strong>.  Now, let say, we define a function:</p>
+
+<pre><code class="elixir">iex&gt; a = 1
+1
+iex&gt; b = 2
+b
+iex&gt; fun = fn -&gt; quote do
+   unquote(a) + unquote(b) 
+  end 
+end
+{:+, [context: Elixir, import: Kernel], [1, 2]}
+</code></pre>
+
+<p>Now we try to change <code>a</code> value and call the function again to see if the presentation will change with the new <code>a</code> value:</p>
+
+<pre><code class="elixir">iex&gt; a = 10
+10
+iex&gt; fun.call()
+{:+, [context: Elixir, import: Kernel], [1, 2]}
+</code></pre>
+
+<p>As you can see, although a&rsquo;s value is change but the funtioncal representing <code>a + b</code> is still reflecting the original value of a and b.
+The way that we use quote and unquote in Elixir can be very creative and dynamic, for instance, we can define like following to play with the real function definition at runtime.</p>
+
+<pre><code class="elixir">iex&gt; num1 = 5
+iex&gt; num2 = 2
+iex&gt; perform = fn fun -&gt; Code.eval_quoted(quote do: unquote(fun)(unquote(num1), unquote(num2))) end
+iex&gt; perform.(:rem) # calculate remaining of 5 and 2
+{1, []}
+iex&gt; perform.(:div) # calculate division result of 5 and 2
+{2, []}
+</code></pre>
+
+<p>That&rsquo;s all for now. I hope you enjoy this article.</p>
+]]></content>
+  </entry>
+  
+</feed>

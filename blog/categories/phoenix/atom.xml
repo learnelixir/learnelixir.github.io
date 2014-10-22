@@ -1,0 +1,736 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Phoenix | Learn Elixir Language]]></title>
+  <link href="http://learnelixir.com/blog/categories/phoenix/atom.xml" rel="self"/>
+  <link href="http://learnelixir.com/"/>
+  <updated>2014-10-22T13:35:57+08:00</updated>
+  <id>http://learnelixir.com/</id>
+  <author>
+    <name><![CDATA[Learn Elixir]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Deploy Phoenix Application to a Ubuntu Server]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server/"/>
+    <updated>2014-10-16T22:26:46+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server</id>
+    <content type="html"><![CDATA[<p>In previous article, we have already learned how to deploy a Phoenix Application to Heroku server. I am actually quite curious to see how Elixir, and Phoenix can work with nginx server. That&rsquo;s the reason why I try to dig into this topic. Here are the steps that I managed to find out how to automate the deployment process and run the application on nginx server.</p>
+
+<!-- more -->
+
+
+<h3>Step to set create a basic Phoenix application.</h3>
+
+<p>You can skip this section if you already have a Phoenix application to deploy</p>
+
+<p>From phoenix installation folder, run the following command. You can name it any name as long as you remember to use the same app name in subsequent steps.</p>
+
+<pre><code class="bash">$ mix phoenix.new my_awesome_app ../
+</code></pre>
+
+<p>Enter this new application folder and install all the dependencies</p>
+
+<pre><code class="bash">$ cd ../my_awesome_app
+mix do deps.get, compile
+</code></pre>
+
+<p>This is a miminal number of steps to setup a phoenix application. Eventually, you will need to add more code to build it up. Moving forward, let&rsquo;s deploy this application.</p>
+
+<h3>Deploy and Deploy</h3>
+
+<h4>Step 1: Install capistrano and capify</h4>
+
+<pre><code class="bash">$ gem install capistrano --version=2.15.5 
+</code></pre>
+
+<p>then capify it.</p>
+
+<pre><code class="bash">$ capify . 
+[add] writing './Capfile'
+[add] writing './config/deploy.rb'
+[done] capified!
+</code></pre>
+
+<p>and create a folder for multi staging deploy later.</p>
+
+<pre><code class="bash">$ mkdir config/deploy
+</code></pre>
+
+<h4>Step 2: Add exrm to the dependencies</h4>
+
+<p>Exrm stands for Elixir Release Management. It is a very nice tool to help release this phoenix app into a runnable standalone application. Everytime we deploy, we will need to run <code>mix release</code> to generate a ready-to-run application. Exrm will help us to handle the release process nicely.</p>
+
+<p>To start, you will need to add <code>exrm</code> into <code>mix.exs</code></p>
+
+<pre><code class="elixir">defp deps do
+  [   
+    {:phoenix, "0.4.1"},
+    {:cowboy, "~&gt; 1.0.0"},
+    {:exrm, "~&gt; 0.14.11"}
+  ]   
+end
+</code></pre>
+
+<p>And install</p>
+
+<pre><code class="bash">$ mix deps.get
+</code></pre>
+
+<h4>Step 3: Change the way the application starts</h4>
+
+<p>Add in <strong>line 12</strong> to the application file in lib folder. In my case it is <code>lib/my_awesome_app.ex</code></p>
+
+<pre><code class="elixir">defmodule MyAwesomeApp do
+  use Application
+
+  # See http://elixir-lang.org/docs/stable/elixir/Application.html
+  # for more information on OTP Applications
+  def start(_type, _args) do
+    import Supervisor.Spec, warn: false
+
+    children = [
+      # Define workers and child supervisors to be supervised
+      # worker(TestApp.Worker, [arg1, arg2, arg3])
+      worker(MyAwesomeApp.Router, [], function: :start)
+    ]
+
+    IO.puts (inspect children)
+
+    opts = [strategy: :one_for_one, name: MyAwesomeApp.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+end
+</code></pre>
+
+<p>After adding line 12, your application in development mode will no longer be able to start the normal way - <code>mix phoenix.start</code>. It will crash immediately like below.</p>
+
+<pre><code class="bash">Running MyAwesomeApp.Router with Cowboy on port 4000
+** (CaseClauseError) no case clause matching: {:error, {:already_started, #PID&lt;0.149.0&gt;}}
+    (phoenix) lib/phoenix/router.ex:78: Phoenix.Router.start_adapter/2
+    (phoenix) lib/mix/tasks/phoenix/start.ex:12: Mix.Tasks.Phoenix.Start.run/1
+    (mix) lib/mix/cli.ex:55: Mix.CLI.run_task/2
+    (elixir) src/elixir_lexical.erl:17: :elixir_lexical.run/3
+    (elixir) lib/code.ex:316: Code.require_file/2
+</code></pre>
+
+<p>To fix this issue, you will need to run the phoenix server using the command below in development mode:</p>
+
+<pre><code class="bash">$ iex -S mix phoenix.start
+</code></pre>
+
+<h4>Step 3: Push all the source code to a git repository</h4>
+
+<p>Create a git place for your code to be stored in online. For my case, I have created a public github project at <code>git@github.com:learnelixir/my-awesome-app.git</code></p>
+
+<p>Then from the application root folder, type the following commands to add the git remote url. Remember to change the git url accordingly</p>
+
+<pre><code class="bash">$ git init
+$ git remote add origin git@github.com:learnelixir/my-awesome-app.git
+</code></pre>
+
+<p>Then push everything up to this repo</p>
+
+<pre><code class="bash">$ git add . &amp;&amp; git commit -am "initial commit"
+$ git push origin master
+</code></pre>
+
+<h4>Step 4: Install erlang and elixir on ubuntu server</h4>
+
+<p>Login to your server, and run the following command to install erlang and elixir environment:</p>
+
+<pre><code class="elixir">$ wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb 
+$ sudo dpkg -i erlang-solutions_1.0_all.deb
+$ sudo apt-get update
+$ sudo apt-get install erlang
+$ sudo apt-get install elixir
+</code></pre>
+
+<h4>Step 5: Adjust your locale to UTF8</h4>
+
+<p>Elixir is quite particular about the locale issue. It will give a lot of warnings later when we deploy if we do not set it up now. You can start by running the following commands:</p>
+
+<pre><code class="bash">$ export LANGUAGE=en_US.UTF-8
+$ export LANG=en_US.UTF-8
+$ export LC_ALL=en_US.UTF-8
+$ locale-gen en_US.UTF-8
+$ sudo apt-get install locales
+$ sudo dpkg-reconfigure locales
+</code></pre>
+
+<p>Then put the following export lines at the end of <code>~/.profile</code>:</p>
+
+<pre><code class="bash">export LANGUAGE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+</code></pre>
+
+<p>Finally, put the following code at the end of <code>/etc/environment</code>:</p>
+
+<pre><code class="bash">LC_ALL=en_US.UTF-8
+LANG=en_US.UTF-8
+</code></pre>
+
+<h4>Step 5: Edit config/deploy.rb</h4>
+
+<p>Edit <code>config/deploy.rb</code> file:</p>
+
+<pre><code class="bash">$ vim config/deploy.rb
+</code></pre>
+
+<p>And paste in the following code:</p>
+
+<pre><code class="ruby">require 'capistrano/ext/multistage'
+
+set :stages, ["staging", "production"]
+set :default_stage, "production"
+
+set :keep_releases, 5
+set :application, "My Awesome App"
+set :repository,  "git@github.com:learnelixir/my-awesome-app.git"
+set :scm, :git
+set :branch, :master 
+set :use_sudo, false
+
+set :normalize_asset_timestamps, false
+set :deploy_via, :remote_cache
+after "deploy:update", "deploy:cleanup"
+
+after "deploy:update", "deploy:build", "deploy:cleanup"
+
+namespace :assets do
+  task :precompile, roles: :web do
+    # do nothing
+  end
+end
+
+def is_application_running?(current_path)
+  pid = capture(%Q{ps ax -o pid= -o command=|
+      grep "/home/app/www/my_awesome_app/current/rel/my_awesome_app/.*/[b]eam"|awk '{print $1}'})
+  return pid != ""
+end
+
+namespace :deploy do
+  task :is_running, roles: :web do
+    is_running = is_application_running?(current_path)
+    if is_running
+      puts "Application is running"
+    else
+      puts "Application is NOT running"
+    end
+  end
+
+  task :build, roles: :web do
+    run "cd #{current_path} &amp;&amp; mix deps.get &amp;&amp; MIX_ENV=#{mix_env} mix release"
+  end 
+
+  task :restart, roles: :web do
+    if is_application_running?(current_path)
+      run "cd #{current_path}/rel/my_awesome_app/bin &amp;&amp; ./my_awesome_app stop" 
+    end 
+    run "cd #{current_path}/rel/my_awesome_app/bin &amp;&amp; ./my_awesome_app start"
+  end
+
+  task :start, roles: :web do
+    run "cd #{current_path}/rel/my_awesome_app/bin &amp;&amp; ./my_awesome_app start"
+  end
+
+  task :stop, roles: :web do
+    run "cd #{current_path}/rel/my_awesome_app/bin &amp;&amp; ./my_awesome_app stop"
+  end
+end
+</code></pre>
+
+<p>We have re-written 3 default task in capistrano. They are <code>restart</code>, <code>start</code> and <code>stop</code>. These are used to run the script which was generated in step 2. Note that this script is generated by the command <code>`mix release</code> on line 41. You will need to change the application name accordingly. In my case, the application name is <code>my_awesome_app</code>.</p>
+
+<p>Besides <code>cap deploy</code>, here the commands that you can run with this capistrano:</p>
+
+<pre><code class="bash">$ cap deploy:is_running # tell you if the application is running
+$ cap deploy:stop       # stop the application
+$ cap deploy:start      # start the application
+$ cap deploy:restart    # restart the application
+</code></pre>
+
+<h4>Step 6: Create production.rb file inside config/deploy folder</h4>
+
+<p>Create <code>`config/deploy/production.rb</code> file:</p>
+
+<pre><code>$ vim config/deploy/production.rb
+</code></pre>
+
+<p>Then paste in the following code. You will need to change the server IP address in <code>xx.xx.xx.xx</code>, and replace the server username in <code>`&lt;user&gt;</code>:</p>
+
+<pre><code class="ruby">server "xx.xx.xx.xx", :app, :web, :db, :primary =&gt; true
+set :user, '&lt;user&gt;'
+set :branch, :master
+set :mix_env, :prod
+set :deploy_to, "/home/&lt;user&gt;/www/my_awesome_app"
+</code></pre>
+
+<p>You can also create <code>staging.rb</code> inside <code>config/deploy</code> folder as well for your staging environment.</p>
+
+<h4>Step 7: Run deploy setup and actual deploy</h4>
+
+<p>Run the following command to initialize the capistrano folder structure for you for future deployments:</p>
+
+<pre><code class="bash">$ cap deploy:setup
+</code></pre>
+
+<p>Then launch the actual deployment and wait. On the first time, the server will take some times to install all the dependencies:</p>
+
+<pre><code class="bash">$ cap deploy
+</code></pre>
+
+<h4>Step 8: Connect with nginx server</h4>
+
+<p>Create the nginx configuration file on your nginx <code>sites-available</code> folder. In this case, it is <code>/etc/nginx/sites-available/my_awesome_app.com</code></p>
+
+<pre><code class="bash">$ vim /etc/nginx/sites-available/my-awesome-app.com
+</code></pre>
+
+<p>Paste in the following code. Note that <strong>you will need to change the IP Address of your server on line 6 and the Domain name on line 7 to match with your server config</strong>:</p>
+
+<pre><code class="bash">upstream my_awesome_app {
+  server 127.0.0.1:4000;
+}
+
+server {
+  listen xx.xx.xx.xx:80;
+  server_name app-url.com app-url.com;
+
+  try_files $uri/index.html $uri @my_awesome_app;
+
+  location @my_awesome_app {
+    proxy_set_header Host $http_host;
+    if (!-f $request_filename) {
+      proxy_pass http://my_awesome_app;
+      break;
+    }
+  }
+  error_page 500 502 503 504 /500.html;
+
+  access_log  /var/log/nginx/my_awesome_app.log;
+  error_log  /var/log/nginx/my_awesome_app.log;
+}
+</code></pre>
+
+<p>I leave the default port 4000 on my phoenix configuration. But you can change it inside your <code>config/prod.exs</code></p>
+
+<p>Then link this file to the same file name in <code>/etc/nginx/sites-enabled</code>. Note that by using <code>ln</code> command, source file always come first.</p>
+
+<pre><code class="bash">sudo ln -nfs /etc/nginx/sites-available/my-awesome-app.com \
+             /etc/nginx/sites-enabled/my-awesome-app.com
+</code></pre>
+
+<p>Test the nginx config:</p>
+
+<pre><code class="bash">$ sudo /etc/init.d/nginx configtest
+</code></pre>
+
+<p>If everything is okay, restart the nginx server:</p>
+
+<pre><code class="bash">$ sudo /etc/init.d/nginx restart
+</code></pre>
+
+<h3>Conclusion</h3>
+
+<p>Now after so many steps, finally I can enjoy my small victory by visiting the site and see it has been deployed up :-)</p>
+
+<p><img class="center" src="/images/deploy_app_to_server/ubuntu.png" width="800" height="509" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+
+<p>Happy Deploying!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Deploy Phonenix Application to Heroku]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/"/>
+    <updated>2014-10-15T23:16:00+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server</id>
+    <content type="html"><![CDATA[<p>Phoenix is a pretty cool web framework for Elixir. However, up to date, there are still very few resources on how to deploy a Phoenix application to a web server. I tried to google on how to deploy but could not find any tutorials that provide very clear and exact steps. Hence, in this article, let walkthrouh step by step how to do that with a heroku server.</p>
+
+<!-- more -->
+
+
+<h3>Create an awesome Phoenix application</h3>
+
+<p>From phoenix installation folder, run the following command. You can name it any name as long as you remember to use the same app name in subsequent steps.</p>
+
+<pre><code class="bash">$ mix phoenix.new my_awesome_app ../
+</code></pre>
+
+<p>Enter this new application folder and install all the dependencies</p>
+
+<pre><code class="bash">$ cd ../my_awesome_app
+mix do deps.get, compile
+</code></pre>
+
+<p>This is a miminal number of steps to setup a phoenix application. Eventually, you will need to add more code to build it up. Moving forward, let&rsquo;s deploy this application.</p>
+
+<p>Here are the steps to deploy to Heroku server</p>
+
+<h4>Step 1: Run git init</h4>
+
+<p>Pretty straight forward. Just run this command in your application folder</p>
+
+<pre><code class="bash">$ git init 
+</code></pre>
+
+<h4>Step 2: Create the heroku application</h4>
+
+<pre><code class="bash">$ heroku apps:create
+Creating enigmatic-tor-2697... done, stack is cedar
+http://enigmatic-tor-2697.herokuapp.com/ | git@heroku.com:enigmatic-tor-2697.git
+Git remote heroku added
+</code></pre>
+
+<p>After this command, Heroku will provide me a URL for my heroku app. But there is nothing there yet. Also, do note down the name, we will use it later. Mine is <code>enigmatic-tor-2697</code>. Let&rsquo;s move to next step</p>
+
+<h4>Step 3: Add buildback to your app</h4>
+
+<p>Run a heroku config:set command as following</p>
+
+<pre><code class="bash">$ heroku config:set \ 
+BUILDPACK_URL=https://github.com/HashNuke/heroku-buildpack-elixir.git -a enigmatic-tor-2697
+</code></pre>
+
+<h4>Step 4: Set mix environment config</h4>
+
+<p>You can choose to set mix environment to be staging or production at this step. Here I choose to run my app using production environment:</p>
+
+<pre><code class="bash">heroku config:set MIX_ENV=prod
+</code></pre>
+
+<p>After this, you will need to modify some of the config file in this Phoenix application. Let&rsquo;s move to step 5</p>
+
+<h4>Step 5: Edit Procfile</h4>
+
+<p>Create file <code>Procfile</code> inside the root of your application folder with the following content</p>
+
+<pre><code class="bash">$ web: yes | mix compile.protocols &amp;&amp; elixir -pa _build/prod/consolidated -S mix phoenix.start 
+</code></pre>
+
+<p>If in step4, you have specified staging environment, you will need to use the folder <code>_build/staging/consolidated</code> for the <code>-pa</code> option here.</p>
+
+<h4>Step 6: Edit elixir_buildpack.config</h4>
+
+<p>Create file <code>elixir_buildback.config</code> inside the root of your application folder with the following content</p>
+
+<pre><code class="bash">erlang_version=17.2
+elixir_version=1.0.0
+always_build_deps=false
+</code></pre>
+
+<p>You are free to change to the approriate version of erlang and elixir</p>
+
+<h4>Step 7: Commit everything and push</h4>
+
+<pre><code class="bash">$ git add . &amp;&amp; git commit -am "initial commit"
+$ git push heroku master
+</code></pre>
+
+<p>It can be quite slow in this first time pushing to heroku master as there is a need to compile all the elixir depenencies on Heroku server, but subsequently it will be quite fast. Now I go to <code>http://enigmatic-tor-2697.herokuapp.com/</code> and hooray the phoenix home page is there</p>
+
+<p><img class="center" src="/images/deploy_app_to_server/heroku.png" width="800" height="509" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+
+<p>In subsequent deploys, you will just need to perform this step - step 7</p>
+
+<p>This has concluded for Heroku deploy. Happy Deploying :-)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Book Listing App With Elixir, Phoenix, Postgres and Ecto]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/05/build-web-app-with-elixir/"/>
+    <updated>2014-10-05T23:22:42+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/05/build-web-app-with-elixir</id>
+    <content type="html"><![CDATA[<p>In this article, let&rsquo;s go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postgres and Ecto. I hope you will enjoy :-)</p>
+
+<!--more-->
+
+
+<h3>Create Elixir Book Store Project</h3>
+
+<p>From the phoenix installation folder, run the following command:</p>
+
+<pre><code class="bash">$ mix phoenix.new book_store ../
+</code></pre>
+
+<p>Now enter the project folder and get all the dependencies and start the phoenix project:</p>
+
+<pre><code class="bash">$ cd ../book_store
+$ mix do deps.get, compile
+$ mix phoenix.start
+</code></pre>
+
+<p>Open the browser, and go to the url <code>http://localhost:4000</code></p>
+
+<p><img class="left" src="/images/build-web-app-with-elixir/phoenix_page.png" width="800" height="510" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+
+<h3>Add Ecto To The Project</h3>
+
+<p>From the project root folder, open file <code>mix.exs</code>, scroll down to the end of the file, then you will see <code>defp deps do</code> function definition. You will need to add in <code>postgrex</code> and <code>ecto</code> dependencies</p>
+
+<ul>
+<li><code>postgrex</code> (<a href="https://github.com/ericmj/postgrex">https://github.com/ericmj/postgrex</a>) is the PostgresSQL driver for Elixir</li>
+<li><code>ecto</code> (<a href="https://github.com/elixir-lang/ecto">https://github.com/elixir-lang/ecto</a>) is a database wrapper and language integrated query for Elixir</li>
+</ul>
+
+
+<pre><code class="elixir">defp deps do
+  [
+    {:phoenix, "0.4.1"},
+    {:cowboy, "~&gt; 1.0.0"},
+    {:postgrex, "~&gt; 0.5"},
+    {:ecto, "~&gt; 0.2.0"}
+  ]
+end
+</code></pre>
+
+<p>In the same file, you will also need to update the application function definition to include <code>postgrex</code> and <code>ecto</code></p>
+
+<pre><code class="elixir">def application do
+  [ 
+    mod: { BookStore, [] },
+    applications: [:phoenix, :cowboy, :logger, :postgrex, :ecto]
+  ] 
+end 
+</code></pre>
+
+<p>Run the following commands in the terminal to get all the dependencies.</p>
+
+<pre><code class="bash">$ mix deps.get
+</code></pre>
+
+<h3>Create A Repo</h3>
+
+<p>A repo is a basic interfacte to a database (which is postgres). Open <code>web/models/repo.ex</code> and add the following code</p>
+
+<pre><code class="elixir">defmodule BookStore.Repo do
+  use Ecto.Repo, adapter: Ecto.Adapters.Postgres
+
+  def conf do
+    parse_url "ecto://postgresuser:password@localhost/book_store"
+  end
+
+  def priv do
+    app_dir(:book_store, "priv/repo")
+  end
+end
+</code></pre>
+
+<p>We have defined PostgreSQL connection with a URL format, what you will need to do is to change the <code>postgresuser</code> and <code>password</code> to be the real postgres username and password on your database.</p>
+
+<p>Since we are going to use the migration feature, we will need to have <code>priv</code> function. Inside this function, we will need to specify where is the migration script is saved, which is inside <code>priv/repo</code> directory.</p>
+
+<p>The next step that we must do is to make sure that our Repo module is started with our application, and is supervised. Open <code>lib/book_store.ex</code>.</p>
+
+<pre><code class="elixir">defmodule BookStore do
+  use Application
+
+  # See http://elixir-lang.org/docs/stable/elixir/Application.html
+  # for more information on OTP Applications
+  def start(_type, _args) do
+    import Supervisor.Spec, warn: false
+
+    children = [
+      # Define workers and child supervisors to be supervised
+      worker(BookStore.Repo, [])
+    ]
+
+    opts = [strategy: :one_for_one, name: BookStore.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+end
+</code></pre>
+
+<p>Note that <code>line 11</code> is the only line that we add inside this file</p>
+
+<p>To make sure that everything is good, let&rsquo;s compile the project:</p>
+
+<pre><code class="bash">$ mix compile
+</code></pre>
+
+<p>Next, let&rsquo;s create the <code>book_store</code> database in postgres</p>
+
+<pre><code class="bash">$ createdb book_store 
+</code></pre>
+
+<h3>Create a model</h3>
+
+<p>Create model file <code>web/models/books.ex</code> with the following code:</p>
+
+<pre><code class="elixir">defmodule BookStore.Books do
+  use Ecto.Model
+
+  schema "books" do
+    field :title, :string
+    field :description, :string
+    field :author, :string
+    field :publisher, :string
+  end
+end
+</code></pre>
+
+<h3>Generate Migration Script</h3>
+
+<p>We will also need to create a database migration for books model by using the following command:</p>
+
+<pre><code class="bash">$ mix ecto.gen.migration BookStore.Repo create_book
+Compiled lib/book_store.ex
+Compiled web/models/repo.ex
+Generated book_store.app
+* creating priv/repo/migrations
+* creating priv/repo/migrations/20141005013526_create_book.exs
+</code></pre>
+
+<p>Now open the just generated migration file <code>priv/repo/migrations/20141005013526_create_book.exs</code> and change with the following code</p>
+
+<pre><code class="elixir">defmodule BookStore.Repo.Migrations.CreateBook do
+  use Ecto.Migration
+
+  def up do
+    ["CREATE TABLE books(id serial primary key, title varchar(125), description text, author varchar(255), publisher varchar(255))",
+     "INSERT INTO books(title, description, author, publisher) VALUES ('Programming Elixir', 'Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun', 'Dave Thomas', 'The Pragmatic Bookshelf')"
+    ]
+  end
+
+  def down do
+    "DROP TABLE books"
+  end
+end
+</code></pre>
+
+<p>Inside this migration file, you will see up and down function. <code>up</code> function is run when you run the database migration, <code>down</code> function is run when you revert or rollback this database migration</p>
+
+<p>Now run the migration</p>
+
+<pre><code class="bash">$ mix ecto.migrate BookStore.Repo
+* running UP _build/dev/lib/book_store/priv/repo/migrations/20141005013526_create_book.exs``
+</code></pre>
+
+<h3>Create A Query</h3>
+
+<p>Create <code>web/models/queries.ex</code> folder.</p>
+
+<pre><code class="elixir">defmodule BookStore.Queries do
+  import Ecto.Query
+
+  def books_query do
+    query = from book in BookStore.Books,
+            select: book 
+    BookStore.Repo.all(query)
+  end
+end
+</code></pre>
+
+<h3>Route books index page to Book controller index action</h3>
+
+<p>Open file <code>web/router.ex</code>, we will need to map the root route to <code>BookController</code>. Note that in Phoenix, controller name is singular + <code>Controller</code> whereas in Rails, it is <code>BooksController</code></p>
+
+<pre><code class="elixir">defmodule BookStore.Router do
+  use Phoenix.Router
+
+  get "/", BookStore.BookController, :index, as: :books
+
+end
+</code></pre>
+
+<h3>Create BookController and get all books</h3>
+
+<p>Create file <code>book_controller.ex</code> inside <code>web/controllers</code> folder with the following source code</p>
+
+<pre><code class="elixir">defmodule BookStore.BookController do
+  use Phoenix.Controller
+
+  def index(conn, _params) do
+    books = BookStore.Queries.books_query
+    render conn, "index", books: books 
+  end
+end
+</code></pre>
+
+<h3>Create books index page view</h3>
+
+<p>Next thing that we will need to do is to create an index page for books listing. First, create folder <code>book</code> inside <code>web/template</code>.</p>
+
+<pre><code class="bash">mkdir web/templates/book
+</code></pre>
+
+<p>Second, create a book view file - <code>web/views/book_view.ex</code> with the following content</p>
+
+<pre><code class="elixir">defmodule BookStore.BookView do
+  use BookStore.Views
+end
+</code></pre>
+
+<p>Finally, create file <code>web/template/book/index.html.eex</code> and paste in the following code:</p>
+
+<p>&#8220;`html</p>
+
+<h1>Our Books</h1>
+
+
+
+
+<table class='table table-bodered table-striped'>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Author</th>
+      <th>Publisher</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for book <- @books do %>
+      <tr>
+        <td><%= book.id %></td>
+        <td><%= book.title %></td>
+        <td><%= book.description %></td>
+        <td><%= book.author %></td>
+        <td><%= book.publisher %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+<pre><code>
+Refresh the browser and voila, this is what we will get:
+
+<img class="left" src="/images/build-web-app-with-elixir/complete.png" width="800" height="346" title="image" alt="images">
+
+
+### Common Pitfall
+
+I seldom hit the following error when trying to restart phoenix although all the codes are correct 
+</code></pre>
+
+<dl>
+<dt>INFO REPORT==== 5-Oct-2014::09:57:47 ==</dt>
+<dd>application: logger
+exited: stopped
+type: temporary
+<strong> (Mix) Could not start application book_store: exited in: BookStore.start(:normal, [])
+</strong> (EXIT) an exception was raised:
+    ** (UndefinedFunctionError) undefined function: BookStore.start/2 (module BookStore is not available)
+        BookStore.start(:normal, [])
+        (kernel) application_master.erl:272: :application_master.start_it_old/4
+&#8220;`</dd>
+</dl>
+
+<p>To fix this, you will need to clean compile all your elixir code:</p>
+
+<pre><code class="bash">$ mix clean
+$ mix compile
+$ mix phoenix.start
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

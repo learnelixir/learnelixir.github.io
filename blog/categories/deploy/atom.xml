@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Deployment | Learn Elixir Language]]></title>
-  <link href="http://learnelixir.com/blog/categories/deployment/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Deploy | Learn Elixir Language]]></title>
+  <link href="http://learnelixir.com/blog/categories/deploy/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-22T07:47:06+08:00</updated>
+  <updated>2014-10-22T13:35:57+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -342,6 +342,103 @@ server {
 <p><img class="center" src="/images/deploy_app_to_server/ubuntu.png" width="800" height="509" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
 
 <p>Happy Deploying!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Deploy Phonenix Application to Heroku]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/"/>
+    <updated>2014-10-15T23:16:00+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server</id>
+    <content type="html"><![CDATA[<p>Phoenix is a pretty cool web framework for Elixir. However, up to date, there are still very few resources on how to deploy a Phoenix application to a web server. I tried to google on how to deploy but could not find any tutorials that provide very clear and exact steps. Hence, in this article, let walkthrouh step by step how to do that with a heroku server.</p>
+
+<!-- more -->
+
+
+<h3>Create an awesome Phoenix application</h3>
+
+<p>From phoenix installation folder, run the following command. You can name it any name as long as you remember to use the same app name in subsequent steps.</p>
+
+<pre><code class="bash">$ mix phoenix.new my_awesome_app ../
+</code></pre>
+
+<p>Enter this new application folder and install all the dependencies</p>
+
+<pre><code class="bash">$ cd ../my_awesome_app
+mix do deps.get, compile
+</code></pre>
+
+<p>This is a miminal number of steps to setup a phoenix application. Eventually, you will need to add more code to build it up. Moving forward, let&rsquo;s deploy this application.</p>
+
+<p>Here are the steps to deploy to Heroku server</p>
+
+<h4>Step 1: Run git init</h4>
+
+<p>Pretty straight forward. Just run this command in your application folder</p>
+
+<pre><code class="bash">$ git init 
+</code></pre>
+
+<h4>Step 2: Create the heroku application</h4>
+
+<pre><code class="bash">$ heroku apps:create
+Creating enigmatic-tor-2697... done, stack is cedar
+http://enigmatic-tor-2697.herokuapp.com/ | git@heroku.com:enigmatic-tor-2697.git
+Git remote heroku added
+</code></pre>
+
+<p>After this command, Heroku will provide me a URL for my heroku app. But there is nothing there yet. Also, do note down the name, we will use it later. Mine is <code>enigmatic-tor-2697</code>. Let&rsquo;s move to next step</p>
+
+<h4>Step 3: Add buildback to your app</h4>
+
+<p>Run a heroku config:set command as following</p>
+
+<pre><code class="bash">$ heroku config:set \ 
+BUILDPACK_URL=https://github.com/HashNuke/heroku-buildpack-elixir.git -a enigmatic-tor-2697
+</code></pre>
+
+<h4>Step 4: Set mix environment config</h4>
+
+<p>You can choose to set mix environment to be staging or production at this step. Here I choose to run my app using production environment:</p>
+
+<pre><code class="bash">heroku config:set MIX_ENV=prod
+</code></pre>
+
+<p>After this, you will need to modify some of the config file in this Phoenix application. Let&rsquo;s move to step 5</p>
+
+<h4>Step 5: Edit Procfile</h4>
+
+<p>Create file <code>Procfile</code> inside the root of your application folder with the following content</p>
+
+<pre><code class="bash">$ web: yes | mix compile.protocols &amp;&amp; elixir -pa _build/prod/consolidated -S mix phoenix.start 
+</code></pre>
+
+<p>If in step4, you have specified staging environment, you will need to use the folder <code>_build/staging/consolidated</code> for the <code>-pa</code> option here.</p>
+
+<h4>Step 6: Edit elixir_buildpack.config</h4>
+
+<p>Create file <code>elixir_buildback.config</code> inside the root of your application folder with the following content</p>
+
+<pre><code class="bash">erlang_version=17.2
+elixir_version=1.0.0
+always_build_deps=false
+</code></pre>
+
+<p>You are free to change to the approriate version of erlang and elixir</p>
+
+<h4>Step 7: Commit everything and push</h4>
+
+<pre><code class="bash">$ git add . &amp;&amp; git commit -am "initial commit"
+$ git push heroku master
+</code></pre>
+
+<p>It can be quite slow in this first time pushing to heroku master as there is a need to compile all the elixir depenencies on Heroku server, but subsequently it will be quite fast. Now I go to <code>http://enigmatic-tor-2697.herokuapp.com/</code> and hooray the phoenix home page is there</p>
+
+<p><img class="center" src="/images/deploy_app_to_server/heroku.png" width="800" height="509" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+
+<p>In subsequent deploys, you will just need to perform this step - step 7</p>
+
+<p>This has concluded for Heroku deploy. Happy Deploying :-)</p>
 ]]></content>
   </entry>
   

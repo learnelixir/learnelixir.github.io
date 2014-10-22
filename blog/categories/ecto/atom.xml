@@ -1,0 +1,898 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ecto | Learn Elixir Language]]></title>
+  <link href="http://learnelixir.com/blog/categories/ecto/atom.xml" rel="self"/>
+  <link href="http://learnelixir.com/"/>
+  <updated>2014-10-22T13:35:57+08:00</updated>
+  <id>http://learnelixir.com/</id>
+  <author>
+    <name><![CDATA[Learn Elixir]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Ecto vs Active Record]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/11/ecto-vs-active-record/"/>
+    <updated>2014-10-11T21:37:22+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/11/ecto-vs-active-record</id>
+    <content type="html"><![CDATA[<p>This post is about comparing the feature and performance between Elixir&rsquo;s Ecto library - database wrapper and languge integrated query for Elixir and Ruby on Rails Active Record.</p>
+
+<!-- more -->
+
+
+<h3>Round 1: Database Migration</h3>
+
+<h4>Active Record</h4>
+
+<p>In Ruby on Rails Active Record, we can generate a migration for a model by following these steps:</p>
+
+<h5><em>Step 1</em>: Generate model file and migration file</h5>
+
+<pre><code class="bash">$ rails g model book title:string description:text author:string publisher:string
+</code></pre>
+
+<p>And the content of the migration file is as following</p>
+
+<pre><code class="ruby">class CreateBooks &lt; ActiveRecord::Migration
+  def change
+    create_table :books do |t|
+      t.string :name
+      t.text :description
+      t.string :author
+      t.string :publisher
+
+      t.timestamps
+    end
+  end
+end
+</code></pre>
+
+<h5><em>Step 2</em>: Create the database</h5>
+
+<pre><code class="bash">bundle exec rake db:create
+</code></pre>
+
+<h5><em>Step 3</em>: Run the migration</h5>
+
+<pre><code class="bash">$ bundle exec rake db:migrate
+</code></pre>
+
+<p>That&rsquo;s all for Active Record</p>
+
+<h4>Ecto</h4>
+
+<p>Assuming that you have already put in <code>ecto</code> and <code>postgrex</code> dependencies and already run <code>mix deps.get</code>, here are the steps:</p>
+
+<h5><em>Step 1</em>: Create Repo file by manually adding web/models/repo.ex file witht the following content</h5>
+
+<pre><code class="elixir">defmodule BookStoreElixir.Repo do
+  use Ecto.Repo, adapter: Ecto.Adapters.Postgres
+
+  def conf do
+    parse_url "ecto://postgresuser:password@localhost/book_store_elixir"
+  end
+
+  def priv do
+    app_dir(:book_store_elixir, "priv/repo")
+  end
+end
+</code></pre>
+
+<h5><em>Step 2</em>: Create the Postgres Database</h5>
+
+<pre><code class="bash">$ createdb book_store_elixir --encoding='utf-8' --locale=en_US.UTF-8 --template=template0
+</code></pre>
+
+<h5><em>Step 3</em>: Create model file <code>web/models/book.ex</code> with the following code:</h5>
+
+<pre><code class="elixir">defmodule BookStoreElixir.Book do
+  use Ecto.Model
+
+  schema "books" do
+    field :title, :string
+    field :description, :string
+    field :author, :string
+    field :publisher, :string
+  end
+end
+</code></pre>
+
+<h5><em>Step 4</em>: Generate a migration file from terminal</h5>
+
+<pre><code class="bash">$ mix ecto.gen.migration BookStoreElixir.Repo create_book
+</code></pre>
+
+<h5><em>Step 5</em>: Edit the newly generated migration file</h5>
+
+<p>There is a need a type the SQL to create the table here:</p>
+
+<pre><code class="bash">$ vim priv/repo/migrations/20141011143244_create_book.exs
+</code></pre>
+
+<pre><code class="elixir">defmodule BookStoreElixir.Repo.Migrations.CreateBook do
+  use Ecto.Migration
+
+  def up do
+    "CREATE TABLE books(id serial primary key, title varchar(125), 
+                  description text, author varchar(255), publisher varchar(255))"
+  end
+
+  def down do
+    "DROP TABLE books"
+  end
+end
+</code></pre>
+
+<h5><em>Step 6</em>: Run the migration file</h5>
+
+<pre><code class="bash">$ mix ecto.migrate BookStoreElixir.Repo
+</code></pre>
+
+<h5><em>Step 7</em>: Add <code>BookStoreElixir.Repo</code> as a worker in line 11 of <code>lib/book_store_elixir.ex</code></h5>
+
+<pre><code class="elixir">defmodule BookStoreElixir do
+  use Application
+
+  # See http://elixir-lang.org/docs/stable/elixir/Application.html
+  # for more information on OTP Applications
+  def start(_type, _args) do
+    import Supervisor.Spec, warn: false
+
+    children = [
+      # Define workers and child supervisors to be supervised
+      worker(BookStoreElixir.Repo, [])
+    ]
+
+    opts = [strategy: :one_for_one, name: BookStoreElixir.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+end
+</code></pre>
+
+<h5>Conclusion for Database Migration:</h5>
+
+<p>Active Record wins as there are fewer number of steps (3 steps in Active Record vs 7 steps in Ecto). Ecto will need to have more mix tasks in order to be more on par with Active Record.</p>
+
+<h3>Round 2: Database CRUD (Create, Read, Update, Delete) operations Syntax</h3>
+
+<h4>1 - Create</h4>
+
+<h5>Active Record</h5>
+
+<p>To create a new record in Active Record, we will use <code>create</code> command on <code>Book</code> model
+<code>ruby
+irb&gt; Book.create({title: "Programming Ruby 1.9 &amp; 2.0", author: "Dave Thomas, with Chad Fowler and Andy Hunt", publisher: "The Pragmatic Bokshelf", description: "Ruby is the fastest growing and most exciting dynamic language out there. If you need to get working programs delivered fast, you should add Ruby to your toolbox."})
+</code></p>
+
+<h5>Ecto</h5>
+
+<p>To create a new record in Ecto, we will use <code>insert</code> command on Book <code>Repo</code></p>
+
+<pre><code class="elixir">iex&gt; alias BookStoreElixir.Repo
+iex&gt; alias BookStoreElixir.Book
+iex&gt; BookStoreElixir.Repo.insert({title: "Programming Ruby 1.9 &amp; 2.0", author: "Dave Thomas, with Chad Fowler and Andy Hunt", publisher: "The Pragmatic Bokshelf", description: "Ruby is the fastest growing and most exciting dynamic language out there. If you need to get working programs delivered fast, you should add Ruby to your toolbox."})
+</code></pre>
+
+<p>Syntax wise, they are quite similar. Although Active Record code seems to be a bit neater but it can be considered a draw for creation syntax.</p>
+
+<h4>2 - Read</h4>
+
+<h5>Active Record</h5>
+
+<p>In Active Record, you can perform quite an entensive list of queries by using <code>where</code>, <code>order</code>, <code>limit</code>, <code>offset</code>, <code>group</code>, <code>join</code>, <code>having</code>, <code>select</code>, <code>pluck</code>, <code>includes</code>. For instance</p>
+
+<pre><code class="ruby">irb&gt; Book.where("title LIKE ?", "%Programming%") \
+         .order(id: :desc) \
+         .limit(1) \
+         .offset(0) \
+         .group("id") \
+         .having("books.id &gt;= 1") \
+         .select(:id) \
+         .pluck(:id)
+</code></pre>
+
+<p>Pretty amazing that Active Record can do chaining in combine into 1 single query.</p>
+
+<h5>Ecto</h5>
+
+<p>There are 2 types of writing Query in Ecto</p>
+
+<ul>
+<li><em>First Way</em>: Using query syntax provide by Ecto</li>
+</ul>
+
+
+<pre><code class="elixir">iex&gt; alias BookStoreElixir.Book
+iex&gt; alias BookStoreElixir.Repo
+iex&gt; import Ecto.Query
+iex&gt; from book in BookStoreElixir.Book, select: book.id, \
+                                        where: like(book.title, "%Programming%"), \
+                                        order_by: [desc: book.id], \
+                                        limit: 1, \
+                                        offset: 0, \
+                                        group_by: book.id, \
+                                        having: book.id &gt;= 1
+iex&gt; Repo.all(query) 
+</code></pre>
+
+<ul>
+<li><em>Second Way</em>: Using chaining by utilising Elixir Pipe will make query just like Active Record:</li>
+</ul>
+
+
+<pre><code class="elixir">iex&gt; alias BookStoreElixir.Book
+iex&gt; alias BookStoreElixir.Repo
+iex&gt; import Ecto.Query
+iex&gt; query = Book |&gt; select([book], book.id) \
+                  |&gt; where([book], like(book.title, "%Programming%")) \
+                  |&gt; order_by([book], desc: book.id) \
+                  |&gt; limit(1) \
+                  |&gt; offset(0) \
+                  |&gt; group_by([book], book.id) \
+                  |&gt; having([book], book.id &gt;= 1)
+iex&gt; Repo.all(query)
+</code></pre>
+
+<p>Syntax wise, both Ecto and Active Record have shown that they are quite expressive in showing the data transformation through a series of query functions. However, Active Record syntax is still considered better in this Round as it is showing an easier approach. Although, the second way of query that we use for Elixir Ecto is pretty closed to Active Record syntax, it still exhibits a more wordy syntax than Active Record. Albeit, Elixir Ecto is using a nice approach by letting programmer to have access to a &ldquo;so called&rdquo; object instance in the query - <code>having[book, book.id &gt;= 1)</code> vs <code>"having("books.id &gt;= 1")</code></p>
+
+<h4>3 - Update</h4>
+
+<h4>Active Record</h4>
+
+<p>To update a record, we will use <code>update_attributes</code> on <code>Book</code> instance</p>
+
+<pre><code class="ruby">irb&gt; book = Book.first
+irb&gt; book.update_attributes({title: "Programming Ruby9 &amp;ss 2.0 (4th edition)"})
+</code></pre>
+
+<h4>Ecto</h4>
+
+<p>To update a record, we will use <code>`update</code> on <code>BookStoreElixir.Repo</code></p>
+
+<pre><code class="elixir">iex&gt; alias BookStoreElixir.Book
+iex&gt; alias BookStoreElixir.Repo
+iex&gt; book = Repo.one(Book)
+iex&gt; Repo.update(%{book | title: "Programming Ruby9 &amp;ss 2.0 (4th edition)"}) 
+</code></pre>
+
+<p>Both Ecto and Active Record have exhibited almost the same level of code when updating a record. Hence, it is a draw.</p>
+
+<h4>4 - Delete</h4>
+
+<h4>Active Record</h4>
+
+<p>To delete a record, we will use <code>destroy</code> on a <code>Book</code> instance</p>
+
+<pre><code class="ruby">irb&gt; book = Book.first
+irb&gt; book.destroy
+</code></pre>
+
+<h4>Ecto</h4>
+
+<p>To delete a record, we will use <code>delete</code> on <code>BookStoreElixir.repo</code></p>
+
+<pre><code class="elixir">iex&gt; alias BookStoreElixir.Book
+iex&gt; alias BookStoreElixir.Repo
+iex&gt; book = Repo.one(Book)
+iex&gt; Repo.delete(book)
+</code></pre>
+
+<p>Both Ecto and Active Record have exhibited almost the same level of code when delete a record. Hence, it is a draw.</p>
+
+<p>So for this Round 2, Active Record is the <strong>winner</strong> (1 vs 0).</p>
+
+<h3>Round 3: Speed of Creation</h3>
+
+<p>Note that this is tested on my local machine. The result here is just for your reference, and should not be treated as an official benchmark.
+I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and Elixir application are running with Postgres 9.3.5. For Rails, environment in Rails 4.1.4 has been preloaded with Spring, hence there is a not a need for system to spend time to load the Rails environment. Further more, the Rails code was run with the log mode the same as on production - i.e. no query log was printed out.</p>
+
+<h4>Active Record</h4>
+
+<p>Here is the code inside <code>db/seeds.rb</code></p>
+
+<pre><code class="ruby"># first round 100, second round 10,000, third round 1,000,000
+number_of_records = 100
+for i in 1..number_of_records
+  Book.create({title: "Book Title #{i}", description: "Description #{i}", author: "Author #{i}", publisher: "Publisher #{i}"})
+end
+</code></pre>
+
+<p>Here is how I run it:</p>
+
+<pre><code class="bash">$ time bundle exec rake db:seed
+</code></pre>
+
+<p>Here are the results of 3 running rounds (with creating 100, 10,000 records and 1 million records). Each time database drop, creation and migration were performed before hand.</p>
+
+<pre><code class="bash">real0m1.706s
+user0m1.401s
+sys0m0.229s     
+
+real  0m12.328s
+user  0m7.820s
+sys 0m1.041s
+
+real  17m52.272s
+user  10m41.534s
+sys 1m20.044s
+</code></pre>
+
+<p>Active Record took <strong>1.706 seconds</strong>,  <strong>12.328 seconds</strong> and a whooping <strong>17 minutes 52.272 seconds</strong> to complete 100, 10,000 and 1 million record creation run.</p>
+
+<h4>Ecto</h4>
+
+<p>I create a file seeds.ex inside the elixir project folder with the following content</p>
+
+<pre><code class="elixir">alias BookStoreElixir.Book
+alias BookStoreElixir.Repo
+
+# First round 100, second round 10,000, third round 1,000,000
+number_of_records = 100
+range = 1..100
+for i &lt;- range do
+  book = %Book{title: "Book Title #{i}", description: "Description #{i}", author: "Author #{i}", publisher: "Publisher #{i}"}
+  Repo.insert(book)
+end
+</code></pre>
+
+<p>Then run this seeds</p>
+
+<pre><code class="bash">$ time mix run seeds.ex 
+</code></pre>
+
+<p>And here is the reusult of 3 runs:</p>
+
+<pre><code>real  0m0.624s
+user  0m0.513s
+sys 0m0.187s
+
+real  0m5.109s
+user  0m2.459s
+sys 0m1.002s
+
+real  6m15.161s
+user  3m19.126s
+sys 2m53.117s
+</code></pre>
+
+<p>Ecto took merely <strong>0.624 seconds</strong>, <strong>5.109 seconds</strong> and <strong>6 minutes 15.161 seconds</strong> to complete the same 3 runs of creation 100, 10,000 and 1 million records.</p>
+
+<p>Here is the chart that shows the performance of Ecto vs Active Record through 3 runs:</p>
+
+<p><img class="center" src="/images/ecto_vs_active_record/creation_chart.png" width="710" height="467" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+
+<p>Ecto is approximately <strong>62%</strong> faster than Active Record. Hence, Ecto is the winner in this round.</p>
+
+<h4>Round 4: Speed of Updating</h4>
+
+<p>We will now run updating on 100, 10,000 and 1 million records in each database each. We will update the records, one by one to have a new book title. As usual, let&rsquo;s start with Active Record first</p>
+
+<h5>Active Record</h5>
+
+<p>Now in my <code>db/seeds.rb</code> file, I will change it like following:</p>
+
+<pre><code class="ruby">Book.all.each do |book|
+  book.update_attributes({title: "New Book Title #{book.id}")
+end
+</code></pre>
+
+<p>And run this file:</p>
+
+<pre><code class="bash">$ time bundle exec rake db:seed
+</code></pre>
+
+<pre><code class="bash">
+real  0m1.725s
+user  0m1.423s
+sys 0m0.243s
+
+real  0m12.414s
+user  0m6.936s
+sys 0m1.109s
+
+real  23m30.364s
+user  15m22.126s
+sys 1m26.698s
+</code></pre>
+
+<p>Active Record took <strong>1.725 seconds</strong>, <strong>12.414 seconds</strong> and <strong>23 minutes, 30.364 seconds</strong> to update all 100, 10,000 and 1 million records respectively.</p>
+
+<h5>Ecto</h5>
+
+<p>We will change the <code>seeds.ex</code> file to following</p>
+
+<pre><code class="elixir">alias BookStoreElixir.Book
+alias BookStoreElixir.Repo
+
+# range = 1..10000
+# for i &lt;- range do
+#  book = %Book{title: "Book Title #{i}", description: "Description #{i}", author: "Author #{i}", publisher: "Publisher #{i}"}
+#  Repo.insert(book)
+# end
+
+for book &lt;- Repo.all(Book) do
+  book = %{book | title: "New Book Title #{book.id}"}
+  Repo.update(book)
+end
+</code></pre>
+
+<p>Before you can run this file, you will need to do a bit modification on <code>postgrex</code> library as this library is throwing a time out if a query spends more than 5 seconds to complete. <code>Repo.all(Book)</code> will definitely take up more than 5 seconds to load up the entire collection of books into the memory</p>
+
+<p>From the project folder, what I did was edit file <code>deps/ecto/lib/ecto/adapters/postgres.ex</code></p>
+
+<pre><code class="bash">$ vim deps/ecto/lib/ecto/adapters/postgres.ex 
+</code></pre>
+
+<p>Then search for <code>@timeout 5000</code> and replace by <code>@timeout :infinity</code></p>
+
+<p>Now you can run and time the running time of this file</p>
+
+<pre><code class="bash">$ time mix run seeds.ex
+</code></pre>
+
+<p>Here are the result of 3 runs:</p>
+
+<pre><code class="bash">real  0m0.606s
+user  0m0.509s
+sys 0m0.184s
+
+real  0m5.495s
+user  0m2.515s
+sys 0m1.071s
+
+real  7m12.016s
+user  3m49.446s
+sys 3m7.004s
+</code></pre>
+
+<p>Ecto took merely <strong>0.606 seconds</strong>, <strong>5.495 seconds</strong> and <strong>7 minutes, 12 seconds</strong> to update 100, 10,000 records and 1 million records respectively. Apparently, Ecto is the winner.</p>
+
+<p>Here is the chart showing the above elapsed time:</p>
+
+<p><img class="center" src="/images/ecto_vs_active_record/update_chart.png" width="633" height="444" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+
+<h3>Conclusion</h3>
+
+<p>With the fact that Active Record and Ecto each has 2 wons, it is concluded to be a draw between Active Record and Ecto. Ecto seems to be very promising library, which provides a very interesting way to write a database query. The steps to setup and the syntax of Ecto will definitely improve in the future.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Playing With Model in Elixir Phoenix Console]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/08/playing-with-model-in-elixir-phoenix-console/"/>
+    <updated>2014-10-08T07:20:21+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/08/playing-with-model-in-elixir-phoenix-console</id>
+    <content type="html"><![CDATA[<p>You will need to have the source code of this article <a href="http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/">http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/</a> before being able to follow this article. So basically, after you finish that article, you will have a model Book. Let turn on elixir console to play around with this model. To turn on elixir console with phoenix, type the following command</p>
+
+<!-- more -->
+
+
+<pre><code class="bash">$ iex -S mix
+</code></pre>
+
+<p>Now you are inside elixir console mode, let&rsquo;s start with retrieve our first book</p>
+
+<pre><code class="elixir">iex&gt; BookStore.Repo.get(BookStore.Books, 1)
+%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun",
+  id: 1, publisher: "The Pragmatic Bookshelf", title: "Programming Elixir"}
+</code></pre>
+
+<p>As you can see, we can use <code>BookStore.Repo</code> to retrieve a book. Here is the review of <code>BookStore.Repo</code> code</p>
+
+<pre><code class="elixir">defmodule BookStore.Repo do
+  use Ecto.Repo, adapter: Ecto.Adapters.Postgres
+
+  def conf do
+    parse_url "ecto://postgresuser:password@localhost/book_store"
+  end 
+
+  def priv do
+    app_dir(:book_store, "priv/repo")
+  end
+end
+</code></pre>
+
+<p>From the elixir console, we also can retrieve all books just like what we did in the controller</p>
+
+<pre><code class="elixir">iex&gt; BookStore.Repo.all(BookStore.Books)
+[%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun",
+  id: 1, publisher: "The Pragmatic Bookshelf", title: "Programming Elixir"}]
+</code></pre>
+
+<p>As you can see, this time round, it returns you an array of Books. Up to this point, I feel a bit annoying every time I need to type <code>BookStore.Books</code>, <code>BookStore.Repo</code>, then I find out that <code>alias</code> in Elixir can help to shorten this syntax by just calling <code>Books</code> and <code>Repo</code>. So now, what you need to do is</p>
+
+<pre><code class="elixir">iex&gt; alias BookStore.Repo, as: Repo
+nil
+iex&gt; alias BookStore.Books, as: Books
+</code></pre>
+
+<p>By default <code>alias</code>, if you call <code>alias</code> without supplying <code>as</code>, it will automatically set the alias to the last part of the module name. Hence in this case, you can just simply call</p>
+
+<pre><code class="elixir">iex&gt; alias BookStore.Repo
+nil
+iex&gt; alias BookStore.Books
+nil
+</code></pre>
+
+<p>So now, it will be much pleasure to write the command in the console</p>
+
+<pre><code class="elixir">iex&gt; Repo.all(Books)
+[%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun",
+  id: 1, publisher: "The Pragmatic Bookshelf", title: "Programming Elixir"}]
+
+iex&gt; Repo.get(Books, 1)
+%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun",
+  id: 1, publisher: "The Pragmatic Bookshelf", title: "Programming Elixir"}
+</code></pre>
+
+<p>Next, you can assign a book from the database call inside the console:</p>
+
+<pre><code class="elixir">iex&gt; book = Repo.get(books, 1)
+%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun",
+  id: 1, publisher: "The Pragmatic Bookshelf", title: "Programming Elixir"}
+
+iex&gt; book.author
+"Dave Thomas"
+
+iex&gt; book.description
+"Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun"
+</code></pre>
+
+<p>To update this book, you will need to reassign the book with itself plus the updated properties and let <code>Repo</code> handle the update by calling <code>update</code> function on Repor</p>
+
+<pre><code class="elixir">iex&gt;  book = %{book | description: "Programming Elixir: a lot more fun", title: "Programming Elixir with fun"}
+%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: a lot more fun", id: 1,
+  publisher: "The Pragmatic Bookshelf", title: "Programming Elixir with fun"}
+
+iex&gt; Repo.update(book)
+:ok
+
+iex&gt; Repo.get(Books, 1)
+%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: a lot more fun", id: 1,
+  publisher: "The Pragmatic Bookshelf", title: "Programming Elixir with fun"}
+</code></pre>
+
+<p>Next, you also can create a new book by calling <code>insert</code> command on <code>Repo</code>. Pretty straight forward.</p>
+
+<pre><code class="elixir">iex&gt; Repo.insert(%Books{author: "Simon St. Laurent, J. David Eisenberg", description: "Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction", publisher: "O'Reilly", title: "Introducing Elixir"})
+%BookStore.Books{author: "Simon St. Laurent, J. David Eisenberg",
+ description: "Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction",
+  id: 18, publisher: "O'Reilly", title: "Introducing Elixir"}
+</code></pre>
+
+<p>Now try to get all books again</p>
+
+<pre><code class="elixir">iex&gt; Repo.all(Books)
+[%BookStore.Books{author: "Dave Thomas",
+  description: "Programming Elixir: a lot more fun", id: 1,
+  publisher: "The Pragmatic Bookshelf", title: "Programming Elixir with fun"},
+ %BookStore.Books{author: "Simon St. Laurent, J. David Eisenberg",
+  description: "Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction",
+  id: 2, publisher: "O'Reilly", title: "Introducing Elixir"}]
+</code></pre>
+
+<p>Note this book is created with id <code>2</code>. Now we can delete this book by calling <code>delete</code> command on <code>Repo</code>.</p>
+
+<pre><code class="elixir">iex&gt; introducing_elixir_book = Repo.get(Books, 2)
+%BookStore.Books{author: "Simon St. Laurent, J. David Eisenberg",
+ description: "Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction",
+  id: 2, publisher: "O'Reilly", title: "Introducing Elixir"}
+
+iex&gt; Repo.delete(introducing_elixir_book)
+:ok
+</code></pre>
+
+<p>Retrieving all books again, you will see the deleted book is really deleted.</p>
+
+<pre><code class="elixir">iex&gt; Repo.all(Books)
+[%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun",
+  id: 1, publisher: "The Pragmatic Bookshelf", title: "Programming Elixir"}]
+</code></pre>
+
+<p>That&rsquo;s all for this article. I really hope you enjoy it. These basic command on the model will play a very important role when you need to build a RESTful controller, which will be cover in the near future article :-)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Book Listing App With Elixir, Phoenix, Postgres and Ecto]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/05/build-web-app-with-elixir/"/>
+    <updated>2014-10-05T23:22:42+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/05/build-web-app-with-elixir</id>
+    <content type="html"><![CDATA[<p>In this article, let&rsquo;s go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postgres and Ecto. I hope you will enjoy :-)</p>
+
+<!--more-->
+
+
+<h3>Create Elixir Book Store Project</h3>
+
+<p>From the phoenix installation folder, run the following command:</p>
+
+<pre><code class="bash">$ mix phoenix.new book_store ../
+</code></pre>
+
+<p>Now enter the project folder and get all the dependencies and start the phoenix project:</p>
+
+<pre><code class="bash">$ cd ../book_store
+$ mix do deps.get, compile
+$ mix phoenix.start
+</code></pre>
+
+<p>Open the browser, and go to the url <code>http://localhost:4000</code></p>
+
+<p><img class="left" src="/images/build-web-app-with-elixir/phoenix_page.png" width="800" height="510" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+
+<h3>Add Ecto To The Project</h3>
+
+<p>From the project root folder, open file <code>mix.exs</code>, scroll down to the end of the file, then you will see <code>defp deps do</code> function definition. You will need to add in <code>postgrex</code> and <code>ecto</code> dependencies</p>
+
+<ul>
+<li><code>postgrex</code> (<a href="https://github.com/ericmj/postgrex">https://github.com/ericmj/postgrex</a>) is the PostgresSQL driver for Elixir</li>
+<li><code>ecto</code> (<a href="https://github.com/elixir-lang/ecto">https://github.com/elixir-lang/ecto</a>) is a database wrapper and language integrated query for Elixir</li>
+</ul>
+
+
+<pre><code class="elixir">defp deps do
+  [
+    {:phoenix, "0.4.1"},
+    {:cowboy, "~&gt; 1.0.0"},
+    {:postgrex, "~&gt; 0.5"},
+    {:ecto, "~&gt; 0.2.0"}
+  ]
+end
+</code></pre>
+
+<p>In the same file, you will also need to update the application function definition to include <code>postgrex</code> and <code>ecto</code></p>
+
+<pre><code class="elixir">def application do
+  [ 
+    mod: { BookStore, [] },
+    applications: [:phoenix, :cowboy, :logger, :postgrex, :ecto]
+  ] 
+end 
+</code></pre>
+
+<p>Run the following commands in the terminal to get all the dependencies.</p>
+
+<pre><code class="bash">$ mix deps.get
+</code></pre>
+
+<h3>Create A Repo</h3>
+
+<p>A repo is a basic interfacte to a database (which is postgres). Open <code>web/models/repo.ex</code> and add the following code</p>
+
+<pre><code class="elixir">defmodule BookStore.Repo do
+  use Ecto.Repo, adapter: Ecto.Adapters.Postgres
+
+  def conf do
+    parse_url "ecto://postgresuser:password@localhost/book_store"
+  end
+
+  def priv do
+    app_dir(:book_store, "priv/repo")
+  end
+end
+</code></pre>
+
+<p>We have defined PostgreSQL connection with a URL format, what you will need to do is to change the <code>postgresuser</code> and <code>password</code> to be the real postgres username and password on your database.</p>
+
+<p>Since we are going to use the migration feature, we will need to have <code>priv</code> function. Inside this function, we will need to specify where is the migration script is saved, which is inside <code>priv/repo</code> directory.</p>
+
+<p>The next step that we must do is to make sure that our Repo module is started with our application, and is supervised. Open <code>lib/book_store.ex</code>.</p>
+
+<pre><code class="elixir">defmodule BookStore do
+  use Application
+
+  # See http://elixir-lang.org/docs/stable/elixir/Application.html
+  # for more information on OTP Applications
+  def start(_type, _args) do
+    import Supervisor.Spec, warn: false
+
+    children = [
+      # Define workers and child supervisors to be supervised
+      worker(BookStore.Repo, [])
+    ]
+
+    opts = [strategy: :one_for_one, name: BookStore.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+end
+</code></pre>
+
+<p>Note that <code>line 11</code> is the only line that we add inside this file</p>
+
+<p>To make sure that everything is good, let&rsquo;s compile the project:</p>
+
+<pre><code class="bash">$ mix compile
+</code></pre>
+
+<p>Next, let&rsquo;s create the <code>book_store</code> database in postgres</p>
+
+<pre><code class="bash">$ createdb book_store 
+</code></pre>
+
+<h3>Create a model</h3>
+
+<p>Create model file <code>web/models/books.ex</code> with the following code:</p>
+
+<pre><code class="elixir">defmodule BookStore.Books do
+  use Ecto.Model
+
+  schema "books" do
+    field :title, :string
+    field :description, :string
+    field :author, :string
+    field :publisher, :string
+  end
+end
+</code></pre>
+
+<h3>Generate Migration Script</h3>
+
+<p>We will also need to create a database migration for books model by using the following command:</p>
+
+<pre><code class="bash">$ mix ecto.gen.migration BookStore.Repo create_book
+Compiled lib/book_store.ex
+Compiled web/models/repo.ex
+Generated book_store.app
+* creating priv/repo/migrations
+* creating priv/repo/migrations/20141005013526_create_book.exs
+</code></pre>
+
+<p>Now open the just generated migration file <code>priv/repo/migrations/20141005013526_create_book.exs</code> and change with the following code</p>
+
+<pre><code class="elixir">defmodule BookStore.Repo.Migrations.CreateBook do
+  use Ecto.Migration
+
+  def up do
+    ["CREATE TABLE books(id serial primary key, title varchar(125), description text, author varchar(255), publisher varchar(255))",
+     "INSERT INTO books(title, description, author, publisher) VALUES ('Programming Elixir', 'Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun', 'Dave Thomas', 'The Pragmatic Bookshelf')"
+    ]
+  end
+
+  def down do
+    "DROP TABLE books"
+  end
+end
+</code></pre>
+
+<p>Inside this migration file, you will see up and down function. <code>up</code> function is run when you run the database migration, <code>down</code> function is run when you revert or rollback this database migration</p>
+
+<p>Now run the migration</p>
+
+<pre><code class="bash">$ mix ecto.migrate BookStore.Repo
+* running UP _build/dev/lib/book_store/priv/repo/migrations/20141005013526_create_book.exs``
+</code></pre>
+
+<h3>Create A Query</h3>
+
+<p>Create <code>web/models/queries.ex</code> folder.</p>
+
+<pre><code class="elixir">defmodule BookStore.Queries do
+  import Ecto.Query
+
+  def books_query do
+    query = from book in BookStore.Books,
+            select: book 
+    BookStore.Repo.all(query)
+  end
+end
+</code></pre>
+
+<h3>Route books index page to Book controller index action</h3>
+
+<p>Open file <code>web/router.ex</code>, we will need to map the root route to <code>BookController</code>. Note that in Phoenix, controller name is singular + <code>Controller</code> whereas in Rails, it is <code>BooksController</code></p>
+
+<pre><code class="elixir">defmodule BookStore.Router do
+  use Phoenix.Router
+
+  get "/", BookStore.BookController, :index, as: :books
+
+end
+</code></pre>
+
+<h3>Create BookController and get all books</h3>
+
+<p>Create file <code>book_controller.ex</code> inside <code>web/controllers</code> folder with the following source code</p>
+
+<pre><code class="elixir">defmodule BookStore.BookController do
+  use Phoenix.Controller
+
+  def index(conn, _params) do
+    books = BookStore.Queries.books_query
+    render conn, "index", books: books 
+  end
+end
+</code></pre>
+
+<h3>Create books index page view</h3>
+
+<p>Next thing that we will need to do is to create an index page for books listing. First, create folder <code>book</code> inside <code>web/template</code>.</p>
+
+<pre><code class="bash">mkdir web/templates/book
+</code></pre>
+
+<p>Second, create a book view file - <code>web/views/book_view.ex</code> with the following content</p>
+
+<pre><code class="elixir">defmodule BookStore.BookView do
+  use BookStore.Views
+end
+</code></pre>
+
+<p>Finally, create file <code>web/template/book/index.html.eex</code> and paste in the following code:</p>
+
+<p>&#8220;`html</p>
+
+<h1>Our Books</h1>
+
+
+
+
+<table class='table table-bodered table-striped'>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Author</th>
+      <th>Publisher</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for book <- @books do %>
+      <tr>
+        <td><%= book.id %></td>
+        <td><%= book.title %></td>
+        <td><%= book.description %></td>
+        <td><%= book.author %></td>
+        <td><%= book.publisher %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+<pre><code>
+Refresh the browser and voila, this is what we will get:
+
+<img class="left" src="/images/build-web-app-with-elixir/complete.png" width="800" height="346" title="image" alt="images">
+
+
+### Common Pitfall
+
+I seldom hit the following error when trying to restart phoenix although all the codes are correct 
+</code></pre>
+
+<dl>
+<dt>INFO REPORT==== 5-Oct-2014::09:57:47 ==</dt>
+<dd>application: logger
+exited: stopped
+type: temporary
+<strong> (Mix) Could not start application book_store: exited in: BookStore.start(:normal, [])
+</strong> (EXIT) an exception was raised:
+    ** (UndefinedFunctionError) undefined function: BookStore.start/2 (module BookStore is not available)
+        BookStore.start(:normal, [])
+        (kernel) application_master.erl:272: :application_master.start_it_old/4
+&#8220;`</dd>
+</dl>
+
+<p>To fix this, you will need to clean compile all your elixir code:</p>
+
+<pre><code class="bash">$ mix clean
+$ mix compile
+$ mix phoenix.start
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Pattern-matching | Learn Elixir Language]]></title>
+  <link href="http://learnelixir.com/blog/categories/pattern-matching/atom.xml" rel="self"/>
+  <link href="http://learnelixir.com/"/>
+  <updated>2014-10-22T13:35:57+08:00</updated>
+  <id>http://learnelixir.com/</id>
+  <author>
+    <name><![CDATA[Learn Elixir]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Have Fun With Pattern Matching in Elixir]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/07/have-fun-with-pattern-matching-in-elixir/"/>
+    <updated>2014-10-07T22:28:03+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/07/have-fun-with-pattern-matching-in-elixir</id>
+    <content type="html"><![CDATA[<p>In this article, we will look deeper into pattern matching in Elixir. Coming from prologue background, I think pattern matching is quite a fun thing to do. Prologue is a too hard core language for this kind of thing, whereas Elixir is mixing just well between normal programming language and pattern matching&hellip;</p>
+
+<!-- more -->
+
+
+<p>First, let&rsquo;s look at the very basic pattern matching in Elixir:</p>
+
+<pre><code class="elixir">iex&gt; variable = 1
+1
+</code></pre>
+
+<p>In a common programming language like Ruby or Java, this is simple an assignment. However, in Elixir, this assignment operator is called the match operator. Here is why</p>
+
+<pre><code class="elixir">iex&gt; variable = 1
+1
+iex&gt; 1 = variable
+1
+</code></pre>
+
+<p>In Ruby or Java, the expression <code>1 = variable</code> will give you a syntax error because 1 cannot be assigned to a variable. But in Elixir, it is just fine, because 1 and variable are matching in value. However, you cannot match an undefined variable with a number when the variable in on the right hand side</p>
+
+<pre><code class="elixir">iex&gt; 2 = x
+** (RuntimeError) undefined function: x/0
+</code></pre>
+
+<p>Without pre-definining <code>x</code> variable, Elixir will think that you are trying to call a function <code>x</code> (<code>x/0</code>) without any argument. Now, let&rsquo;s go further to matching few variables at the same time</p>
+
+<pre><code class="elixir">iex&gt; [a, b, c] = [1, 2, 3]
+[1, 2, 3]
+iex&gt; a
+1
+iex&gt; b
+2
+iex&gt; c
+3
+</code></pre>
+
+<p>After this matching operation, <code>a</code>, <code>b</code> and <code>c</code> will have value <code>1</code>, <code>2</code> and <code>3</code> respectively. This is extremely useful when you need to assign a list of variables or when you return a function as a tuple. We can now go a bit further by first trying to understand a definition of a list:</p>
+
+<p><strong>A list is a series of element which can have 0 elements.</strong></p>
+
+<p>So based on this definition, I can write a list as following</p>
+
+<pre><code class="bash">a list is [] # empty list
+# or
+a list is [element1, element2, element3, element4, etc...]
+</code></pre>
+
+<p>The first is easy to understand, a list can be empty. The second list basically shows that it can have many elements, which can be understood that a list is combined from <code>element1</code> and the rest of the element:</p>
+
+<pre><code class="bash">list is [element1, and the remaining]
+</code></pre>
+
+<p>In mathematics, we can say</p>
+
+<pre><code class="bash">list = [head | tail]
+</code></pre>
+
+<p>Where <code>head</code> is <code>element1</code> and <code>tail</code> is the remaining. So now we apply this into Elixir pattern matching</p>
+
+<pre><code class="elixir">iex&gt; list = [1, 2, 3, 4, 5]
+[1, 2, 3, 4, 5]
+iex&gt; [head | tail] = list 
+[1, 2, 3, 4, 5]
+</code></pre>
+
+<p>Because of patter matching, <code>head</code> is now carrying value <code>1</code></p>
+
+<pre><code class="elixir">iex&gt; head
+1
+</code></pre>
+
+<p>And tail is now carrying the remaining of the list which is:</p>
+
+<pre><code class="elixir">iex&gt; tail
+[2, 3, 4, 5]
+</code></pre>
+
+<p>So if we want to get our all elements of this list, we can just simply continue to assign like following:</p>
+
+<pre><code class="elixir">iex&gt; [head1 | tail1] = tail
+[2, 3, 4, 5]
+iex&gt; head1
+2
+iex&gt; tail1
+[3, 4, 5]
+</code></pre>
+
+<p>So on so forth we will be able to extract every single element of this list using pattern matching. You can note that we never talk about a for loop, yet we still can go through the loop easily using Pattern Matching.</p>
+
+<p>The applications of pattern matching is endless, but I am going to show you a classic pattern matching by trying to calculate a sum of a list.</p>
+
+<pre><code class="elixir">defmodule Utils do
+  def sum([]), do: 0
+  def sum([head | tail]), do: head + sum(tail)
+end
+
+Utils.sum([]) # return 0
+Utils.sum([9, 8, 7, 6]) # returns 30
+</code></pre>
+
+<p>Let&rsquo;s go through quickly how this work:</p>
+
+<ul>
+<li>On line 2, we definied a sum function for an empty list (pattern matching an empty list in sum function&rsquo;s argument) and return 0.</li>
+<li>On line 3, we defined another sum function but with a non empty list, this function then returns the result as the value of <code>head</code> + the sum of the remaining inside the list (<code>sum(tail)</code>). It is actually a recursion by calling the function itself in its evaluation.</li>
+</ul>
+
+
+<p>So by now you should have a basic understanding how Elixir pattern matching works. Eventually, you will see more and more this type of pattern matching throughout Elixir Programming.</p>
+]]></content>
+  </entry>
+  
+</feed>

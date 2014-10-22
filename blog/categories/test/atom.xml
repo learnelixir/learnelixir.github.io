@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Test | Learn Elixir Language]]></title>
+  <link href="http://learnelixir.com/blog/categories/test/atom.xml" rel="self"/>
+  <link href="http://learnelixir.com/"/>
+  <updated>2014-10-22T13:35:57+08:00</updated>
+  <id>http://learnelixir.com/</id>
+  <author>
+    <name><![CDATA[Learn Elixir]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Basic Testing With Elixir]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/06/basic-testing-with-elixir/"/>
+    <updated>2014-10-06T22:31:16+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/06/basic-testing-with-elixir</id>
+    <content type="html"><![CDATA[<p>In this article, we will go through some basic testing syntax with elixir. Elixir is a language that very well supports unit test and I totally love it when I first see it on the video. Let&rsquo;s start by writing a simple assertion</p>
+
+<!--more-->
+
+
+<p>You can use your favorite editor to edit an <code>.ex</code> file. In my case, I create a test folder and edit my <code>sample.ex</code> inside</p>
+
+<pre><code class="bash">$ mkdir test
+$ vim test/sample.ex
+</code></pre>
+
+<p>Now, inside this <code>sample.ex</code>, I can immediately write my first assertion like below</p>
+
+<pre><code class="elixir">ExUnit.start                                                      
+
+defmodule TestIt do                                               
+  use ExUnit.Case                                                 
+
+  test "1 + 1 is 2" do                                            
+    assert 1 + 1 == 2                                             
+  end                                                             
+end
+</code></pre>
+
+<p>As you can see, the test case can be written in a very simple manner. It starts with <code>ExUnit.start</code> and then make use of <code>ExUnit.Case</code> in <code>use ExUnit.Case</code></p>
+
+<p>You can then run this file by this command</p>
+
+<pre><code class="bash">$ elixir sample.ex
+.
+
+Finished in 0.03 seconds (0.03s on load, 0.00s on tests)
+1 tests, 0 failures
+
+Randomized with seed 322828
+</code></pre>
+
+<p>That&rsquo;s for the start, now we can following a Test Driven Development method (TDD) to develop something basic just for learning purpose. Let&rsquo;s write fibonacci generate.</p>
+
+<p>Giving a sequence number, the program will generate out a fibonacci number. Before we start writing, let&rsquo;s review the definition of fibonacci number</p>
+
+<pre><code class="bash">fibonacci(0) = 1
+fibonacci(1) = 1
+fibonacci(n) = fibonacci(n - 1) + fibonacci(n - 2) 
+</code></pre>
+
+<p>With this definition in mind, let start by writing the first test:</p>
+
+<pre><code class="elixir">ExUnit.start                                                      
+
+defmodule TestIt do                                               
+  use ExUnit.Case                                                 
+
+  test "fibonacci number 0 is 1" do
+    assert Sequence.fibonacci(0) == 1
+  end
+end
+</code></pre>
+
+<p>Run this test and you can expect a failure:</p>
+
+<pre><code class="bash">$ elixir sample.ex
+
+  1) test fibonacci number 0 is 1 (TestIt)
+     sample.ex:6
+     ** (UndefinedFunctionError) undefined function: Sequence.fibonacci/1 (module Sequence is not available)
+     stacktrace:
+       Sequence.fibonacci(0)
+       sample.ex:7
+
+
+
+Finished in 0.03 seconds (0.03s on load, 0.00s on tests)
+1 tests, 1 failures
+
+Randomized with seed 490020
+</code></pre>
+
+<p>As you can expect, the failure is because we do not have any module <code>Sequence</code> and function <code>fibonacci</code>. Let go to <code>sample.ex</code> and add in a function fibonacci:</p>
+
+<pre><code class="elixir">ExUnit.start                                                      
+
+defmodule Sequence do
+  def fibonacci(n) do
+    1
+  end
+end
+
+defmodule TestIt do
+  use ExUnit.Case
+
+  test "fibonacci number 0 is 1" do 
+    assert Sequence.fibonacci(0) == 1
+  end
+end
+</code></pre>
+
+<p>Now we have <code>fibonacci</code> function in <code>Sequence</code> module, which takes in a number and always return 1. Run the test again</p>
+
+<pre><code class="bash">elixir sample.ex
+.
+
+Finished in 0.04 seconds (0.04s on load, 0.00s on tests)
+1 tests, 0 failures
+
+Randomized with seed 311294
+</code></pre>
+
+<p>Great! It passed. We are at green state now. We can now refactor a bit to make our source code a bit shorter:</p>
+
+<pre><code class="elixir">ExUnit.start                                                      
+
+defmodule Sequence do
+  def fibonacci(n), do: 1
+end
+
+defmodule TestIt do
+  use ExUnit.Case
+
+  test "fibonacci number 0 is 1" do
+    assert Sequence.fibonacci(0) == 1
+  end
+end
+</code></pre>
+
+<p>I have moved the block inside <code>def fibonacci</code> to become something shorter. In fact, <code>def</code> is a function call in Elixir, which takes in a pattern (<code>fibonacci(n)</code>) and <code>do</code> something. This something needs to be a regular expression.</p>
+
+<p>Now run the test again and you would expect it to pass</p>
+
+<pre><code class="bash">$ elixir sample.ex
+sample.ex:4: warning: variable n is unused
+.
+
+Finished in 0.04 seconds (0.04s on load, 0.00s on tests)
+1 tests, 0 failures
+
+Randomized with seed 999642
+</code></pre>
+
+<p>You can ignore the warning of unused variable n for now. We will come back to that shortly. Now, let&rsquo;s write some more test cases:</p>
+
+<pre><code class="elixir">ExUnit.start 
+
+defmodule Sequence do
+  def fibonacci(n), do: 1
+end
+
+defmodule TestIt do
+  use ExUnit.Case
+
+  test "fibonacci number 0 is 1" do
+    assert Sequence.fibonacci(0) == 1
+  end
+
+  test "fibonacci number 1 is 1" do
+    assert Sequence.fibonacci(1) == 1
+  end
+
+  test "fibonacci number 2 is 2" do
+    assert Sequence.fibonacci(2) == 2 
+  end
+
+  test "fibonacci number 3 is 3" do
+    assert Sequence.fibonacci(2) == 2 
+  end
+
+  test "fibonacci number 4 is 5" do
+    assert Sequence.fibonacci(2) == 2 
+  end
+
+  test "fibonacci number 10 is 89" do
+    assert Sequence.fibonacci(10) == 89 
+  end
+end
+</code></pre>
+
+<p>And when run the test, it will fail as expected</p>
+
+<pre><code class="bash">$ elixir sample.ex
+  1) test fibonacci number 2 is 2 (TestIt)
+     sample.ex:18
+     Assertion with == failed
+     code: Sequence.fibonacci(2) == 2
+     lhs:  1
+     rhs:  2
+     stacktrace:
+       sample.ex:19
+
+
+
+  2) test fibonacci number 3 is 3 (TestIt)
+     sample.ex:22
+     Assertion with == failed
+     code: Sequence.fibonacci(2) == 2
+     lhs:  1
+     rhs:  2
+     stacktrace:
+       sample.ex:23
+
+
+
+  3) test fibonacci number 4 is 5 (TestIt)
+     sample.ex:26
+     Assertion with == failed
+     code: Sequence.fibonacci(2) == 2
+     lhs:  1
+     rhs:  2
+     stacktrace:
+       sample.ex:27
+
+..
+
+  4) test fibonacci number 10 is 89 (TestIt)
+     sample.ex:30
+     Assertion with == failed
+     code: Sequence.fibonacci(10) == 89
+     lhs:  1
+     rhs:  89
+     stacktrace:
+       sample.ex:31
+
+
+
+Finished in 0.06 seconds (0.06s on load, 0.00s on tests)
+6 tests, 4 failures
+
+Randomized with seed 982355
+</code></pre>
+
+<p>Now let try to write the code to pass these cases using the definition</p>
+
+<pre><code class="elixir">defmodule Sequence do
+  def fibonacci(n) when n &lt;= 1, do: 1
+  def fibonacci(n), do: fibonacci(n - 1) + fibonacci(n - 2)
+end
+</code></pre>
+
+<p>Note that <code>when n &lt;= 1</code> in the first function definition is Elixir guard conidtion&#8220;. Now, run the test and everything is passed</p>
+
+<pre><code class="bash">$ elixir sample.ex
+......
+
+Finished in 0.06 seconds (0.06s on load, 0.00s on tests)
+6 tests, 0 failures
+
+Randomized with seed 456516
+</code></pre>
+
+<p>Since elixir function definition is patterned matching. You also can write as following to match according to the mathematic definition</p>
+
+<pre><code class="elixir">defmodule Sequence do
+  def fibonacci(0), do: 1
+  def fibonacci(1), do: 1
+  def fibonacci(n), do: fibonacci(n - 1) + fibonacci(n - 2)
+end
+</code></pre>
+
+<p>Here we do not need a guard condition for n in third function as it will match first and second if n is 0 or 1. The function matching is top to bottom. Run the test again</p>
+
+<pre><code class="bash">$ elixir sample.ex
+......
+
+Finished in 0.06 seconds (0.06s on load, 0.00s on tests)
+6 tests, 0 failures
+
+Randomized with seed 163178
+</code></pre>
+
+<p>We concluded this article here and hope you have learned and enjoyed the following from Elixir. Thank you for your time</p>
+
+<ul>
+<li>TDD in Elixir</li>
+<li>ExUnit Test</li>
+<li>Function Pattern Matching</li>
+<li>Guard Conditions</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

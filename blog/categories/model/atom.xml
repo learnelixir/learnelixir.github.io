@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Model | Learn Elixir Language]]></title>
+  <link href="http://learnelixir.com/blog/categories/model/atom.xml" rel="self"/>
+  <link href="http://learnelixir.com/"/>
+  <updated>2014-10-22T13:35:57+08:00</updated>
+  <id>http://learnelixir.com/</id>
+  <author>
+    <name><![CDATA[Learn Elixir]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Playing With Model in Elixir Phoenix Console]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/08/playing-with-model-in-elixir-phoenix-console/"/>
+    <updated>2014-10-08T07:20:21+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/08/playing-with-model-in-elixir-phoenix-console</id>
+    <content type="html"><![CDATA[<p>You will need to have the source code of this article <a href="http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/">http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/</a> before being able to follow this article. So basically, after you finish that article, you will have a model Book. Let turn on elixir console to play around with this model. To turn on elixir console with phoenix, type the following command</p>
+
+<!-- more -->
+
+
+<pre><code class="bash">$ iex -S mix
+</code></pre>
+
+<p>Now you are inside elixir console mode, let&rsquo;s start with retrieve our first book</p>
+
+<pre><code class="elixir">iex&gt; BookStore.Repo.get(BookStore.Books, 1)
+%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun",
+  id: 1, publisher: "The Pragmatic Bookshelf", title: "Programming Elixir"}
+</code></pre>
+
+<p>As you can see, we can use <code>BookStore.Repo</code> to retrieve a book. Here is the review of <code>BookStore.Repo</code> code</p>
+
+<pre><code class="elixir">defmodule BookStore.Repo do
+  use Ecto.Repo, adapter: Ecto.Adapters.Postgres
+
+  def conf do
+    parse_url "ecto://postgresuser:password@localhost/book_store"
+  end 
+
+  def priv do
+    app_dir(:book_store, "priv/repo")
+  end
+end
+</code></pre>
+
+<p>From the elixir console, we also can retrieve all books just like what we did in the controller</p>
+
+<pre><code class="elixir">iex&gt; BookStore.Repo.all(BookStore.Books)
+[%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun",
+  id: 1, publisher: "The Pragmatic Bookshelf", title: "Programming Elixir"}]
+</code></pre>
+
+<p>As you can see, this time round, it returns you an array of Books. Up to this point, I feel a bit annoying every time I need to type <code>BookStore.Books</code>, <code>BookStore.Repo</code>, then I find out that <code>alias</code> in Elixir can help to shorten this syntax by just calling <code>Books</code> and <code>Repo</code>. So now, what you need to do is</p>
+
+<pre><code class="elixir">iex&gt; alias BookStore.Repo, as: Repo
+nil
+iex&gt; alias BookStore.Books, as: Books
+</code></pre>
+
+<p>By default <code>alias</code>, if you call <code>alias</code> without supplying <code>as</code>, it will automatically set the alias to the last part of the module name. Hence in this case, you can just simply call</p>
+
+<pre><code class="elixir">iex&gt; alias BookStore.Repo
+nil
+iex&gt; alias BookStore.Books
+nil
+</code></pre>
+
+<p>So now, it will be much pleasure to write the command in the console</p>
+
+<pre><code class="elixir">iex&gt; Repo.all(Books)
+[%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun",
+  id: 1, publisher: "The Pragmatic Bookshelf", title: "Programming Elixir"}]
+
+iex&gt; Repo.get(Books, 1)
+%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun",
+  id: 1, publisher: "The Pragmatic Bookshelf", title: "Programming Elixir"}
+</code></pre>
+
+<p>Next, you can assign a book from the database call inside the console:</p>
+
+<pre><code class="elixir">iex&gt; book = Repo.get(books, 1)
+%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun",
+  id: 1, publisher: "The Pragmatic Bookshelf", title: "Programming Elixir"}
+
+iex&gt; book.author
+"Dave Thomas"
+
+iex&gt; book.description
+"Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun"
+</code></pre>
+
+<p>To update this book, you will need to reassign the book with itself plus the updated properties and let <code>Repo</code> handle the update by calling <code>update</code> function on Repor</p>
+
+<pre><code class="elixir">iex&gt;  book = %{book | description: "Programming Elixir: a lot more fun", title: "Programming Elixir with fun"}
+%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: a lot more fun", id: 1,
+  publisher: "The Pragmatic Bookshelf", title: "Programming Elixir with fun"}
+
+iex&gt; Repo.update(book)
+:ok
+
+iex&gt; Repo.get(Books, 1)
+%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: a lot more fun", id: 1,
+  publisher: "The Pragmatic Bookshelf", title: "Programming Elixir with fun"}
+</code></pre>
+
+<p>Next, you also can create a new book by calling <code>insert</code> command on <code>Repo</code>. Pretty straight forward.</p>
+
+<pre><code class="elixir">iex&gt; Repo.insert(%Books{author: "Simon St. Laurent, J. David Eisenberg", description: "Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction", publisher: "O'Reilly", title: "Introducing Elixir"})
+%BookStore.Books{author: "Simon St. Laurent, J. David Eisenberg",
+ description: "Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction",
+  id: 18, publisher: "O'Reilly", title: "Introducing Elixir"}
+</code></pre>
+
+<p>Now try to get all books again</p>
+
+<pre><code class="elixir">iex&gt; Repo.all(Books)
+[%BookStore.Books{author: "Dave Thomas",
+  description: "Programming Elixir: a lot more fun", id: 1,
+  publisher: "The Pragmatic Bookshelf", title: "Programming Elixir with fun"},
+ %BookStore.Books{author: "Simon St. Laurent, J. David Eisenberg",
+  description: "Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction",
+  id: 2, publisher: "O'Reilly", title: "Introducing Elixir"}]
+</code></pre>
+
+<p>Note this book is created with id <code>2</code>. Now we can delete this book by calling <code>delete</code> command on <code>Repo</code>.</p>
+
+<pre><code class="elixir">iex&gt; introducing_elixir_book = Repo.get(Books, 2)
+%BookStore.Books{author: "Simon St. Laurent, J. David Eisenberg",
+ description: "Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction",
+  id: 2, publisher: "O'Reilly", title: "Introducing Elixir"}
+
+iex&gt; Repo.delete(introducing_elixir_book)
+:ok
+</code></pre>
+
+<p>Retrieving all books again, you will see the deleted book is really deleted.</p>
+
+<pre><code class="elixir">iex&gt; Repo.all(Books)
+[%BookStore.Books{author: "Dave Thomas",
+ description: "Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun",
+  id: 1, publisher: "The Pragmatic Bookshelf", title: "Programming Elixir"}]
+</code></pre>
+
+<p>That&rsquo;s all for this article. I really hope you enjoy it. These basic command on the model will play a very important role when you need to build a RESTful controller, which will be cover in the near future article :-)</p>
+]]></content>
+  </entry>
+  
+</feed>

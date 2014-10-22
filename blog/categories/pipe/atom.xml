@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Pipe | Learn Elixir Language]]></title>
+  <link href="http://learnelixir.com/blog/categories/pipe/atom.xml" rel="self"/>
+  <link href="http://learnelixir.com/"/>
+  <updated>2014-10-22T13:35:57+08:00</updated>
+  <id>http://learnelixir.com/</id>
+  <author>
+    <name><![CDATA[Learn Elixir]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Experience Pipe Operator in Elixir]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/10/experience-pipe-operator-in-elixir/"/>
+    <updated>2014-10-10T21:09:55+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/10/experience-pipe-operator-in-elixir</id>
+    <content type="html"><![CDATA[<p>Pipe operator in Elixir is new to me. When I first saw it, I thought it was weird. However, after I read some Elixir code and experience myself, it is quite an interesting thing to use. Here&rsquo;s why:</p>
+
+<!-- more -->
+
+
+<p>Let start with the following code:</p>
+
+<pre><code class="elixir">defmodule FunWithNumber do
+  def increase(n), do: n + 1
+  def double(n), do: n * 2 
+end
+</code></pre>
+
+<p>Now, in a common lanugage like Java or Ruby, in order to increase a number and then double it, here is what I will need to write in Elixir:</p>
+
+<pre><code class="elixir">ExUnit.start
+defmodule TestFunWithNumber do
+  use ExUnit.Case
+  import FunWithNumber
+
+  test "evaluates to 4 if I increase 1 by 1 and double the result" do
+    assert double(increase(1)) == 4
+  end
+end
+</code></pre>
+
+<p>Whereas, using Elixir pipe operator <code>|&gt;</code>, I can write like following and the test should still pass</p>
+
+<pre><code class="elixir">test "evaluates to 4 if I increase 1 by 1 and double the result using Pipe" do
+  assert 1 |&gt; increase |&gt; double == 4 
+end
+</code></pre>
+
+<p>Something to take note here is that I am using number <code>1</code> to pipe its value to function <code>increase</code> and then pipe the result returning from increase to <code>double</code> function. It is quite amazing to read the code in this way instead of the original way whereby I have to read code from inside out. With pipe operator, it is a sequence of operations, which the <strong>linput</strong> of previous operation will be <strong>output</strong> of the next operation and so on. It is truly a way to <strong>transform data</strong> via multiple step functions.</p>
+
+<p>You will notice that I do not need to supply any argument to <code>sequence</code> or <code>double</code> function call. It will auto bind all the arguments by itself.</p>
+
+<p>Here is another example, that I pipe a list into two functions</p>
+
+<pre><code class="elixir">defmodule ListUtils do
+  def select([], _guard), do: []
+  def select([head | tail], check) do
+    if check.(head) do
+      [head | select(tail, check)]
+    else
+      select(tail, check)
+    end
+  end
+end
+
+ExUnit.start
+
+defmodule TestPipeDemo do
+  use ExUnit.Case
+  import ListUtils 
+  test "Select number divisible by 3 on a sequence" do
+    list = [1, 2, 3, 4]
+    is_odd = &amp;(rem(&amp;1, 2) == 1)
+    is_divided_by_3 = &amp;(rem(&amp;1, 3) == 0)
+    result = list |&gt; select(is_odd) |&gt; select(is_divided_by_3)
+    assert result == [3]
+  end
+end
+</code></pre>
+
+<p>If you look at line 21, the list was used to send itself to the first <code>select</code> function then to the second <code>select</code> function.</p>
+
+<p>That&rsquo;s all for this article. We will cover more advanced topic on Pipe on upcoming articles :-)</p>
+]]></content>
+  </entry>
+  
+</feed>

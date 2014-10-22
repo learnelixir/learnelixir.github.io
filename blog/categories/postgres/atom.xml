@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Postgres | Learn Elixir Language]]></title>
+  <link href="http://learnelixir.com/blog/categories/postgres/atom.xml" rel="self"/>
+  <link href="http://learnelixir.com/"/>
+  <updated>2014-10-22T13:35:57+08:00</updated>
+  <id>http://learnelixir.com/</id>
+  <author>
+    <name><![CDATA[Learn Elixir]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Book Listing App With Elixir, Phoenix, Postgres and Ecto]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/05/build-web-app-with-elixir/"/>
+    <updated>2014-10-05T23:22:42+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/05/build-web-app-with-elixir</id>
+    <content type="html"><![CDATA[<p>In this article, let&rsquo;s go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postgres and Ecto. I hope you will enjoy :-)</p>
+
+<!--more-->
+
+
+<h3>Create Elixir Book Store Project</h3>
+
+<p>From the phoenix installation folder, run the following command:</p>
+
+<pre><code class="bash">$ mix phoenix.new book_store ../
+</code></pre>
+
+<p>Now enter the project folder and get all the dependencies and start the phoenix project:</p>
+
+<pre><code class="bash">$ cd ../book_store
+$ mix do deps.get, compile
+$ mix phoenix.start
+</code></pre>
+
+<p>Open the browser, and go to the url <code>http://localhost:4000</code></p>
+
+<p><img class="left" src="/images/build-web-app-with-elixir/phoenix_page.png" width="800" height="510" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+
+<h3>Add Ecto To The Project</h3>
+
+<p>From the project root folder, open file <code>mix.exs</code>, scroll down to the end of the file, then you will see <code>defp deps do</code> function definition. You will need to add in <code>postgrex</code> and <code>ecto</code> dependencies</p>
+
+<ul>
+<li><code>postgrex</code> (<a href="https://github.com/ericmj/postgrex">https://github.com/ericmj/postgrex</a>) is the PostgresSQL driver for Elixir</li>
+<li><code>ecto</code> (<a href="https://github.com/elixir-lang/ecto">https://github.com/elixir-lang/ecto</a>) is a database wrapper and language integrated query for Elixir</li>
+</ul>
+
+
+<pre><code class="elixir">defp deps do
+  [
+    {:phoenix, "0.4.1"},
+    {:cowboy, "~&gt; 1.0.0"},
+    {:postgrex, "~&gt; 0.5"},
+    {:ecto, "~&gt; 0.2.0"}
+  ]
+end
+</code></pre>
+
+<p>In the same file, you will also need to update the application function definition to include <code>postgrex</code> and <code>ecto</code></p>
+
+<pre><code class="elixir">def application do
+  [ 
+    mod: { BookStore, [] },
+    applications: [:phoenix, :cowboy, :logger, :postgrex, :ecto]
+  ] 
+end 
+</code></pre>
+
+<p>Run the following commands in the terminal to get all the dependencies.</p>
+
+<pre><code class="bash">$ mix deps.get
+</code></pre>
+
+<h3>Create A Repo</h3>
+
+<p>A repo is a basic interfacte to a database (which is postgres). Open <code>web/models/repo.ex</code> and add the following code</p>
+
+<pre><code class="elixir">defmodule BookStore.Repo do
+  use Ecto.Repo, adapter: Ecto.Adapters.Postgres
+
+  def conf do
+    parse_url "ecto://postgresuser:password@localhost/book_store"
+  end
+
+  def priv do
+    app_dir(:book_store, "priv/repo")
+  end
+end
+</code></pre>
+
+<p>We have defined PostgreSQL connection with a URL format, what you will need to do is to change the <code>postgresuser</code> and <code>password</code> to be the real postgres username and password on your database.</p>
+
+<p>Since we are going to use the migration feature, we will need to have <code>priv</code> function. Inside this function, we will need to specify where is the migration script is saved, which is inside <code>priv/repo</code> directory.</p>
+
+<p>The next step that we must do is to make sure that our Repo module is started with our application, and is supervised. Open <code>lib/book_store.ex</code>.</p>
+
+<pre><code class="elixir">defmodule BookStore do
+  use Application
+
+  # See http://elixir-lang.org/docs/stable/elixir/Application.html
+  # for more information on OTP Applications
+  def start(_type, _args) do
+    import Supervisor.Spec, warn: false
+
+    children = [
+      # Define workers and child supervisors to be supervised
+      worker(BookStore.Repo, [])
+    ]
+
+    opts = [strategy: :one_for_one, name: BookStore.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+end
+</code></pre>
+
+<p>Note that <code>line 11</code> is the only line that we add inside this file</p>
+
+<p>To make sure that everything is good, let&rsquo;s compile the project:</p>
+
+<pre><code class="bash">$ mix compile
+</code></pre>
+
+<p>Next, let&rsquo;s create the <code>book_store</code> database in postgres</p>
+
+<pre><code class="bash">$ createdb book_store 
+</code></pre>
+
+<h3>Create a model</h3>
+
+<p>Create model file <code>web/models/books.ex</code> with the following code:</p>
+
+<pre><code class="elixir">defmodule BookStore.Books do
+  use Ecto.Model
+
+  schema "books" do
+    field :title, :string
+    field :description, :string
+    field :author, :string
+    field :publisher, :string
+  end
+end
+</code></pre>
+
+<h3>Generate Migration Script</h3>
+
+<p>We will also need to create a database migration for books model by using the following command:</p>
+
+<pre><code class="bash">$ mix ecto.gen.migration BookStore.Repo create_book
+Compiled lib/book_store.ex
+Compiled web/models/repo.ex
+Generated book_store.app
+* creating priv/repo/migrations
+* creating priv/repo/migrations/20141005013526_create_book.exs
+</code></pre>
+
+<p>Now open the just generated migration file <code>priv/repo/migrations/20141005013526_create_book.exs</code> and change with the following code</p>
+
+<pre><code class="elixir">defmodule BookStore.Repo.Migrations.CreateBook do
+  use Ecto.Migration
+
+  def up do
+    ["CREATE TABLE books(id serial primary key, title varchar(125), description text, author varchar(255), publisher varchar(255))",
+     "INSERT INTO books(title, description, author, publisher) VALUES ('Programming Elixir', 'Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun', 'Dave Thomas', 'The Pragmatic Bookshelf')"
+    ]
+  end
+
+  def down do
+    "DROP TABLE books"
+  end
+end
+</code></pre>
+
+<p>Inside this migration file, you will see up and down function. <code>up</code> function is run when you run the database migration, <code>down</code> function is run when you revert or rollback this database migration</p>
+
+<p>Now run the migration</p>
+
+<pre><code class="bash">$ mix ecto.migrate BookStore.Repo
+* running UP _build/dev/lib/book_store/priv/repo/migrations/20141005013526_create_book.exs``
+</code></pre>
+
+<h3>Create A Query</h3>
+
+<p>Create <code>web/models/queries.ex</code> folder.</p>
+
+<pre><code class="elixir">defmodule BookStore.Queries do
+  import Ecto.Query
+
+  def books_query do
+    query = from book in BookStore.Books,
+            select: book 
+    BookStore.Repo.all(query)
+  end
+end
+</code></pre>
+
+<h3>Route books index page to Book controller index action</h3>
+
+<p>Open file <code>web/router.ex</code>, we will need to map the root route to <code>BookController</code>. Note that in Phoenix, controller name is singular + <code>Controller</code> whereas in Rails, it is <code>BooksController</code></p>
+
+<pre><code class="elixir">defmodule BookStore.Router do
+  use Phoenix.Router
+
+  get "/", BookStore.BookController, :index, as: :books
+
+end
+</code></pre>
+
+<h3>Create BookController and get all books</h3>
+
+<p>Create file <code>book_controller.ex</code> inside <code>web/controllers</code> folder with the following source code</p>
+
+<pre><code class="elixir">defmodule BookStore.BookController do
+  use Phoenix.Controller
+
+  def index(conn, _params) do
+    books = BookStore.Queries.books_query
+    render conn, "index", books: books 
+  end
+end
+</code></pre>
+
+<h3>Create books index page view</h3>
+
+<p>Next thing that we will need to do is to create an index page for books listing. First, create folder <code>book</code> inside <code>web/template</code>.</p>
+
+<pre><code class="bash">mkdir web/templates/book
+</code></pre>
+
+<p>Second, create a book view file - <code>web/views/book_view.ex</code> with the following content</p>
+
+<pre><code class="elixir">defmodule BookStore.BookView do
+  use BookStore.Views
+end
+</code></pre>
+
+<p>Finally, create file <code>web/template/book/index.html.eex</code> and paste in the following code:</p>
+
+<p>&#8220;`html</p>
+
+<h1>Our Books</h1>
+
+
+
+
+<table class='table table-bodered table-striped'>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Author</th>
+      <th>Publisher</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for book <- @books do %>
+      <tr>
+        <td><%= book.id %></td>
+        <td><%= book.title %></td>
+        <td><%= book.description %></td>
+        <td><%= book.author %></td>
+        <td><%= book.publisher %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+<pre><code>
+Refresh the browser and voila, this is what we will get:
+
+<img class="left" src="/images/build-web-app-with-elixir/complete.png" width="800" height="346" title="image" alt="images">
+
+
+### Common Pitfall
+
+I seldom hit the following error when trying to restart phoenix although all the codes are correct 
+</code></pre>
+
+<dl>
+<dt>INFO REPORT==== 5-Oct-2014::09:57:47 ==</dt>
+<dd>application: logger
+exited: stopped
+type: temporary
+<strong> (Mix) Could not start application book_store: exited in: BookStore.start(:normal, [])
+</strong> (EXIT) an exception was raised:
+    ** (UndefinedFunctionError) undefined function: BookStore.start/2 (module BookStore is not available)
+        BookStore.start(:normal, [])
+        (kernel) application_master.erl:272: :application_master.start_it_old/4
+&#8220;`</dd>
+</dl>
+
+<p>To fix this, you will need to clean compile all your elixir code:</p>
+
+<pre><code class="bash">$ mix clean
+$ mix compile
+$ mix phoenix.start
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>
