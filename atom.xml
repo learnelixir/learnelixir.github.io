@@ -4,7 +4,7 @@
   <title><![CDATA[Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-26T00:21:42+08:00</updated>
+  <updated>2014-10-26T06:44:42+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -854,14 +854,15 @@
 </span><span class='line'>
 </span><span class='line'><span class="kd">def</span> <span class="n">process_upload_plug</span><span class="p">(</span><span class="n">up_plug</span><span class="p">)</span> <span class="k">do</span>
 </span><span class='line'>  <span class="n">model</span> <span class="p">=</span> <span class="n">assign_file_information</span><span class="p">(</span><span class="n">up_plug</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">up_plug</span> <span class="p">=</span> <span class="nc">Map</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="n">up_plug</span><span class="p">,</span> <span class="ss">:model</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
 </span><span class='line'>  <span class="n">post_process_file</span><span class="p">(</span><span class="n">up_plug</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">model</span>
+</span><span class='line'>  <span class="n">up_plug</span><span class="p">.</span><span class="n">model</span>
 </span><span class='line'><span class="k">end</span>
 </span><span class='line'>
 </span><span class='line'><span class="kd">def</span> <span class="n">assign_file_information</span><span class="p">(</span><span class="n">up_plug</span><span class="p">)</span> <span class="k">do</span>
 </span><span class='line'>  <span class="n">plug</span> <span class="p">=</span> <span class="n">up_plug</span><span class="p">.</span><span class="n">plug</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">model</span> <span class="p">=</span> <span class="nc">Map</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="n">up_plug</span><span class="p">.</span><span class="n">model</span><span class="p">,</span> <span class="err">\</span>
+</span><span class='line'>  <span class="n">model</span> <span class="p">=</span> <span class="n">up_plug</span><span class="p">.</span><span class="n">model</span>
+</span><span class='line'>  <span class="n">model</span> <span class="p">=</span> <span class="nc">Map</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="err">\</span>
 </span><span class='line'>                  <span class="nc">String</span><span class="p">.</span><span class="n">to_atom</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">up_plug</span><span class="p">.</span><span class="n">attribute_name</span><span class="si">}</span><span class="s2">_updated_at&quot;</span><span class="p">),</span> <span class="nc">Ecto.DateTime</span><span class="p">.</span><span class="n">utc</span><span class="p">)</span>
 </span><span class='line'>  <span class="n">model</span> <span class="p">=</span> <span class="nc">Map</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="err">\</span>
 </span><span class='line'>                  <span class="nc">String</span><span class="p">.</span><span class="n">to_atom</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">up_plug</span><span class="p">.</span><span class="n">attribute_name</span><span class="si">}</span><span class="s2">_content_type&quot;</span><span class="p">),</span> <span class="n">content_type</span><span class="p">(</span><span class="n">plug</span><span class="p">))</span>
@@ -869,7 +870,6 @@
 </span><span class='line'>                  <span class="nc">String</span><span class="p">.</span><span class="n">to_atom</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">up_plug</span><span class="p">.</span><span class="n">attribute_name</span><span class="si">}</span><span class="s2">_file_name&quot;</span><span class="p">),</span> <span class="n">file_name</span><span class="p">(</span><span class="n">plug</span><span class="p">))</span>
 </span><span class='line'>  <span class="n">model</span> <span class="p">=</span> <span class="nc">Map</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="err">\</span>
 </span><span class='line'>                  <span class="nc">String</span><span class="p">.</span><span class="n">to_atom</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">up_plug</span><span class="p">.</span><span class="n">attribute_name</span><span class="si">}</span><span class="s2">_file_size&quot;</span><span class="p">),</span> <span class="n">size</span><span class="p">(</span><span class="n">plug</span><span class="p">))</span>
-</span><span class='line'>
 </span><span class='line'>  <span class="n">model</span>
 </span><span class='line'><span class="k">end</span>
 </span><span class='line'>
@@ -1177,14 +1177,18 @@
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defp</span> <span class="n">upload_photo_attachment</span><span class="p">(</span><span class="n">hardware</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">attachment_attribute_name</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>  <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="n">attachment_attribute_name</span><span class="p">]</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">attachment_attribute_name</span><span class="p">]</span> <span class="o">!=</span> <span class="no">nil</span> <span class="ow">and</span> <span class="err">\</span>
+</span><span class='line'>          <span class="nc">String</span><span class="p">.</span><span class="n">length</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">attachment_attribute_name</span><span class="p">].</span><span class="n">filename</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="k">do</span>
 </span><span class='line'>    <span class="n">hardware</span> <span class="p">=</span> <span class="nc">UpPlug</span><span class="p">.</span><span class="n">process_upload_plug</span><span class="p">(%</span><span class="nc">UpPlug</span><span class="p">{</span>
 </span><span class='line'>      <span class="ss">model</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span>
 </span><span class='line'>      <span class="ss">plug</span><span class="p">:</span> <span class="n">params</span><span class="p">[</span><span class="n">attachment_attribute_name</span><span class="p">],</span>
 </span><span class='line'>      <span class="ss">attribute_name</span><span class="p">:</span> <span class="n">attachment_attribute_name</span><span class="p">,</span>
 </span><span class='line'>      <span class="ss">styles</span><span class="p">:</span> <span class="p">%{</span> <span class="ss">thumb</span><span class="p">:</span> <span class="s2">&quot;100x100&gt;&quot;</span><span class="p">,</span> <span class="ss">large</span><span class="p">:</span> <span class="s2">&quot;300x300&gt;&quot;</span> <span class="p">}</span>
 </span><span class='line'>    <span class="p">})</span>
+</span><span class='line'>    <span class="n">hardware</span> <span class="p">=</span> <span class="nc">Map</span><span class="p">.</span><span class="n">delete</span><span class="p">(</span><span class="n">hardware</span><span class="p">,</span> <span class="ss">:photo</span><span class="p">)</span>
 </span><span class='line'>    <span class="nc">Repo</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
