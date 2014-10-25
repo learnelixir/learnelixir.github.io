@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ecto | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/ecto/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-22T21:26:38+08:00</updated>
+  <updated>2014-10-26T00:17:38+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -362,7 +362,7 @@ sys 2m53.117s
 
 <p>Here is the chart that shows the performance of Ecto vs Active Record through 3 runs:</p>
 
-<p><img class="center" src="/images/ecto_vs_active_record/creation_chart.png" width="710" height="467" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+<p>{% img center /images/ecto_vs_active_record/creation_chart.png 710 467 &lsquo;image&rsquo; &lsquo;images&rsquo; %}</p>
 
 <p>Ecto is approximately <strong>62%</strong> faster than Active Record. Hence, Ecto is the winner in this round.</p>
 
@@ -452,7 +452,7 @@ sys 3m7.004s
 
 <p>Here is the chart showing the above elapsed time:</p>
 
-<p><img class="center" src="/images/ecto_vs_active_record/update_chart.png" width="633" height="444" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+<p>{% img center /images/ecto_vs_active_record/update_chart.png 633 444 &lsquo;image&rsquo; &lsquo;images&rsquo; %}</p>
 
 <h3>Conclusion</h3>
 
@@ -630,7 +630,7 @@ $ mix phoenix.start
 
 <p>Open the browser, and go to the url <code>http://localhost:4000</code></p>
 
-<p><img class="left" src="/images/build-web-app-with-elixir/phoenix_page.png" width="800" height="510" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+<p>{% img left /images/build-web-app-with-elixir/phoenix_page.png 800 510 &lsquo;image&rsquo; &lsquo;images&rsquo; %}</p>
 
 <h3>Add Ecto To The Project</h3>
 
@@ -865,7 +865,7 @@ end
 <pre><code>
 Refresh the browser and voila, this is what we will get:
 
-<img class="left" src="/images/build-web-app-with-elixir/complete.png" width="800" height="346" title="image" alt="images">
+{% img left /images/build-web-app-with-elixir/complete.png 800 346 'image' 'images' %}
 
 
 ### Common Pitfall
