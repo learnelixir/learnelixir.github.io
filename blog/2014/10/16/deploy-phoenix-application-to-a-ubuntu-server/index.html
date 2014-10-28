@@ -116,7 +116,11 @@
   </header>
 
 
-<div class="entry-content"><p>In previous article, we have already learned how to deploy a Phoenix Application to Heroku server. I am actually quite curious to see how Elixir, and Phoenix can work with nginx server. That&rsquo;s the reason why I try to dig into this topic. Here are the steps that I managed to find out how to automate the deployment process and run the application on nginx server.</p>
+<div class="entry-content"><p><strong>UPDATE</strong> on 28th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. The source code is available on the following git URL:</p>
+
+<p><a href="https://github.com/learnelixir/phoenix-heroku">https://github.com/learnelixir/phoenix-heroku</a></p>
+
+<p>In previous article, we have already learned how to deploy a Phoenix Application to Heroku server. I am actually quite curious to see how Elixir, and Phoenix can work with nginx server. That&rsquo;s the reason why I try to dig into this topic. Here are the steps that I managed to find out how to automate the deployment process and run the application on nginx server.</p>
 
 <!-- more -->
 
@@ -187,7 +191,7 @@
 <span class='line-number'>7</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
 </span><span class='line'>  <span class="p">[</span>
-</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.4.1&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:exrm</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.14.11&quot;</span><span class="p">}</span>
 </span><span class='line'>  <span class="p">]</span>
@@ -204,7 +208,7 @@
 
 <h4>Step 3: Change the way the application starts</h4>
 
-<p>Add in <strong>line 12</strong> to the application file in lib folder. In my case it is <code>lib/my_awesome_app.ex</code></p>
+<p>Add in <strong>line 14</strong> to the application file in lib folder. In my case it is <code>lib/my_awesome_app.ex</code></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -225,7 +229,6 @@
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
 <span class='line-number'>19</span>
-<span class='line-number'>20</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">MyAwesomeApp</span> <span class="k">do</span>
 </span><span class='line'>  <span class="kn">use</span> <span class="nc">Application</span>
 </span><span class='line'>
@@ -237,10 +240,9 @@
 </span><span class='line'>    <span class="n">children</span> <span class="p">=</span> <span class="p">[</span>
 </span><span class='line'>      <span class="c1"># Define workers and child supervisors to be supervised</span>
 </span><span class='line'>      <span class="c1"># worker(TestApp.Worker, [arg1, arg2, arg3])</span>
-</span><span class='line'>      <span class="n">worker</span><span class="p">(</span><span class="nc">MyAwesomeApp.Router</span><span class="p">,</span> <span class="p">[],</span> <span class="ss">function</span><span class="p">:</span> <span class="ss">:start</span><span class="p">)</span>
 </span><span class='line'>    <span class="p">]</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="nc">IO</span><span class="p">.</span><span class="n">puts</span> <span class="p">(</span><span class="n">inspect</span> <span class="n">children</span><span class="p">)</span>
+</span><span class='line'>    <span class="nc">MyAwesomeApp.Router</span><span class="p">.</span><span class="n">start</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="n">opts</span> <span class="p">=</span> <span class="p">[</span><span class="ss">strategy</span><span class="p">:</span> <span class="ss">:one_for_one</span><span class="p">,</span> <span class="ss">name</span><span class="p">:</span> <span class="nc">MyAwesomeApp.Supervisor</span><span class="p">]</span>
 </span><span class='line'>    <span class="nc">Supervisor</span><span class="p">.</span><span class="n">start_link</span><span class="p">(</span><span class="n">children</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
@@ -249,7 +251,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>After adding line 12, your application in development mode will no longer be able to start the normal way - <code>mix phoenix.start</code>. It will crash immediately like below.</p>
+<p>After adding line 14, your application in development mode will no longer be able to start the normal way - <code>mix phoenix.start</code>. It will crash immediately like below.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -299,18 +301,63 @@
 
 <h4>Step 4: Install erlang and elixir on ubuntu server</h4>
 
-<p>Login to your server, and run the following command to install erlang and elixir environment:</p>
+<p>Login to your server, and run the following command to install erlang environment:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
+</span><span class='line'><span class="nv">$ </span>sudo dpkg -i erlang-solutions_1.0_all.deb
+</span><span class='line'><span class="nv">$ </span>sudo apt-get update
+</span><span class='line'><span class="nv">$ </span>sudo apt-get install erlang
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Since phoenix is runnng on Elixir 1.0.1+ now, we cannot install elixir by using <code>sudo apt-get install elixir</code> which will only install elixir 1.0.0. We will need to download the prebuilt package. If you have already installed elixir, you will need to remove it by using the command <code>sudo apt-get remove elixir</code>. After that, from your home folder, type the following commands:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="err">$</span> <span class="n">wget</span> <span class="n">http</span><span class="ss">:/</span><span class="o">/</span><span class="n">packages</span><span class="p">.</span><span class="n">erlang</span><span class="o">-</span><span class="n">solutions</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">erlang</span><span class="o">-</span><span class="n">solutions_1</span><span class="p">.</span><span class="mi">0</span><span class="n">_all</span><span class="p">.</span><span class="n">deb</span>
-</span><span class='line'><span class="err">$</span> <span class="n">sudo</span> <span class="n">dpkg</span> <span class="o">-</span><span class="n">i</span> <span class="n">erlang</span><span class="o">-</span><span class="n">solutions_1</span><span class="p">.</span><span class="mi">0</span><span class="n">_all</span><span class="p">.</span><span class="n">deb</span>
-</span><span class='line'><span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
-</span><span class='line'><span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">erlang</span>
-</span><span class='line'><span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">elixir</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ~
+</span><span class='line'><span class="nv">$ </span>mkdir -p src
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd </span>src
+</span><span class='line'><span class="nv">$ </span>wget https://github.com/elixir-lang/elixir/releases/download/v1.0.2/Precompiled.zip
+</span><span class='line'><span class="nv">$ </span>unzip Precompile.zip -d elixir
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then open <code>~/.profile</code> file and add in the elixir path</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim ~/.profile
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>add the path to elixir bin folder at the end of the file. In my case it is <code>/home/app/src/elixir</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;$PATH:/home/app/src/elixir/bin&quot;</span>
+</span><span class='line'><span class="c"># export PATH=&quot;$PATH:&lt;path_to_elixir_bin_folder&gt;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>then make <code>~/.profile</code> take effect:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>. ~/.profile
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and check Elixir version now. It should come up with 1.0.2</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>elixir --version
+</span><span class='line'>Elixir 1.0.2
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -509,18 +556,26 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Then paste in the following code. You will need to change the server IP address in <code>xx.xx.xx.xx</code>, and replace the server username in <code>`&lt;user&gt;</code>:</p>
+<p>Then paste in the following code. You will need to change the server IP address in <code>xx.xx.xx.xx</code>, replace the server username in <code>`&lt;user&gt;</code> and change the path to your the compiled elixir bin folder mentioned ealier in this article:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">server</span> <span class="s2">&quot;xx.xx.xx.xx&quot;</span><span class="p">,</span> <span class="ss">:app</span><span class="p">,</span> <span class="ss">:web</span><span class="p">,</span> <span class="ss">:db</span><span class="p">,</span> <span class="ss">:primary</span> <span class="o">=&gt;</span> <span class="kp">true</span>
 </span><span class='line'><span class="n">set</span> <span class="ss">:user</span><span class="p">,</span> <span class="s1">&#39;&lt;user&gt;&#39;</span>
 </span><span class='line'><span class="n">set</span> <span class="ss">:branch</span><span class="p">,</span> <span class="ss">:master</span>
 </span><span class='line'><span class="n">set</span> <span class="ss">:mix_env</span><span class="p">,</span> <span class="ss">:prod</span>
 </span><span class='line'><span class="n">set</span> <span class="ss">:deploy_to</span><span class="p">,</span> <span class="s2">&quot;/home/&lt;user&gt;/www/my_awesome_app&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">set</span> <span class="ss">:default_environment</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>  <span class="s1">&#39;PATH&#39;</span> <span class="o">=&gt;</span> <span class="s2">&quot;$PATH:/home/app/src/elixir/bin&quot;</span> <span class="c1"># --&gt; replace by path to your elixir bin folder</span>
+</span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 

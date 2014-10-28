@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Postgres | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/postgres/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-26T06:44:42+08:00</updated>
+  <updated>2014-10-28T08:37:33+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -18,7 +18,12 @@
     <link href="http://learnelixir.com/blog/2014/10/05/build-web-app-with-elixir/"/>
     <updated>2014-10-05T23:22:42+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/05/build-web-app-with-elixir</id>
-    <content type="html"><![CDATA[<p>In this article, let&rsquo;s go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postgres and Ecto. I hope you will enjoy :-)</p>
+    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 26th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1</p>
+
+<hr/><br/>
+
+
+<p>In this article, let&rsquo;s go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postgres and Ecto. I hope you will enjoy :-)</p>
 
 <!--more-->
 
@@ -53,7 +58,7 @@ $ mix phoenix.start
 
 <pre><code class="elixir">defp deps do
   [
-    {:phoenix, "0.4.1"},
+    {:phoenix, "0.5.0"},
     {:cowboy, "~&gt; 1.0.0"},
     {:postgrex, "~&gt; 0.5"},
     {:ecto, "~&gt; 0.2.0"}
@@ -93,11 +98,9 @@ end
 end
 </code></pre>
 
-<p>We have defined PostgreSQL connection with a URL format, what you will need to do is to change the <code>postgresuser</code> and <code>password</code> to be the real postgres username and password on your database.</p>
+<p>We have defined PostgreSQL connection with a URL format. What you will need to do is changing the <code>postgresuser</code> and <code>password</code> to be the real postgres username and password on your database.</p>
 
-<p>Since we are going to use the migration feature, we will need to have <code>priv</code> function. Inside this function, we will need to specify where is the migration script is saved, which is inside <code>priv/repo</code> directory.</p>
-
-<p>The next step that we must do is to make sure that our Repo module is started with our application, and is supervised. Open <code>lib/book_store.ex</code>.</p>
+<p>The next step that we need to do is to make sure that our Repo module is started with our application, and is supervised. You can do this by opening file <code>lib/book_store.ex</code>.</p>
 
 <pre><code class="elixir">defmodule BookStore do
   use Application
@@ -118,7 +121,7 @@ end
 end
 </code></pre>
 
-<p>Note that <code>line 11</code> is the only line that we add inside this file</p>
+<p>Line number 11 is the only line that we add inside this file.</p>
 
 <p>To make sure that everything is good, let&rsquo;s compile the project:</p>
 
@@ -127,12 +130,12 @@ end
 
 <p>Next, let&rsquo;s create the <code>book_store</code> database in postgres</p>
 
-<pre><code class="bash">$ createdb book_store 
+<pre><code class="bash">$ createdb book_store --encoding='utf-8' --locale=en_US.UTF-8 --template=template0;
 </code></pre>
 
 <h3>Create a model</h3>
 
-<p>Create model file <code>web/models/books.ex</code> with the following code:</p>
+<p>Create a model file <code>web/models/books.ex</code> with the following code:</p>
 
 <pre><code class="elixir">defmodule BookStore.Books do
   use Ecto.Model
@@ -164,8 +167,19 @@ Generated book_store.app
   use Ecto.Migration
 
   def up do
-    ["CREATE TABLE books(id serial primary key, title varchar(125), description text, author varchar(255), publisher varchar(255))",
-     "INSERT INTO books(title, description, author, publisher) VALUES ('Programming Elixir', 'Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun', 'Dave Thomas', 'The Pragmatic Bookshelf')"
+    ["CREATE TABLE books(\
+        id serial primary key, \
+        title varchar(125), \
+        description text, \
+        author varchar(255), \
+        publisher varchar(255))",\
+
+     "INSERT INTO books(title, description, author, publisher) \
+             VALUES ( \
+                'Programming Elixir', \
+                'Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun', \
+                'Dave Thomas', \
+                'The Pragmatic Bookshelf')"
     ]
   end
 
@@ -205,17 +219,22 @@ end
 <pre><code class="elixir">defmodule BookStore.Router do
   use Phoenix.Router
 
-  get "/", BookStore.BookController, :index, as: :books
+  scope "/" do
+    pipe_through :browser
 
+    get "/", BookStore.BookController, :index, as: :books
+  end 
 end
 </code></pre>
 
 <h3>Create BookController and get all books</h3>
 
-<p>Create file <code>book_controller.ex</code> inside <code>web/controllers</code> folder with the following source code</p>
+<p>Create a file called <code>book_controller.ex</code> inside <code>web/controllers</code> folder with the following source code:</p>
 
 <pre><code class="elixir">defmodule BookStore.BookController do
   use Phoenix.Controller
+
+  plug :action
 
   def index(conn, _params) do
     books = BookStore.Queries.books_query
@@ -289,7 +308,8 @@ exited: stopped
 type: temporary
 <strong> (Mix) Could not start application book_store: exited in: BookStore.start(:normal, [])
 </strong> (EXIT) an exception was raised:
-    ** (UndefinedFunctionError) undefined function: BookStore.start/2 (module BookStore is not available)
+    ** (UndefinedFunctionError) undefined function: BookStore.start/2
+      (module BookStore is not available)
         BookStore.start(:normal, [])
         (kernel) application_master.erl:272: :application_master.start_it_old/4
 &#8220;`</dd>

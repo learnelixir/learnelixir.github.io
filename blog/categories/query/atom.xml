@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Query | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/query/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-26T06:44:42+08:00</updated>
+  <updated>2014-10-28T08:37:33+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -164,7 +164,12 @@ end
 
 <p>To create a new record in Active Record, we will use <code>create</code> command on <code>Book</code> model
 <code>ruby
-irb&gt; Book.create({title: "Programming Ruby 1.9 &amp; 2.0", author: "Dave Thomas, with Chad Fowler and Andy Hunt", publisher: "The Pragmatic Bokshelf", description: "Ruby is the fastest growing and most exciting dynamic language out there. If you need to get working programs delivered fast, you should add Ruby to your toolbox."})
+irb&gt; Book.create({title: "Programming Ruby 1.9 &amp; 2.0", \
+          author: "Dave Thomas, with Chad Fowler and Andy Hunt", \
+          publisher: "The Pragmatic Bokshelf", \
+          description: "Ruby is the fastest growing and most exciting dynamic language out there. \
+                        If you need to get working programs delivered fast, \
+                        you should add Ruby to your toolbox."})
 </code></p>
 
 <h5>Ecto</h5>
@@ -173,7 +178,12 @@ irb&gt; Book.create({title: "Programming Ruby 1.9 &amp; 2.0", author: "Dave Thom
 
 <pre><code class="elixir">iex&gt; alias BookStoreElixir.Repo
 iex&gt; alias BookStoreElixir.Book
-iex&gt; BookStoreElixir.Repo.insert({title: "Programming Ruby 1.9 &amp; 2.0", author: "Dave Thomas, with Chad Fowler and Andy Hunt", publisher: "The Pragmatic Bokshelf", description: "Ruby is the fastest growing and most exciting dynamic language out there. If you need to get working programs delivered fast, you should add Ruby to your toolbox."})
+iex&gt; BookStoreElixir.Repo.insert({title: "Programming Ruby 1.9 &amp; 2.0", \
+          author: "Dave Thomas, with Chad Fowler and Andy Hunt", \
+          publisher: "The Pragmatic Bokshelf", 
+          description: "Ruby is the fastest growing and most exciting dynamic language out there. \
+                        If you need to get working programs delivered fast, \
+                        you should add Ruby to your toolbox."})
 </code></pre>
 
 <p>Syntax wise, they are quite similar. Although Active Record code seems to be a bit neater but it can be considered a draw for creation syntax.</p>
@@ -296,7 +306,10 @@ I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and E
 <pre><code class="ruby"># first round 100, second round 10,000, third round 1,000,000
 number_of_records = 100
 for i in 1..number_of_records
-  Book.create({title: "Book Title #{i}", description: "Description #{i}", author: "Author #{i}", publisher: "Publisher #{i}"})
+  Book.create({title: "Book Title #{i}", \
+               description: "Description #{i}", \
+               author: "Author #{i}", \
+               publisher: "Publisher #{i}"})
 end
 </code></pre>
 
@@ -333,7 +346,10 @@ alias BookStoreElixir.Repo
 number_of_records = 100
 range = 1..100
 for i &lt;- range do
-  book = %Book{title: "Book Title #{i}", description: "Description #{i}", author: "Author #{i}", publisher: "Publisher #{i}"}
+  book = %Book{title: "Book Title #{i}", \
+               description: "Description #{i}", \
+               author: "Author #{i}", \
+               publisher: "Publisher #{i}"}
   Repo.insert(book)
 end
 </code></pre>
@@ -409,7 +425,10 @@ alias BookStoreElixir.Repo
 
 # range = 1..10000
 # for i &lt;- range do
-#  book = %Book{title: "Book Title #{i}", description: "Description #{i}", author: "Author #{i}", publisher: "Publisher #{i}"}
+#  book = %Book{title: "Book Title #{i}", \
+                description: "Description #{i}", \
+                author: "Author #{i}", \
+                publisher: "Publisher #{i}"}
 #  Repo.insert(book)
 # end
 

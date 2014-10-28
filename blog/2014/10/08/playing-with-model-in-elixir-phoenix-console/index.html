@@ -267,7 +267,9 @@
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span>  <span class="n">book</span> <span class="p">=</span> <span class="p">%{</span><span class="n">book</span> <span class="p">|</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir: a lot more fun&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir with fun&quot;</span><span class="p">}</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span>  <span class="n">book</span> <span class="p">=</span> <span class="p">%{</span><span class="n">book</span> <span class="p">|</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir: a lot more fun&quot;</span><span class="p">,</span> <span class="err">\</span>
+</span><span class='line'>                      <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir with fun&quot;</span><span class="p">}</span>
 </span><span class='line'><span class="p">%</span><span class="nc">BookStore.Books</span><span class="p">{</span><span class="ss">author</span><span class="p">:</span> <span class="s2">&quot;Dave Thomas&quot;</span><span class="p">,</span>
 </span><span class='line'> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir: a lot more fun&quot;</span><span class="p">,</span> <span class="ss">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
 </span><span class='line'>  <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;The Pragmatic Bookshelf&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir with fun&quot;</span><span class="p">}</span>
@@ -288,10 +290,20 @@
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">insert</span><span class="p">(%</span><span class="nc">Books</span><span class="p">{</span><span class="ss">author</span><span class="p">:</span> <span class="s2">&quot;Simon St. Laurent, J. David Eisenberg&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction&quot;</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;O&#39;Reilly&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Introducing Elixir&quot;</span><span class="p">})</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">insert</span><span class="p">(%</span><span class="nc">Books</span><span class="p">{</span><span class="ss">author</span><span class="p">:</span> <span class="s2">&quot;Simon St. Laurent, J. David Eisenberg&quot;</span><span class="p">,</span> <span class="err">\</span>
+</span><span class='line'>                        <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Elixir is an excellent language if you want to </span><span class="err">\</span><span class="s2"></span>
+</span><span class='line'><span class="s2">                                      learn about functional programming, and with this hands-on </span><span class="err">\</span><span class="s2"></span>
+</span><span class='line'><span class="s2">                                      introduction&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;O&#39;Reilly&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Introducing Elixir&quot;</span><span class="p">})</span>
 </span><span class='line'><span class="p">%</span><span class="nc">BookStore.Books</span><span class="p">{</span><span class="ss">author</span><span class="p">:</span> <span class="s2">&quot;Simon St. Laurent, J. David Eisenberg&quot;</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="ss">id</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;O&#39;Reilly&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Introducing Elixir&quot;</span><span class="p">}</span>
+</span><span class='line'>                 <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Elixir is an excellent language if you want to learn about </span><span class="err">\</span><span class="s2"></span>
+</span><span class='line'><span class="s2">                               functional programming, and with this hands-on introduction&quot;</span><span class="p">,</span> <span class="err">\</span>
+</span><span class='line'>                 <span class="ss">id</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;O&#39;Reilly&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Introducing Elixir&quot;</span><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -304,12 +316,14 @@
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
+<span class='line-number'>8</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">all</span><span class="p">(</span><span class="nc">Books</span><span class="p">)</span>
 </span><span class='line'><span class="p">[%</span><span class="nc">BookStore.Books</span><span class="p">{</span><span class="ss">author</span><span class="p">:</span> <span class="s2">&quot;Dave Thomas&quot;</span><span class="p">,</span>
 </span><span class='line'>  <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir: a lot more fun&quot;</span><span class="p">,</span> <span class="ss">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
 </span><span class='line'>  <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;The Pragmatic Bookshelf&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir with fun&quot;</span><span class="p">},</span>
 </span><span class='line'> <span class="p">%</span><span class="nc">BookStore.Books</span><span class="p">{</span><span class="ss">author</span><span class="p">:</span> <span class="s2">&quot;Simon St. Laurent, J. David Eisenberg&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Elixir is an excellent language if you want to learn about </span><span class="err">\</span><span class="s2"></span>
+</span><span class='line'><span class="s2">                functional programming, and with this hands-on introduction&quot;</span><span class="p">,</span>
 </span><span class='line'>  <span class="ss">id</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;O&#39;Reilly&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Introducing Elixir&quot;</span><span class="p">}]</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -323,9 +337,11 @@
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
+<span class='line-number'>8</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">introducing_elixir_book</span> <span class="p">=</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="nc">Books</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </span><span class='line'><span class="p">%</span><span class="nc">BookStore.Books</span><span class="p">{</span><span class="ss">author</span><span class="p">:</span> <span class="s2">&quot;Simon St. Laurent, J. David Eisenberg&quot;</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction&quot;</span><span class="p">,</span>
+</span><span class='line'> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Elixir is an excellent language if you want to learn </span><span class="err">\</span><span class="s2"></span>
+</span><span class='line'><span class="s2">               about functional programming, and with this hands-on introduction&quot;</span><span class="p">,</span>
 </span><span class='line'>  <span class="ss">id</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;O&#39;Reilly&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Introducing Elixir&quot;</span><span class="p">}</span>
 </span><span class='line'>
 </span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">delete</span><span class="p">(</span><span class="n">introducing_elixir_book</span><span class="p">)</span>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Model | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/model/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-26T06:44:42+08:00</updated>
+  <updated>2014-10-28T08:37:33+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -101,7 +101,8 @@ iex&gt; book.description
 
 <p>To update this book, you will need to reassign the book with itself plus the updated properties and let <code>Repo</code> handle the update by calling <code>update</code> function on Repor</p>
 
-<pre><code class="elixir">iex&gt;  book = %{book | description: "Programming Elixir: a lot more fun", title: "Programming Elixir with fun"}
+<pre><code class="elixir">iex&gt;  book = %{book | description: "Programming Elixir: a lot more fun", \
+                      title: "Programming Elixir with fun"}
 %BookStore.Books{author: "Dave Thomas",
  description: "Programming Elixir: a lot more fun", id: 1,
   publisher: "The Pragmatic Bookshelf", title: "Programming Elixir with fun"}
@@ -117,10 +118,15 @@ iex&gt; Repo.get(Books, 1)
 
 <p>Next, you also can create a new book by calling <code>insert</code> command on <code>Repo</code>. Pretty straight forward.</p>
 
-<pre><code class="elixir">iex&gt; Repo.insert(%Books{author: "Simon St. Laurent, J. David Eisenberg", description: "Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction", publisher: "O'Reilly", title: "Introducing Elixir"})
+<pre><code class="elixir">iex&gt; Repo.insert(%Books{author: "Simon St. Laurent, J. David Eisenberg", \
+                        description: "Elixir is an excellent language if you want to \
+                                      learn about functional programming, and with this hands-on \
+                                      introduction", 
+                        publisher: "O'Reilly", title: "Introducing Elixir"})
 %BookStore.Books{author: "Simon St. Laurent, J. David Eisenberg",
- description: "Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction",
-  id: 18, publisher: "O'Reilly", title: "Introducing Elixir"}
+                 description: "Elixir is an excellent language if you want to learn about \
+                               functional programming, and with this hands-on introduction", \
+                 id: 18, publisher: "O'Reilly", title: "Introducing Elixir"}
 </code></pre>
 
 <p>Now try to get all books again</p>
@@ -130,7 +136,8 @@ iex&gt; Repo.get(Books, 1)
   description: "Programming Elixir: a lot more fun", id: 1,
   publisher: "The Pragmatic Bookshelf", title: "Programming Elixir with fun"},
  %BookStore.Books{author: "Simon St. Laurent, J. David Eisenberg",
-  description: "Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction",
+  description: "Elixir is an excellent language if you want to learn about \
+                functional programming, and with this hands-on introduction",
   id: 2, publisher: "O'Reilly", title: "Introducing Elixir"}]
 </code></pre>
 
@@ -138,7 +145,8 @@ iex&gt; Repo.get(Books, 1)
 
 <pre><code class="elixir">iex&gt; introducing_elixir_book = Repo.get(Books, 2)
 %BookStore.Books{author: "Simon St. Laurent, J. David Eisenberg",
- description: "Elixir is an excellent language if you want to learn about functional programming, and with this hands-on introduction",
+ description: "Elixir is an excellent language if you want to learn \
+               about functional programming, and with this hands-on introduction",
   id: 2, publisher: "O'Reilly", title: "Introducing Elixir"}
 
 iex&gt; Repo.delete(introducing_elixir_book)

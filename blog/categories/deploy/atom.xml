@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Deploy | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/deploy/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-26T06:44:42+08:00</updated>
+  <updated>2014-10-28T08:37:33+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -18,7 +18,11 @@
     <link href="http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server/"/>
     <updated>2014-10-16T22:26:46+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server</id>
-    <content type="html"><![CDATA[<p>In previous article, we have already learned how to deploy a Phoenix Application to Heroku server. I am actually quite curious to see how Elixir, and Phoenix can work with nginx server. That&rsquo;s the reason why I try to dig into this topic. Here are the steps that I managed to find out how to automate the deployment process and run the application on nginx server.</p>
+    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 28th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. The source code is available on the following git URL:</p>
+
+<p><a href="https://github.com/learnelixir/phoenix-heroku">https://github.com/learnelixir/phoenix-heroku</a></p>
+
+<p>In previous article, we have already learned how to deploy a Phoenix Application to Heroku server. I am actually quite curious to see how Elixir, and Phoenix can work with nginx server. That&rsquo;s the reason why I try to dig into this topic. Here are the steps that I managed to find out how to automate the deployment process and run the application on nginx server.</p>
 
 <!-- more -->
 
@@ -68,7 +72,7 @@ mix do deps.get, compile
 
 <pre><code class="elixir">defp deps do
   [   
-    {:phoenix, "0.4.1"},
+    {:phoenix, "0.5.0"},
     {:cowboy, "~&gt; 1.0.0"},
     {:exrm, "~&gt; 0.14.11"}
   ]   
@@ -82,7 +86,7 @@ end
 
 <h4>Step 3: Change the way the application starts</h4>
 
-<p>Add in <strong>line 12</strong> to the application file in lib folder. In my case it is <code>lib/my_awesome_app.ex</code></p>
+<p>Add in <strong>line 14</strong> to the application file in lib folder. In my case it is <code>lib/my_awesome_app.ex</code></p>
 
 <pre><code class="elixir">defmodule MyAwesomeApp do
   use Application
@@ -95,10 +99,9 @@ end
     children = [
       # Define workers and child supervisors to be supervised
       # worker(TestApp.Worker, [arg1, arg2, arg3])
-      worker(MyAwesomeApp.Router, [], function: :start)
     ]
 
-    IO.puts (inspect children)
+    MyAwesomeApp.Router.start
 
     opts = [strategy: :one_for_one, name: MyAwesomeApp.Supervisor]
     Supervisor.start_link(children, opts)
@@ -106,7 +109,7 @@ end
 end
 </code></pre>
 
-<p>After adding line 12, your application in development mode will no longer be able to start the normal way - <code>mix phoenix.start</code>. It will crash immediately like below.</p>
+<p>After adding line 14, your application in development mode will no longer be able to start the normal way - <code>mix phoenix.start</code>. It will crash immediately like below.</p>
 
 <pre><code class="bash">Running MyAwesomeApp.Router with Cowboy on port 4000
 ** (CaseClauseError) no case clause matching: {:error, {:already_started, #PID&lt;0.149.0&gt;}}
@@ -140,13 +143,43 @@ $ git push origin master
 
 <h4>Step 4: Install erlang and elixir on ubuntu server</h4>
 
-<p>Login to your server, and run the following command to install erlang and elixir environment:</p>
+<p>Login to your server, and run the following command to install erlang environment:</p>
 
-<pre><code class="elixir">$ wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb 
+<pre><code class="bash">$ wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb 
 $ sudo dpkg -i erlang-solutions_1.0_all.deb
 $ sudo apt-get update
 $ sudo apt-get install erlang
-$ sudo apt-get install elixir
+</code></pre>
+
+<p>Since phoenix is runnng on Elixir 1.0.1+ now, we cannot install elixir by using <code>sudo apt-get install elixir</code> which will only install elixir 1.0.0. We will need to download the prebuilt package. If you have already installed elixir, you will need to remove it by using the command <code>sudo apt-get remove elixir</code>. After that, from your home folder, type the following commands:</p>
+
+<pre><code class="bash">$ cd ~
+$ mkdir -p src
+$ cd src
+$ wget https://github.com/elixir-lang/elixir/releases/download/v1.0.2/Precompiled.zip
+$ unzip Precompile.zip -d elixir
+</code></pre>
+
+<p>Then open <code>~/.profile</code> file and add in the elixir path</p>
+
+<pre><code class="bash">$ vim ~/.profile
+</code></pre>
+
+<p>add the path to elixir bin folder at the end of the file. In my case it is <code>/home/app/src/elixir</code></p>
+
+<pre><code class="bash">export PATH="$PATH:/home/app/src/elixir/bin"
+# export PATH="$PATH:&lt;path_to_elixir_bin_folder&gt;"
+</code></pre>
+
+<p>then make <code>~/.profile</code> take effect:</p>
+
+<pre><code class="bash">$ . ~/.profile
+</code></pre>
+
+<p>and check Elixir version now. It should come up with 1.0.2</p>
+
+<pre><code class="bash">$ elixir --version
+Elixir 1.0.2
 </code></pre>
 
 <h4>Step 5: Adjust your locale to UTF8</h4>
@@ -261,13 +294,17 @@ $ cap deploy:restart    # restart the application
 <pre><code>$ vim config/deploy/production.rb
 </code></pre>
 
-<p>Then paste in the following code. You will need to change the server IP address in <code>xx.xx.xx.xx</code>, and replace the server username in <code>`&lt;user&gt;</code>:</p>
+<p>Then paste in the following code. You will need to change the server IP address in <code>xx.xx.xx.xx</code>, replace the server username in <code>`&lt;user&gt;</code> and change the path to your the compiled elixir bin folder mentioned ealier in this article:</p>
 
 <pre><code class="ruby">server "xx.xx.xx.xx", :app, :web, :db, :primary =&gt; true
 set :user, '&lt;user&gt;'
 set :branch, :master
 set :mix_env, :prod
 set :deploy_to, "/home/&lt;user&gt;/www/my_awesome_app"
+
+set :default_environment, {
+  'PATH' =&gt; "$PATH:/home/app/src/elixir/bin" # --&gt; replace by path to your elixir bin folder
+}
 </code></pre>
 
 <p>You can also create <code>staging.rb</code> inside <code>config/deploy</code> folder as well for your staging environment.</p>
@@ -350,7 +387,14 @@ server {
     <link href="http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/"/>
     <updated>2014-10-15T23:16:00+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server</id>
-    <content type="html"><![CDATA[<p>Phoenix is a pretty cool web framework for Elixir. However, up to date, there are still very few resources on how to deploy a Phoenix application to a web server. I tried to google on how to deploy but could not find any tutorials that provide very clear and exact steps. Hence, in this article, let walkthrouh step by step how to do that with a heroku server.</p>
+    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 27th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. The source code is available on the following git URL:</p>
+
+<p><a href="https://github.com/learnelixir/phoenix-heroku">https://github.com/learnelixir/phoenix-heroku</a></p>
+
+<hr/><br/>
+
+
+<p>Phoenix is a pretty cool web framework for Elixir. However, up to date, there are still very few resources on how to deploy a Phoenix application to a web server. I tried to google on how to deploy but could not find any tutorials that provide very clear and exact steps. Hence, in this article, let walkthrouh step by step how to do that with a heroku server.</p>
 
 <!-- more -->
 
@@ -359,13 +403,53 @@ server {
 
 <p>From phoenix installation folder, run the following command. You can name it any name as long as you remember to use the same app name in subsequent steps.</p>
 
-<pre><code class="bash">$ mix phoenix.new my_awesome_app ../
+<pre><code class="bash">$ mix phoenix.new phoenix-heroku ../
 </code></pre>
 
-<p>Enter this new application folder and install all the dependencies</p>
+<p>Enter this new application</p>
 
-<pre><code class="bash">$ cd ../my_awesome_app
-mix do deps.get, compile
+<pre><code class="bash">$ cd ../phoenix-heroku
+</code></pre>
+
+<p>and change the phoenix deps to refer to ref <code>8cffae4</code> sha. There is an error in current Phoenix 0.5 version whereby the view layout file is touched even though it does not exists. This commit <a href="https://github.com/phoenixframework/phoenix/commit/86dee56b42da5f465c81cae6b0556942069a2165">https://github.com/phoenixframework/phoenix/commit/86dee56b42da5f465c81cae6b0556942069a2165</a> has fixed that:</p>
+
+<pre><code class="elixir">defp deps do
+  [{:phoenix, git: "https://github.com/phoenixframework/phoenix.git", ref: "8cffae4"},
+   {:cowboy, "~&gt; 1.0"}]
+end
+</code></pre>
+
+<p>Now, install all the depenencies</p>
+
+<pre><code class="bash">mix do deps.get, compile
+</code></pre>
+
+<p>You will also need to modify the views to work with this phoenix version:</p>
+
+<pre><code class="bash">$ vim web/views.ex
+</code></pre>
+
+<p>and change it to the following</p>
+
+<pre><code class="elixir">defmodule PhoenixHeroku.Views do
+  use Phoenix.View, root: "web/templates"
+
+  # Everything in this block is available runs in this
+  # module and in other views that use MyApp.View
+  using do
+    # Import common functionality
+    import PhoenixHeroku.I18n
+    import PhoenixHeroku.Router.Helpers
+
+    # Use Phoenix.HTML to import all HTML functions (forms, tags, etc)
+    use Phoenix.HTML
+
+    # Common aliases
+    alias Phoenix.Controller.Flash
+  end 
+
+  # Functions defined here are available to all other views/templates
+end
 </code></pre>
 
 <p>This is a miminal number of steps to setup a phoenix application. Eventually, you will need to add more code to build it up. Moving forward, let&rsquo;s deploy this application.</p>
@@ -381,20 +465,22 @@ mix do deps.get, compile
 
 <h4>Step 2: Create the heroku application</h4>
 
-<pre><code class="bash">$ heroku apps:create
-Creating enigmatic-tor-2697... done, stack is cedar
-http://enigmatic-tor-2697.herokuapp.com/ | git@heroku.com:enigmatic-tor-2697.git
+<p><strong>Note</strong>: You will need to change the heroku application name, which is in this post -  <code>phoenix-heroku-demo</code> to your application name.</p>
+
+<pre><code class="bash">$ heroku create phoenix-heroku-demo
+Creating phoenix-heroku-demo... done, stack is cedar
+http://phoenix-heroku-demo.herokuapp.com/ | git@heroku.com:phoenix-heroku-demo.git
 Git remote heroku added
 </code></pre>
 
-<p>After this command, Heroku will provide me a URL for my heroku app. But there is nothing there yet. Also, do note down the name, we will use it later. Mine is <code>enigmatic-tor-2697</code>. Let&rsquo;s move to next step</p>
+<p>After this command, Heroku will provide me a URL for my heroku app. But there is nothing there yet. Also, do note down the name, we will use it later. Mine is <code>phoenix-heroku-demo</code>. Let&rsquo;s move to next step</p>
 
 <h4>Step 3: Add buildback to your app</h4>
 
 <p>Run a heroku config:set command as following</p>
 
 <pre><code class="bash">$ heroku config:set \ 
-BUILDPACK_URL=https://github.com/HashNuke/heroku-buildpack-elixir.git -a enigmatic-tor-2697
+BUILDPACK_URL=https://github.com/HashNuke/heroku-buildpack-elixir.git -a phoenix-heroku-demo 
 </code></pre>
 
 <h4>Step 4: Set mix environment config</h4>
@@ -413,18 +499,16 @@ BUILDPACK_URL=https://github.com/HashNuke/heroku-buildpack-elixir.git -a enigmat
 <pre><code class="bash">$ web: yes | mix compile.protocols &amp;&amp; elixir -pa _build/prod/consolidated -S mix phoenix.start 
 </code></pre>
 
-<p>If in step4, you have specified staging environment, you will need to use the folder <code>_build/staging/consolidated</code> for the <code>-pa</code> option here.</p>
+<p>If in step 4, you have specified staging environment, you will need to use the folder <code>_build/staging/consolidated</code> for the <code>-pa</code> option here.</p>
 
 <h4>Step 6: Edit elixir_buildpack.config</h4>
 
-<p>Create file <code>elixir_buildback.config</code> inside the root of your application folder with the following content</p>
+<p>Create file <code>elixir_buildpack.config</code> inside the root of your application folder with the following content. Note that we will need to use Elixir 1.0.1 here as the Phoenix build at the point that I wrote this article requires that.</p>
 
 <pre><code class="bash">erlang_version=17.2
-elixir_version=1.0.0
-always_build_deps=false
+elixir_version=1.0.1
+always_rebuild=true
 </code></pre>
-
-<p>You are free to change to the approriate version of erlang and elixir</p>
 
 <h4>Step 7: Commit everything and push</h4>
 
@@ -432,11 +516,16 @@ always_build_deps=false
 $ git push heroku master
 </code></pre>
 
-<p>It can be quite slow in this first time pushing to heroku master as there is a need to compile all the elixir depenencies on Heroku server, but subsequently it will be quite fast. Now I go to <code>http://enigmatic-tor-2697.herokuapp.com/</code> and hooray the phoenix home page is there</p>
+<p>It can be quite slow in this first time pushing to heroku master as there is a need to compile all the elixir depenencies on Heroku server, but subsequently it will be quite fast. Now I go to <code>http://phoenix-heroku-demo.herokuapp.com/</code> and hooray the phoenix home page is there</p>
 
 <p><img class="center" src="/images/deploy_app_to_server/heroku.png" width="800" height="509" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
 
 <p>In subsequent deploys, you will just need to perform this step - step 7</p>
+
+<p><strong>Tips</strong>: On your terminal, in order to run custom command for your phoenix app, you can trigger <code>heroku run</code>. For instance, if I want to run seed file, I can type the following command from my terminal:</p>
+
+<pre><code class="bash">$ heroku run mix run seeds.ex
+</code></pre>
 
 <p>This has concluded for Heroku deploy. Happy Deploying :-)</p>
 ]]></content>
