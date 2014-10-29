@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Deploy | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/deploy/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-28T08:40:15+08:00</updated>
+  <updated>2014-10-29T08:07:24+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -376,7 +376,7 @@ server {
 
 <p>Now after so many steps, finally I can enjoy my small victory by visiting the site and see it has been deployed up :-)</p>
 
-<p><img class="center" src="/images/deploy_app_to_server/ubuntu.png" width="800" height="509" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+<p>{% img center /images/deploy_app_to_server/ubuntu.png 800 509 &lsquo;image&rsquo; &lsquo;images&rsquo; %}</p>
 
 <p>Happy Deploying!</p>
 ]]></content>
@@ -518,7 +518,7 @@ $ git push heroku master
 
 <p>It can be quite slow in this first time pushing to heroku master as there is a need to compile all the elixir depenencies on Heroku server, but subsequently it will be quite fast. Now I go to <code>http://phoenix-heroku-demo.herokuapp.com/</code> and hooray the phoenix home page is there</p>
 
-<p><img class="center" src="/images/deploy_app_to_server/heroku.png" width="800" height="509" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+<p>{% img center /images/deploy_app_to_server/heroku.png 800 509 &lsquo;image&rsquo; &lsquo;images&rsquo; %}</p>
 
 <p>In subsequent deploys, you will just need to perform this step - step 7</p>
 

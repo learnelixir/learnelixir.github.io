@@ -1,0 +1,762 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Migrating Applications From Phoenix 0.4.1 to Phoenix 0.5.0 - Learn Elixir Language</title>
+  <meta name="author" content="<a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>&#8221;>
+
+  
+  <meta name="description" content="Migrating application sfrom Phoenix 0.4.1 to Phoenix 0.5.0"" />
+
+  
+  <meta name="keywords" content="phoenix upgrade" />
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://learnelixir.com/blog/2014/10/29/migrating-applications-from-phoenix-0-dot-4-1-to-phoenix-0-dot-5-0">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Learn Elixir Language" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-55420151-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/"><div class='logo' title='Learn Elixir Language'></div></a></h1>
+  
+    <h2>Elixir Language, Phoenix Framework and Me.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscription">
+  <li><a href="https://github.com/learnelixir" rel="subscribe-github" title="@learnelixir on GitHub">GitHub</a></li>
+</ul>
+  
+  
+  
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:learnelixir.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Migrating Applications From Phoenix 0.4.1 to Phoenix 0.5.0</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-29T06:16:12+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>6:16 am</span></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://learnelixir.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Phoenix 0.5.0 was released 2 weeks ago and it was a great release with bug fixes and a lot enhancements, performance tweaks. If you are running your application on Phoenix 0.4.1, it&rsquo;s now a good time to upgrade your app to utilise the speed of Phoenix 0.5.0. Besides those, there are some backward incompatible changes which may break your app that you should watch out when you upgrade to Phoenix 0.5.0. In this article, we are going to go through in details how to upgrade a Phoenix 0.4.0 application to a Phoenix 0.5.0.</p>
+
+<p>The source code for the Phoenix application after upgrade to 0.5.0, which I applied inside this article is available at:</p>
+
+<p><a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0">https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0</a></p>
+
+<!-- more -->
+
+
+<p>To start, you will need to branch your application to another branch called phoenix-0.5.0:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout -b phoenix-0.5.0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Before upgrading</h3>
+
+<p>Before we start any upgrading, it&rsquo;s important to note that Phoenix 0.5.0 will only run on Elixir 1.0.1 and it&rsquo;s not compatible with Elixir 1.0.0. Hence you will need to upgrade your Elixir to 1.0.1 first if you have not done so. On your Mac, you can simply run the <code>brew install</code> command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>brew install elixir
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On Ubuntu server, you can refer to this updated article - <a href="http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server/">http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server/</a> - <strong>Step Number 4</strong> on how to bring up your Elixir to version 1.0.1</p>
+
+<h3>Upgrading to Phoenix 0.5.0</h3>
+
+<p>You will need to delete your Phoenix source folder and install the latest one by typing the following command on your terminal. This way, next time, when you generate a new Phoenix application, it will Phoenix 0.5.0:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git clone https://github.com/phoenixframework/phoenix.git <span class="o">&amp;&amp;</span> <span class="se">\</span>
+</span><span class='line'>  <span class="nb">cd </span>phoenix <span class="o">&amp;&amp;</span> <span class="se">\</span>
+</span><span class='line'>  git checkout v0.5.0 <span class="o">&amp;&amp;</span> <span class="se">\</span>
+</span><span class='line'>  mix <span class="k">do</span> deps.get, compile
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Upgrading application running Phoenix 0.4.1 to Phoenix 0.5.0</h3>
+
+<p>Now enter the application folder that are still running Phoenix 0.4.1. For my case, I will upgrade the hardware zone app described in the <a href="http://learnelixir.com/blog/2014/10/18/seven-restful-actions-in-phoenix-web-app/">Seven RESTful Actions in Phoenix Web App</a>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ~/learn/elixir/hardware_zone
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then follow the following steps:</p>
+
+<h4>Step 1 - Change Phoenix version to 0.5.0 in <code>mix.exs</code></h4>
+
+<p>Open <code>mix.exs</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim mix.exs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On <code>def project</code> function, make sure your <code>elixir</code> is using <code>~&gt; 1.0.0</code>. You will also need to add in the <code>compilers</code> line below <code>elixrc_paths</code> line as following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">project</span> <span class="k">do</span>
+</span><span class='line'>  <span class="p">[</span> <span class="ss">app</span><span class="p">:</span> <span class="ss">:hardware_zone</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">version</span><span class="p">:</span> <span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">elixir</span><span class="p">:</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">elixirc_paths</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;web&quot;</span><span class="p">],</span>
+</span><span class='line'>    <span class="ss">compilers</span><span class="p">:</span> <span class="p">[</span><span class="ss">:phoenix</span><span class="p">]</span> <span class="o">++</span> <span class="nc">Mix</span><span class="p">.</span><span class="n">compilers</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">deps</span><span class="p">:</span> <span class="n">deps</span> <span class="p">]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On <code>defp deps</code> function, make sure <code>phoenix</code> version is now <code>0.5.0</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
+</span><span class='line'>  <span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.5&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:plug</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.8.1&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:mogrify</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.1&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="p">]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After that, run <code>deps.get, compile</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix <span class="k">do</span> deps.get, compile
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Step 2 - Upgrade config files</h4>
+
+<p>There have a been a huge change in config files in config folder. Those files are <code>config.exs</code>, <code>def.exs</code>, <code>prod.exs</code> and <code>test.exs</code>. Let&rsquo;s look at them one by one</p>
+
+<h5>config.exs</h5>
+
+<p>Open <code>config.exs</code> file</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim config/config.exs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Inside the function call <code>config :phoenix, HardwareZone.Router, ...</code>, you will need to change the lines for <code>port</code>, <code>ssl</code>, <code>static_assets</code>, <code>cookies</code>, <code>session_key</code> and <code>session_secret</code>:</p>
+
+<ul>
+<li>Line <code>port: System.get_env("PORT"),</code> will need to change to <code>http: [port: System.get_env("PORT")],</code>.</li>
+<li>Line <code>ssl: false,</code> will need to change to <code>https: false,</code>.</li>
+<li>Line <code>cookies: true,</code> will need to be removed.</li>
+<li>Line <code>session_key: "_hardware_zone_key",</code> will need to be removed.</li>
+<li>Line <code>session_secret: ...</code>, will need to change to <code>secret_key_base: ...</code></li>
+</ul>
+
+
+<p>Add line <code>url: [host: "localhost"],</code> to be right under <code>config :phoenix, HardwareZone.Router,</code> function call.</p>
+
+<p>Effectively, the function call: <code>config :phoenix, HardwareZone.Router</code> will be like following after change:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="nc">HardwareZone.Router</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">url</span><span class="p">:</span> <span class="p">[</span><span class="ss">host</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">],</span>
+</span><span class='line'>  <span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)],</span>
+</span><span class='line'>  <span class="ss">https</span><span class="p">:</span> <span class="no">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">secret_key_base</span><span class="p">:</span> <span class="s2">&quot;oXLywfYvLeqUBlTmg2ly4HL64UpJycMiwqG2OlN95TM30AwXqXEFb...&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">catch_errors</span><span class="p">:</span> <span class="no">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">debug_errors</span><span class="p">:</span> <span class="no">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">error_controller</span><span class="p">:</span> <span class="nc">HardwareZone.PageController</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You will also need to remove the entire function call:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">:code_reloader</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">enabled</span><span class="p">:</span> <span class="no">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>And add in the following. Note that you will need to change the key name according to the project&rsquo;s name:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="nc">HardwareZone.Router</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">session</span><span class="p">:</span> <span class="p">[</span><span class="ss">store</span><span class="p">:</span> <span class="ss">:cookie</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">key</span><span class="p">:</span> <span class="s2">&quot;_hardware_zone_key&quot;</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s all for <code>config.exs</code>. Let&rsquo;s move on to <code>dev.exs</code></p>
+
+<h5>dev.exs</h5>
+
+<p>Open <code>dev.exs</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim config/dev.exs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Under <code>config :phoenix, HardwareZone.Router,</code> call you will need to remove the following lines:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4000</span><span class="p">,</span>
+</span><span class='line'><span class="ss">ssl</span><span class="p">:</span> <span class="no">false</span><span class="p">,</span>
+</span><span class='line'><span class="ss">host</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="ss">cookies</span><span class="p">:</span> <span class="no">true</span><span class="p">,</span>
+</span><span class='line'><span class="ss">session_key</span><span class="p">:</span> <span class="s2">&quot;_hardware_zone_key&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="ss">session_secret</span><span class="p">:</span> <span class="s2">&quot;VQP)JU1Z7*5L+^09X*L=6RKN9R1HL0O2E7^(1B%V3W64Z7@J9^7(M&amp;TXW8*C)...&quot;</span><span class="p">,</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and add in this line:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4000</span><span class="p">],</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Also, remove the following block of code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">:code_reloader</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">enabled</span><span class="p">:</span> <span class="no">true</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">config</span> <span class="ss">:logger</span><span class="p">,</span> <span class="ss">:console</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">level</span><span class="p">:</span> <span class="ss">:debug</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And add in the following line:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">:code_reloader</span><span class="p">,</span> <span class="no">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Effectively, for my case, it will look like following after these changes have been  made:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kn">use</span> <span class="nc">Mix.Config</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="nc">HardwareZone.Router</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4000</span><span class="p">],</span>
+</span><span class='line'>  <span class="ss">debug_errors</span><span class="p">:</span> <span class="no">true</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Enables code reloading for development</span>
+</span><span class='line'><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">:code_reloader</span><span class="p">,</span> <span class="no">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let&rsquo;s move on to <code>prod.exs</code></p>
+
+<h5>prod.exs</h5>
+
+<p>Open <code>prod.exs</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim config/prod.exs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>under the function call <code>config :phoenix, HardwareZone.Router,</code>, you will also need to remove the block of code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4000</span><span class="p">,</span>
+</span><span class='line'><span class="ss">ssl</span><span class="p">:</span> <span class="no">false</span><span class="p">,</span>
+</span><span class='line'><span class="ss">host</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="ss">cookies</span><span class="p">:</span> <span class="no">true</span><span class="p">,</span>
+</span><span class='line'><span class="ss">session_key</span><span class="p">:</span> <span class="s2">&quot;_hardware_zone_key&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="ss">session_secret</span><span class="p">:</span> <span class="s2">&quot;VQP)JU1Z7*5L+^09X*L=6RKN9R1HL0O2E7^(1B%V3W64Z7@J9^7(M&amp;TXW8*C)I....&quot;</span><span class="p">,</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and replace by the following code. Note that the secret key is different per application, hence make sure you change it:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="ss">url</span><span class="p">:</span> <span class="p">[</span><span class="ss">host</span><span class="p">:</span> <span class="s2">&quot;estark-sands-7697.herokuapp.com&quot;</span><span class="p">],</span>
+</span><span class='line'><span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)],</span>
+</span><span class='line'><span class="ss">secret_key_base</span><span class="p">:</span> <span class="s2">&quot;oXLywfYvLeqUBlTmg2ly4HL64UpJycMiwqG2OlN95TM30AwXqXEFbwjAbD/tgnfDDNpqFeEc...&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Under <code>config :logger, :console,</code> call, remove the line <code>metadata: [:request_id]</code>.</p>
+
+<p>After all the <code>prod.exs</code> should look like below:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kn">use</span> <span class="nc">Mix.Config</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="nc">HardwareZone.Router</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">url</span><span class="p">:</span> <span class="p">[</span><span class="ss">host</span><span class="p">:</span> <span class="s2">&quot;estark-sands-7697.herokuapp.com&quot;</span><span class="p">],</span>
+</span><span class='line'>  <span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)],</span>
+</span><span class='line'>  <span class="ss">secret_key_base</span><span class="p">:</span> <span class="s2">&quot;oXLywfYvLeqUBlTmg2ly4HL64UpJycMiwqG2OlN95TM30AwXqXEFbwjAbD/tgnfDDNpq....&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">config</span> <span class="ss">:logger</span><span class="p">,</span> <span class="ss">:console</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">level</span><span class="p">:</span> <span class="ss">:info</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, let&rsquo;s move on to <code>prod/test.exs</code>:</p>
+
+<h5>test.exs</h5>
+
+<p>Open <code>test.exs</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim config/test.exs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>under the function call <code>config :phoenix, HardwareZone.Router,</code>, you will also need to remove the block of code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4000</span><span class="p">,</span>
+</span><span class='line'><span class="ss">ssl</span><span class="p">:</span> <span class="no">false</span><span class="p">,</span>
+</span><span class='line'><span class="ss">host</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="ss">cookies</span><span class="p">:</span> <span class="no">true</span><span class="p">,</span>
+</span><span class='line'><span class="ss">session_key</span><span class="p">:</span> <span class="s2">&quot;_hardware_zone_key&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="ss">session_secret</span><span class="p">:</span> <span class="s2">&quot;VQP)JU1Z7*5L+^09X*L=6RKN9R1HL0O2E7^(1B%V3W64Z7@J9^7(M&amp;TXW8*C)I....&quot;</span><span class="p">,</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and replace by:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4001</span><span class="p">],</span>
+</span><span class='line'><span class="ss">catch_errors</span><span class="p">:</span> <span class="no">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>You will also need to remove the 2 function calls:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">:code_reloader</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">enabled</span><span class="p">:</span> <span class="no">true</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">config</span> <span class="ss">:logger</span><span class="p">,</span> <span class="ss">:console</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">level</span><span class="p">:</span> <span class="ss">:debug</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Effectively, <code>test.exs</code> will look like following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kn">use</span> <span class="nc">Mix.Config</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="nc">HardwareZone.Router</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4001</span><span class="p">],</span>
+</span><span class='line'>  <span class="ss">catch_errors</span><span class="p">:</span> <span class="no">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s all for config files. We can move on to the next one: <code>test/test_helper.exs</code></p>
+
+<h4>Step 3 - <code>test/test_helper.exs</code></h4>
+
+<p>Open <code>test/test_helper.exs</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim <span class="nb">test</span>/test_helper.exs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and remove the top line:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="nc">Phoenix.CodeReloader</span><span class="p">.</span><span class="n">reload!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Step 4 - router.ex</h4>
+
+<p>Open <code>router.ex</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/router.ex
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this file, you will need to move all the current routes to be under <code>scope "/"</code>. This change is because in Phoenix 0.5.0 introduces pipeline DSL whereby a arrival request will be eventually dispatched to a desired end-point. More information can be found <a href="https://github.com/phoenixframework/phoenix/blob/bdd9a88324d7a95fd54ba0d9904f7ff304f019d0/lib/phoenix/router.ex#L113-L220">here</a>. Let&rsquo;s start by adding on the following</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">scope</span> <span class="s2">&quot;/&quot;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">pipe_through</span> <span class="ss">:browser</span>
+</span><span class='line'>  <span class="p">...</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then copy all your existing routes to the <code>...</code> position in the above code. For our Hardware Zone application, the end result is as following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">scope</span> <span class="s2">&quot;/&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">pipe_through</span> <span class="ss">:browser</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">get</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="nc">HardwareZone.HardwaresController</span><span class="p">,</span> <span class="ss">:index</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:root</span>
+</span><span class='line'>    <span class="n">resources</span> <span class="s2">&quot;/hardwares&quot;</span><span class="p">,</span> <span class="nc">HardwareZone.HardwaresController</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>That&rsquo;s all for <code>router.ex</code>, let&rsquo;s move on to upgrade our controllers</p>
+
+<h4>Step 5 - Controllers</h4>
+
+<p>Open all your controllers and put in <code>plug :action</code> under your controller name, aka.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">HardwareZone.HardwaresController</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Controller</span>
+</span><span class='line'>  <span class="p">...</span>
+</span><span class='line'>  <span class="n">plug</span> <span class="ss">:action</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">index</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">_params</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="p">...</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="p">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s all for Controllers. Let&rsquo;s move on to view.</p>
+
+<h4>Step 6 - Views</h4>
+
+<p>You will need to open <code>web/views.ex</code> file</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/views.ex
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and add in the following line under the <code>import</code> <code>Router.Helpers</code> line:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kn">alias</span> <span class="nc">Phoenix.Controller.Flash</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There are no step 7 :-). Happy Upgrading.</p>
+
+<h3>Wrap Up</h3>
+
+<p>That&rsquo;s all how we migrate from Phoenix 0.4.1 to Phoenix 0.5.0. Please leave any comments if you find anyway better way. All your comments and questions are always welcomed. :-)</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-10-29T06:16:12+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>6:16 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/phoenix/'>phoenix</a>, <a class='category' href='/blog/categories/upgrade/'>upgrade</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://learnelixir.com/blog/2014/10/29/migrating-applications-from-phoenix-0-dot-4-1-to-phoenix-0-dot-5-0/" data-via="learnelixir" data-counturl="http://learnelixir.com/blog/2014/10/29/migrating-applications-from-phoenix-0-dot-4-1-to-phoenix-0-dot-5-0/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-layout="button_count" data-send="false" data-width="300" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/23/image-upload-in-phoenix-web-app/" title="Previous Post: Image Upload in Phoenix Web App">&laquo; Image Upload in Phoenix Web App</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a> -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'learnelixir';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://learnelixir.com/blog/2014/10/29/migrating-applications-from-phoenix-0-dot-4-1-to-phoenix-0-dot-5-0/';
+        var disqus_url = 'http://learnelixir.com/blog/2014/10/29/migrating-applications-from-phoenix-0-dot-4-1-to-phoenix-0-dot-5-0/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
