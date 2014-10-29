@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Pipe | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/pipe/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-30T01:08:20+08:00</updated>
+  <updated>2014-10-30T07:22:37+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -18,74 +18,65 @@
     <link href="http://learnelixir.com/blog/2014/10/10/experience-pipe-operator-in-elixir/"/>
     <updated>2014-10-10T21:09:55+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/10/experience-pipe-operator-in-elixir</id>
-    <content type="html"><![CDATA[<p>Pipe operator in Elixir is new to me. When I first saw it, I thought it was weird. However, after I read some Elixir code and experience myself, it is quite an interesting thing to use. Here&rsquo;s why:</p>
+    <content type="html"><![CDATA[<p>Pipe operator in Elixir is new to me. When I first saw it, I thought it was weird. However, after I read some Elixir code and experience myself, it is quite an interesting thing to use. Here&#39;s why:</p>
 
-<!-- more -->
-
+<!--more-->
 
 <p>Let start with the following code:</p>
-
-<pre><code class="elixir">defmodule FunWithNumber do
-  def increase(n), do: n + 1
-  def double(n), do: n * 2 
-end
-</code></pre>
-
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">FunWithNumber</span> <span class="k">do</span>
+  <span class="kd">def</span> <span class="n">increase</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+  <span class="kd">def</span> <span class="n">double</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">2</span> 
+<span class="k">end</span>
+</code></pre></div>
 <p>Now, in a common lanugage like Java or Ruby, in order to increase a number and then double it, here is what I will need to write in Elixir:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="nc">ExUnit</span><span class="p">.</span><span class="n">start</span>
+<span class="kd">defmodule</span> <span class="nc">TestFunWithNumber</span> <span class="k">do</span>
+  <span class="kn">use</span> <span class="nc">ExUnit.Case</span>
+  <span class="kn">import</span> <span class="nc">FunWithNumber</span>
 
-<pre><code class="elixir">ExUnit.start
-defmodule TestFunWithNumber do
-  use ExUnit.Case
-  import FunWithNumber
-
-  test "evaluates to 4 if I increase 1 by 1 and double the result" do
-    assert double(increase(1)) == 4
-  end
-end
-</code></pre>
-
+  <span class="n">test</span> <span class="s2">&quot;evaluates to 4 if I increase 1 by 1 and double the result&quot;</span> <span class="k">do</span>
+    <span class="n">assert</span> <span class="n">double</span><span class="p">(</span><span class="n">increase</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="mi">4</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
 <p>Whereas, using Elixir pipe operator <code>|&gt;</code>, I can write like following and the test should still pass</p>
-
-<pre><code class="elixir">test "evaluates to 4 if I increase 1 by 1 and double the result using Pipe" do
-  assert 1 |&gt; increase |&gt; double == 4 
-end
-</code></pre>
-
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">test</span> <span class="s2">&quot;evaluates to 4 if I increase 1 by 1 and double the result using Pipe&quot;</span> <span class="k">do</span>
+  <span class="n">assert</span> <span class="mi">1</span> <span class="o">|&gt;</span> <span class="n">increase</span> <span class="o">|&gt;</span> <span class="n">double</span> <span class="o">==</span> <span class="mi">4</span> 
+<span class="k">end</span>
+</code></pre></div>
 <p>Something to take note here is that I am using number <code>1</code> to pipe its value to function <code>increase</code> and then pipe the result returning from increase to <code>double</code> function. It is quite amazing to read the code in this way instead of the original way whereby I have to read code from inside out. With pipe operator, it is a sequence of operations, which the <strong>linput</strong> of previous operation will be <strong>output</strong> of the next operation and so on. It is truly a way to <strong>transform data</strong> via multiple step functions.</p>
 
 <p>You will notice that I do not need to supply any argument to <code>sequence</code> or <code>double</code> function call. It will auto bind all the arguments by itself.</p>
 
 <p>Here is another example, that I pipe a list into two functions</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">ListUtils</span> <span class="k">do</span>
+  <span class="kd">def</span> <span class="n">select</span><span class="p">([],</span> <span class="n">_guard</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="p">[]</span>
+  <span class="kd">def</span> <span class="n">select</span><span class="p">([</span><span class="n">head</span> <span class="p">|</span> <span class="n">tail</span><span class="p">],</span> <span class="n">check</span><span class="p">)</span> <span class="k">do</span>
+    <span class="k">if</span> <span class="n">check</span><span class="p">.(</span><span class="n">head</span><span class="p">)</span> <span class="k">do</span>
+      <span class="p">[</span><span class="n">head</span> <span class="p">|</span> <span class="n">select</span><span class="p">(</span><span class="n">tail</span><span class="p">,</span> <span class="n">check</span><span class="p">)]</span>
+    <span class="k">else</span>
+      <span class="n">select</span><span class="p">(</span><span class="n">tail</span><span class="p">,</span> <span class="n">check</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
 
-<pre><code class="elixir">defmodule ListUtils do
-  def select([], _guard), do: []
-  def select([head | tail], check) do
-    if check.(head) do
-      [head | select(tail, check)]
-    else
-      select(tail, check)
-    end
-  end
-end
+<span class="nc">ExUnit</span><span class="p">.</span><span class="n">start</span>
 
-ExUnit.start
+<span class="kd">defmodule</span> <span class="nc">TestPipeDemo</span> <span class="k">do</span>
+  <span class="kn">use</span> <span class="nc">ExUnit.Case</span>
+  <span class="kn">import</span> <span class="nc">ListUtils</span> 
+  <span class="n">test</span> <span class="s2">&quot;Select number divisible by 3 on a sequence&quot;</span> <span class="k">do</span>
+    <span class="n">list</span> <span class="p">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+    <span class="n">is_odd</span> <span class="p">=</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">rem</span><span class="p">(</span><span class="ni">&amp;1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">is_divided_by_3</span> <span class="p">=</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">rem</span><span class="p">(</span><span class="ni">&amp;1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">result</span> <span class="p">=</span> <span class="n">list</span> <span class="o">|&gt;</span> <span class="n">select</span><span class="p">(</span><span class="n">is_odd</span><span class="p">)</span> <span class="o">|&gt;</span> <span class="n">select</span><span class="p">(</span><span class="n">is_divided_by_3</span><span class="p">)</span>
+    <span class="n">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>If you look at line 21, the list was used to send itself to the first <code>select</code> function then to the second <code>select</code> function. </p>
 
-defmodule TestPipeDemo do
-  use ExUnit.Case
-  import ListUtils 
-  test "Select number divisible by 3 on a sequence" do
-    list = [1, 2, 3, 4]
-    is_odd = &amp;(rem(&amp;1, 2) == 1)
-    is_divided_by_3 = &amp;(rem(&amp;1, 3) == 0)
-    result = list |&gt; select(is_odd) |&gt; select(is_divided_by_3)
-    assert result == [3]
-  end
-end
-</code></pre>
-
-<p>If you look at line 21, the list was used to send itself to the first <code>select</code> function then to the second <code>select</code> function.</p>
-
-<p>That&rsquo;s all for this article. We will cover more advanced topic on Pipe on upcoming articles :-)</p>
+<p>That&#39;s all for this article. We will cover more advanced topic on Pipe on upcoming articles :-)</p>
 ]]></content>
   </entry>
   

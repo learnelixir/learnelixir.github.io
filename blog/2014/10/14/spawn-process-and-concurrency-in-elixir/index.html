@@ -117,14 +117,13 @@
   </header>
 
 
-<div class="entry-content"><p>Concurrency in Elixir can be achieved by using 3 things. They are <strong>spawning process</strong>, <strong>sending messages</strong> and <strong>receiving messages</strong>. Let&rsquo;s look at how we can spawn a new process in Elixir</p>
+<div class="entry-content"><p>Concurrency in Elixir can be achieved by using 3 things. They are <strong>spawning process</strong>, <strong>sending messages</strong> and <strong>receiving messages</strong>. Let&#39;s look at how we can spawn a new process in Elixir</p>
 
 <!-- more -->
 
-
 <h3>Spawning Process</h3>
 
-<p>To spawn a new process in Elixir, we will first need to define a function and call <code>spawn</code>. This function can be an anonymous function or a function defined in a module.</p>
+<p>To spawn a new process in Elixir, we will first need to define a function and call <code>spawn</code>. This function can be an anonymous function or a function defined in a module. </p>
 
 <h4>Spawn process from Anonymous function</h4>
 
@@ -136,15 +135,13 @@
 </span><span class='line'><span class="c1">#Function&lt;20.90072148/0 in :erl_eval.expr/5&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>We can then call spawn on this function</p>
+<p>We can then call spawn on this function </p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">pid</span> <span class="p">=</span> <span class="n">spawn</span><span class="p">(</span><span class="n">fun</span><span class="p">)</span>
 </span><span class='line'><span class="c1">#PID&lt;0.56.0&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p><code>spawn</code> function will return you a <code>PID</code> struct with pid number of the spawn process inside. This process is then by killed by itself after finish running.</p>
 
@@ -153,7 +150,6 @@
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Process</span><span class="p">.</span><span class="n">alive?</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
 </span><span class='line'><span class="no">false</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Another way to spawn is calling spawn/3 a function defined in <code>defmodule</code>. For example:</p>
 
@@ -173,7 +169,6 @@
 </span><span class='line'><span class="n">pid</span> <span class="p">=</span> <span class="n">spawn</span><span class="p">(</span><span class="nc">Fib</span><span class="p">,</span> <span class="ss">:fib</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">])</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>The first argument is the module name, second argument is function name and the last argument is the list of the arguments. Later we will see how this <code>spawn</code> can be used. Before that, let move on to how to send a message to a process.</p>
 
 <h4>Sending Messages</h4>
@@ -190,13 +185,11 @@
 </span><span class='line'><span class="no">true</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Since the process is alive, we can send a message to this process by triggering <code>send/2</code> function</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">send</span> <span class="n">self</span><span class="p">(),</span> <span class="p">{</span><span class="ss">:any</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p><code>send</code> takes 2 argument, the first one is the PID of the process that you would like to send the message to and the second argument is the message in a form of a tuple. It can be any tuple.</p>
 
@@ -216,8 +209,7 @@
 </span><span class='line'>     <span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>How these 3 things <strong>spawn processes</strong>, <strong>sending messages</strong> and <strong>receiving messages</strong> can work together? Let&rsquo;s take a look at the following code to generate a fibonacci number by supplying a sequence number</p>
+<p>How these 3 things <strong>spawn processes</strong>, <strong>sending messages</strong> and <strong>receiving messages</strong> can work together? Let&#39;s take a look at the following code to generate a fibonacci number by supplying a sequence number</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -231,7 +223,6 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>After we defined this module <code>Fib</code>, we can just call:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -239,7 +230,6 @@
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Fib</span><span class="p">.</span><span class="n">fib</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 </span><span class='line'><span class="mi">55</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Now, let make Fib module a bit more interesting by making use of the <strong>spawn processes</strong>, <strong>sending messages</strong> and <strong>receiving messages</strong>. Let define a new module called CFib</p>
 
@@ -258,7 +248,6 @@
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Now in <code>fib(n)</code> function definition, instead of just calling the the calculation on <code>n - 1</code> and <code>n - 2</code>, we will make these 2 calculations as 2 processes running concurrently.</p>
 
@@ -281,7 +270,6 @@
 </span><span class='line'>  <span class="n">send</span> <span class="n">parent</span><span class="p">,</span> <span class="p">[</span><span class="n">self</span><span class="p">,</span> <span class="n">func</span><span class="p">.(</span><span class="n">sequence</span><span class="p">)]</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Inside <code>fib</code> function, we have spawned 2 processes for function <code>fib_at_child</code> with arguments <code>n - 1</code> and <code>n - 2</code> respectively, the anonymous function to calculate fibonacci based on a sequence number and the parent process itself. We have also defined an extra function call <code>fib_at_child</code> which will be used to execute the function on the sequence number and send back the result of the calculation back to the parent process. Take note that the function <code>fib_at_child</code> now is running at the child process instead of the parent process. That is the reason why we will need to use <code>send</code> function to send back the result to parent.</p>
 
@@ -316,7 +304,6 @@
 </span><span class='line'>  <span class="n">send</span> <span class="n">parent</span><span class="p">,</span> <span class="p">{</span><span class="n">self</span><span class="p">,</span> <span class="n">func</span><span class="p">.(</span><span class="n">sequence</span><span class="p">)}</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>And here is the complete program of CFib</p>
 
@@ -362,8 +349,7 @@
 </span><span class='line'><span class="nc">CFib</span><span class="p">.</span><span class="n">fib</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="c1"># 55</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>That&rsquo;s all for this article. I hope you enjoyed this. Happy coding :-)</p>
+<p>That&#39;s all for this article. I hope you enjoyed this. Happy coding :-)</p>
 </div>
 
 

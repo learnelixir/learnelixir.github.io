@@ -117,19 +117,15 @@
   </header>
 
 
-<div class="entry-content"><p>You will need to have the source code of this article <a href="http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/">http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/</a> before being able to follow this article. So basically, after you finish that article, you will have a model Book. Let turn on elixir console to play around with this model. To turn on elixir console with phoenix, type the following command</p>
+<div class="entry-content"><p>You will need to have the source code of this article http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/ before being able to follow this article. So basically, after you finish that article, you will have a model Book. Let turn on elixir console to play around with this model. To turn on elixir console with phoenix, type the following command</p>
 
 <!-- more -->
-
-
-
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>iex -S mix
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Now you are inside elixir console mode, let&rsquo;s start with retrieve our first book</p>
+<p>Now you are inside elixir console mode, let&#39;s start with retrieve our first book</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -140,7 +136,6 @@
 </span><span class='line'> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun&quot;</span><span class="p">,</span>
 </span><span class='line'>  <span class="ss">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;The Pragmatic Bookshelf&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir&quot;</span><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>As you can see, we can use <code>BookStore.Repo</code> to retrieve a book. Here is the review of <code>BookStore.Repo</code> code</p>
 
@@ -168,7 +163,6 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>From the elixir console, we also can retrieve all books just like what we did in the controller</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -181,7 +175,6 @@
 </span><span class='line'>  <span class="ss">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;The Pragmatic Bookshelf&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir&quot;</span><span class="p">}]</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>As you can see, this time round, it returns you an array of Books. Up to this point, I feel a bit annoying every time I need to type <code>BookStore.Books</code>, <code>BookStore.Repo</code>, then I find out that <code>alias</code> in Elixir can help to shorten this syntax by just calling <code>Books</code> and <code>Repo</code>. So now, what you need to do is</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -191,7 +184,6 @@
 </span><span class='line'><span class="no">nil</span>
 </span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="kn">alias</span> <span class="nc">BookStore.Books</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="nc">Books</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>By default <code>alias</code>, if you call <code>alias</code> without supplying <code>as</code>, it will automatically set the alias to the last part of the module name. Hence in this case, you can just simply call</p>
 
@@ -204,7 +196,6 @@
 </span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="kn">alias</span> <span class="nc">BookStore.Books</span>
 </span><span class='line'><span class="no">nil</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>So now, it will be much pleasure to write the command in the console</p>
 
@@ -227,7 +218,6 @@
 </span><span class='line'> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun&quot;</span><span class="p">,</span>
 </span><span class='line'>  <span class="ss">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;The Pragmatic Bookshelf&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir&quot;</span><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Next, you can assign a book from the database call inside the console:</p>
 
@@ -252,7 +242,6 @@
 </span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">book</span><span class="p">.</span><span class="n">description</span>
 </span><span class='line'><span class="s2">&quot;Programming Elixir: Functional |&gt; Concurrent |&gt; Pragmatic |&gt; Fun&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>To update this book, you will need to reassign the book with itself plus the updated properties and let <code>Repo</code> handle the update by calling <code>update</code> function on Repor</p>
 
@@ -284,7 +273,6 @@
 </span><span class='line'>  <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;The Pragmatic Bookshelf&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir with fun&quot;</span><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Next, you also can create a new book by calling <code>insert</code> command on <code>Repo</code>. Pretty straight forward.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -307,7 +295,6 @@
 </span><span class='line'>                 <span class="ss">id</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;O&#39;Reilly&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Introducing Elixir&quot;</span><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Now try to get all books again</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -328,8 +315,7 @@
 </span><span class='line'>  <span class="ss">id</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;O&#39;Reilly&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Introducing Elixir&quot;</span><span class="p">}]</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Note this book is created with id <code>2</code>. Now we can delete this book by calling <code>delete</code> command on <code>Repo</code>.</p>
+<p>Note this book is created with id <code>2</code>. Now we can delete this book by calling <code>delete</code> command on <code>Repo</code>. </p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -349,7 +335,6 @@
 </span><span class='line'><span class="ss">:ok</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Retrieving all books again, you will see the deleted book is really deleted.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -362,8 +347,7 @@
 </span><span class='line'>  <span class="ss">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;The Pragmatic Bookshelf&quot;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Elixir&quot;</span><span class="p">}]</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>That&rsquo;s all for this article. I really hope you enjoy it. These basic command on the model will play a very important role when you need to build a RESTful controller, which will be cover in the near future article :-)</p>
+<p>That&#39;s all for this article. I really hope you enjoy it. These basic command on the model will play a very important role when you need to build a RESTful controller, which will be cover in the near future article :-) </p>
 </div>
 
 
@@ -391,7 +375,7 @@
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/console/'>console</a>, <a class='category' href='/blog/categories/ecto/'>ecto</a>, <a class='category' href='/blog/categories/model/'>model</a>
+    <a class='category' href='/blog/categories/console/'>console</a>, <a class='category' href='/blog/categories/ecto/'>ecto</a>, <a class='category' href='/blog/categories/model/'>model</a>, <a class='category' href='/blog/categories/phoenix/'>phoenix</a>
   
 </span>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Function | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/function/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-30T01:08:20+08:00</updated>
+  <updated>2014-10-30T07:22:37+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -18,89 +18,71 @@
     <link href="http://learnelixir.com/blog/2014/10/09/anonymous-function-in-elixir/"/>
     <updated>2014-10-09T08:05:11+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/09/anonymous-function-in-elixir</id>
-    <content type="html"><![CDATA[<p>This is one of my favorite topic when talking about anonymous function. The reason why is that anonymous function in Elixir is a very simple way to express something without having to turn on a text editor. I can specify an anonymous function right away in an Elixir console and test it straight away. Here&rsquo;s how:</p>
+    <content type="html"><![CDATA[<p>This is one of my favorite topic when talking about anonymous function. The reason why is that anonymous function in Elixir is a very simple way to express something without having to turn on a text editor. I can specify an anonymous function right away in an Elixir console and test it straight away. Here&#39;s how:</p>
 
 <!-- more -->
 
-
 <p>From your elixir terminal, you can quickly define an anonymous function like below:</p>
-
-<pre><code class="elixir">iex&gt; itself = fn n -&gt; n end
-#Function&lt;6.90072148/1 in :erl_eval.expr/5&gt;
-</code></pre>
-
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">iex</span><span class="o">&gt;</span> <span class="n">itself</span> <span class="p">=</span> <span class="k">fn</span> <span class="n">n</span> <span class="p">-&gt;</span> <span class="n">n</span> <span class="k">end</span>
+<span class="c1">#Function&lt;6.90072148/1 in :erl_eval.expr/5&gt;</span>
+</code></pre></div>
 <p>Anonymous function starts with <code>fn</code> keyword, following by a list of arguments, then the symbol <code>-&gt;</code>, then the expression and ends with an <code>end</code> keyword. You can define an anonymous function with many arguments like below</p>
-
-<pre><code class="elixir">iex&gt; sum = fn a, b -&gt; a + b end
-#Function&lt;12.90072148/2 in :erl_eval.expr/5&gt;
-</code></pre>
-
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">iex</span><span class="o">&gt;</span> <span class="n">sum</span> <span class="p">=</span> <span class="k">fn</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">-&gt;</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="k">end</span>
+<span class="c1">#Function&lt;12.90072148/2 in :erl_eval.expr/5&gt;</span>
+</code></pre></div>
 <p>Now, in order to call this anonymous function, you will need to use the <code>dot</code> notation. This is a bit different from calling a function defined in <code>defmodule</code>:</p>
-
-<pre><code class="elixir">iex&gt; sum = fn a, b -&gt; a + b end
-#Function&lt;12.90072148/2 in :erl_eval.expr/5&gt;
-iex&gt; sum.(5, 10)
-15
-</code></pre>
-
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">iex</span><span class="o">&gt;</span> <span class="n">sum</span> <span class="p">=</span> <span class="k">fn</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">-&gt;</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="k">end</span>
+<span class="c1">#Function&lt;12.90072148/2 in :erl_eval.expr/5&gt;</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">sum</span><span class="p">.(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="mi">15</span>
+</code></pre></div>
 <p>Some body like me will feel a bit ackward in the beginning when we need to use <code>dot</code> notation to call an anonymous function. However, it is true that this <code>dot</code> notation is used to differentiate between calling a function without any arguments and using a variable.  For instance:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">iex</span><span class="o">&gt;</span> <span class="n">my_self</span> <span class="p">=</span> <span class="k">fn</span> <span class="p">-&gt;</span> <span class="mi">5</span> <span class="k">end</span>
+<span class="c1">#Function&lt;6.90072148/1 in :erl_eval.expr/5&gt;</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">other_self</span> <span class="p">=</span> <span class="mi">5</span>
+<span class="mi">5</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">my_self</span><span class="p">.()</span> <span class="c1"># I am calling an anonymous function</span>
+<span class="mi">5</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">other_self</span> <span class="c1"># I am using a variable</span>
+<span class="mi">5</span>
+</code></pre></div>
+<p>Like Javascript, function in Elixir is first class citizen. Specifically, this means the language supports passing functions as arguments to other functions, returning them as the values from other functions, and assigning them to variables or storing them in data structures. </p>
 
-<pre><code class="elixir">iex&gt; my_self = fn -&gt; 5 end
-#Function&lt;6.90072148/1 in :erl_eval.expr/5&gt;
-iex&gt; other_self = 5
-5
-iex&gt; my_self.() # I am calling an anonymous function
-5
-iex&gt; other_self # I am using a variable
-5
-</code></pre>
+<p>So let&#39;s see how we can pass a function as an argument to another function:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">ListUtils</span> <span class="k">do</span>
+  <span class="kd">def</span> <span class="n">select</span><span class="p">([],</span> <span class="n">_check</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="p">[]</span>
+  <span class="kd">def</span> <span class="n">select</span><span class="p">([</span><span class="n">head</span> <span class="p">|</span> <span class="n">tail</span><span class="p">],</span> <span class="n">check</span><span class="p">)</span> <span class="k">do</span>
+    <span class="k">if</span> <span class="n">check</span><span class="p">.(</span><span class="n">head</span><span class="p">)</span> <span class="k">do</span>
+      <span class="p">[</span><span class="n">head</span> <span class="p">|</span> <span class="n">select</span><span class="p">(</span><span class="n">tail</span><span class="p">,</span> <span class="n">check</span><span class="p">)]</span>
+    <span class="k">else</span>
+      <span class="n">select</span><span class="p">(</span><span class="n">tail</span><span class="p">,</span> <span class="n">check</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
 
-<p>Like Javascript, function in Elixir is first class citizen. Specifically, this means the language supports passing functions as arguments to other functions, returning them as the values from other functions, and assigning them to variables or storing them in data structures.</p>
-
-<p>So let&rsquo;s see how we can pass a function as an argument to another function:</p>
-
-<pre><code class="elixir">defmodule ListUtils do
-  def select([], _check), do: []
-  def select([head | tail], check) do
-    if check.(head) do
-      [head | select(tail, check)]
-    else
-      select(tail, check)
-    end
-  end
-end
-
-is_odd = fn n -&gt; rem(n, 2) == 1 end
-ListUtils.select([1, 2, 3, 4], is_odd)
-</code></pre>
-
+<span class="n">is_odd</span> <span class="p">=</span> <span class="k">fn</span> <span class="n">n</span> <span class="p">-&gt;</span> <span class="n">rem</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">end</span>
+<span class="nc">ListUtils</span><span class="p">.</span><span class="n">select</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">is_odd</span><span class="p">)</span>
+</code></pre></div>
 <ul>
-<li>Here is we define a <code>ListUtils</code> module which contains <code>select</code> function to filter based on the argument <code>check</code> function.</li>
+<li>Here is we define a <code>ListUtils</code> module which contains <code>select</code> function to filter based on the argument <code>check</code> function. </li>
 <li>On line 12, we define an anonymous function and assign that function to variable <code>is_odd</code>.</li>
 <li>On line 13, we pass the <code>is_odd</code> variable (now is bound to the anonymous) as an argument to <code>select</code> function.</li>
 <li>You can expect the result returning from the <code>select</code> function call is <code>[1, 3]</code></li>
 </ul>
 
-
 <p>So this is how an anonymous function can be assigned to a variable and passed to another function. In addition, we can directly supply the anonymous function into the function call without first assigning to a variable like below and it still works!</p>
-
-<pre><code class="elixir">ListUtils.select([1, 2, 3, 4], fn n -&gt; rem(n, 2) == 1 end)
-</code></pre>
-
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="nc">ListUtils</span><span class="p">.</span><span class="n">select</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="k">fn</span> <span class="n">n</span> <span class="p">-&gt;</span> <span class="n">rem</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">end</span><span class="p">)</span>
+</code></pre></div>
 <p>Further more, in Elixir, there is a short hand syntax that can convert the line above into following:</p>
-
-<pre><code class="elixir">ListUtils.select([1, 2, 3, 4], &amp;(rem(&amp;1, 2) == 1))
-</code></pre>
-
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="nc">ListUtils</span><span class="p">.</span><span class="n">select</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">rem</span><span class="p">(</span><span class="ni">&amp;1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span>
+</code></pre></div>
 <p>We have transformed the anonymous function from <code>fn n -&gt; rem(n, 2) == 1 end</code> to <code>&amp;(rem(&amp;1, 2) == 1)</code>. In the later case, <code>&amp;1</code> is actually <code>n</code> variable in first case. I usually do not recommend to use this for multiple argument function as it might confuse the reader
 . However, it is still readable and understandable for just 1 argument. Anyway, for your information, multiple argument function can be rewritten as:</p>
-
-<pre><code class="elixir">sum = fn a, b -&gt; a + b end
-# is equivalent to 
-sum = &amp;(&amp;1 + &amp;2)
-</code></pre>
-
-<p>That&rsquo;s all for this article. I hope you enjoy this article if you reach this far. Please leave some comments if you have any questions or recommendations :-)</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">sum</span> <span class="p">=</span> <span class="k">fn</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">-&gt;</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="k">end</span>
+<span class="c1"># is equivalent to </span>
+<span class="n">sum</span> <span class="p">=</span> <span class="o">&amp;</span><span class="p">(</span><span class="ni">&amp;1</span> <span class="o">+</span> <span class="ni">&amp;2</span><span class="p">)</span>
+</code></pre></div>
+<p>That&#39;s all for this article. I hope you enjoy this article if you reach this far. Please leave some comments if you have any questions or recommendations :-)</p>
 ]]></content>
   </entry>
   

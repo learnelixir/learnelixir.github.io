@@ -117,10 +117,9 @@
   </header>
 
 
-<div class="entry-content"><p>This post is about comparing the feature and performance between Elixir&rsquo;s Ecto library - database wrapper and languge integrated query for Elixir and Ruby on Rails Active Record.</p>
+<div class="entry-content"><p>This post is about comparing the feature and performance between Elixir&#39;s Ecto library - database wrapper and languge integrated query for Elixir and Ruby on Rails Active Record.</p>
 
 <!-- more -->
-
 
 <h3>Round 1: Database Migration</h3>
 
@@ -133,7 +132,6 @@
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>rails g model book title:string description:text author:string publisher:string
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>And the content of the migration file is as following</p>
 
@@ -163,13 +161,11 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <h5><em>Step 2</em>: Create the database</h5>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>bundle <span class="nb">exec </span>rake db:create
 </span></code></pre></td></tr></table></div></figure>
-
 
 <h5><em>Step 3</em>: Run the migration</h5>
 
@@ -177,8 +173,7 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>bundle <span class="nb">exec </span>rake db:migrate
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>That&rsquo;s all for Active Record</p>
+<p>That&#39;s all for Active Record</p>
 
 <h4>Ecto</h4>
 
@@ -210,13 +205,11 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <h5><em>Step 2</em>: Create the Postgres Database</h5>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>createdb book_store_elixir --encoding<span class="o">=</span><span class="s1">&#39;utf-8&#39;</span> --locale<span class="o">=</span>en_US.UTF-8 --template<span class="o">=</span>template0
 </span></code></pre></td></tr></table></div></figure>
-
 
 <h5><em>Step 3</em>: Create model file <code>web/models/book.ex</code> with the following code:</h5>
 
@@ -242,13 +235,11 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <h5><em>Step 4</em>: Generate a migration file from terminal</h5>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix ecto.gen.migration BookStoreElixir.Repo create_book
 </span></code></pre></td></tr></table></div></figure>
-
 
 <h5><em>Step 5</em>: Edit the newly generated migration file</h5>
 
@@ -257,9 +248,6 @@
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim priv/repo/migrations/20141011143244_create_book.exs
 </span></code></pre></td></tr></table></div></figure>
-
-
-
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -287,13 +275,11 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <h5><em>Step 6</em>: Run the migration file</h5>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix ecto.migrate BookStoreElixir.Repo
 </span></code></pre></td></tr></table></div></figure>
-
 
 <h5><em>Step 7</em>: Add <code>BookStoreElixir.Repo</code> as a worker in line 11 of <code>lib/book_store_elixir.ex</code></h5>
 
@@ -333,7 +319,6 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <h5>Conclusion for Database Migration:</h5>
 
 <p>Active Record wins as there are fewer number of steps (3 steps in Active Record vs 7 steps in Ecto). Ecto will need to have more mix tasks in order to be more on par with Active Record.</p>
@@ -344,22 +329,20 @@
 
 <h5>Active Record</h5>
 
-<p>To create a new record in Active Record, we will use <code>create</code> command on <code>Book</code> model</p>
-
+<p>To create a new record in Active Record, we will use <code>create</code> command on <code>Book</code> model 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="no">Book</span><span class="o">.</span><span class="n">create</span><span class="p">({</span><span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Ruby 1.9 &amp; 2.0&quot;</span><span class="p">,</span> <span class="p">\</span>
-</span><span class='line'>          <span class="ss">author</span><span class="p">:</span> <span class="s2">&quot;Dave Thomas, with Chad Fowler and Andy Hunt&quot;</span><span class="p">,</span> <span class="p">\</span>
-</span><span class='line'>          <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;The Pragmatic Bokshelf&quot;</span><span class="p">,</span> <span class="p">\</span>
-</span><span class='line'>          <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Ruby is the fastest growing and most exciting dynamic language out there. \</span>
-</span><span class='line'><span class="s2">                        If you need to get working programs delivered fast, \</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="no">Book</span><span class="o">.</span><span class="n">create</span><span class="p">({</span><span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Ruby 1.9 &amp; 2.0&quot;</span><span class="p">,</span> <span class="p">&lt;/span&gt;
+</span><span class='line'>          <span class="ss">author</span><span class="p">:</span> <span class="s2">&quot;Dave Thomas, with Chad Fowler and Andy Hunt&quot;</span><span class="p">,</span> <span class="p">&lt;/span&gt;
+</span><span class='line'>          <span class="ss">publisher</span><span class="p">:</span> <span class="s2">&quot;The Pragmatic Bokshelf&quot;</span><span class="p">,</span> <span class="p">&lt;/span&gt;
+</span><span class='line'>          <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;Ruby is the fastest growing and most exciting dynamic language out there. &lt;/span&gt;
+</span><span class='line'><span class="s2">                        If you need to get working programs delivered fast, &lt;/span&gt;
 </span><span class='line'><span class="s2">                        you should add Ruby to your toolbox.&quot;</span><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
+</span></code></pre></td></tr></table></div></figure></p>
 
 <h5>Ecto</h5>
 
@@ -382,7 +365,6 @@
 </span><span class='line'><span class="s2">                        If you need to get working programs delivered fast, </span><span class="err">\</span><span class="s2"></span>
 </span><span class='line'><span class="s2">                        you should add Ruby to your toolbox.&quot;</span><span class="p">})</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Syntax wise, they are quite similar. Although Active Record code seems to be a bit neater but it can be considered a draw for creation syntax.</p>
 
@@ -410,8 +392,7 @@
 </span><span class='line'>         <span class="o">.</span><span class="n">pluck</span><span class="p">(</span><span class="ss">:id</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Pretty amazing that Active Record can do chaining in combine into 1 single query.</p>
+<p>Pretty amazing that Active Record can do chaining in combine into 1 single query. </p>
 
 <h5>Ecto</h5>
 
@@ -420,7 +401,6 @@
 <ul>
 <li><em>First Way</em>: Using query syntax provide by Ecto</li>
 </ul>
-
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -446,11 +426,9 @@
 </span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">all</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <ul>
 <li><em>Second Way</em>: Using chaining by utilising Elixir Pipe will make query just like Active Record:</li>
 </ul>
-
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -476,14 +454,13 @@
 </span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">all</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Syntax wise, both Ecto and Active Record have shown that they are quite expressive in showing the data transformation through a series of query functions. However, Active Record syntax is still considered better in this Round as it is showing an easier approach. Although, the second way of query that we use for Elixir Ecto is pretty closed to Active Record syntax, it still exhibits a more wordy syntax than Active Record. Albeit, Elixir Ecto is using a nice approach by letting programmer to have access to a &ldquo;so called&rdquo; object instance in the query - <code>having[book, book.id &gt;= 1)</code> vs <code>"having("books.id &gt;= 1")</code></p>
+<p>Syntax wise, both Ecto and Active Record have shown that they are quite expressive in showing the data transformation through a series of query functions. However, Active Record syntax is still considered better in this Round as it is showing an easier approach. Although, the second way of query that we use for Elixir Ecto is pretty closed to Active Record syntax, it still exhibits a more wordy syntax than Active Record. Albeit, Elixir Ecto is using a nice approach by letting programmer to have access to a &quot;so called&quot; object instance in the query - <code>having[book, book.id &gt;= 1)</code> vs <code>&quot;having(&quot;books.id &gt;= 1&quot;)</code></p>
 
 <h4>3 - Update</h4>
 
 <h4>Active Record</h4>
 
-<p>To update a record, we will use <code>update_attributes</code> on <code>Book</code> instance</p>
+<p>To update a record, we will use <code>update_attributes</code> on <code>Book</code> instance </p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -491,10 +468,9 @@
 </span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">book</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">({</span><span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Ruby9 &amp;ss 2.0 (4th edition)&quot;</span><span class="p">})</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <h4>Ecto</h4>
 
-<p>To update a record, we will use <code>`update</code> on <code>BookStoreElixir.Repo</code></p>
+<p>To update a record, we will use `<code>update</code> on <code>BookStoreElixir.Repo</code></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -505,7 +481,6 @@
 </span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">book</span> <span class="p">=</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">one</span><span class="p">(</span><span class="nc">Book</span><span class="p">)</span>
 </span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">update</span><span class="p">(%{</span><span class="n">book</span> <span class="p">|</span> <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;Programming Ruby9 &amp;ss 2.0 (4th edition)&quot;</span><span class="p">})</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Both Ecto and Active Record have exhibited almost the same level of code when updating a record. Hence, it is a draw.</p>
 
@@ -521,7 +496,6 @@
 </span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">book</span><span class="o">.</span><span class="n">destroy</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <h4>Ecto</h4>
 
 <p>To delete a record, we will use <code>delete</code> on <code>BookStoreElixir.repo</code></p>
@@ -535,7 +509,6 @@
 </span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="n">book</span> <span class="p">=</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">one</span><span class="p">(</span><span class="nc">Book</span><span class="p">)</span>
 </span><span class='line'><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">delete</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Both Ecto and Active Record have exhibited almost the same level of code when delete a record. Hence, it is a draw.</p>
 
@@ -568,13 +541,11 @@ I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and E
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Here is how I run it:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">time </span>bundle <span class="nb">exec </span>rake db:seed
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Here are the results of 3 running rounds (with creating 100, 10,000 records and 1 million records). Each time database drop, creation and migration were performed before hand.</p>
 
@@ -601,7 +572,6 @@ I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and E
 </span><span class='line'>user  10m41.534s
 </span><span class='line'>sys 1m20.044s
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Active Record took <strong>1.706 seconds</strong>,  <strong>12.328 seconds</strong> and a whooping <strong>17 minutes 52.272 seconds</strong> to complete 100, 10,000 and 1 million record creation run.</p>
 
@@ -637,13 +607,11 @@ I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and E
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Then run this seeds</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">time </span>mix run seeds.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>And here is the reusult of 3 runs:</p>
 
@@ -671,8 +639,7 @@ I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and E
 </span><span class='line'>sys 2m53.117s
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Ecto took merely <strong>0.624 seconds</strong>, <strong>5.109 seconds</strong> and <strong>6 minutes 15.161 seconds</strong> to complete the same 3 runs of creation 100, 10,000 and 1 million records.</p>
+<p>Ecto took merely <strong>0.624 seconds</strong>, <strong>5.109 seconds</strong> and <strong>6 minutes 15.161 seconds</strong> to complete the same 3 runs of creation 100, 10,000 and 1 million records. </p>
 
 <p>Here is the chart that shows the performance of Ecto vs Active Record through 3 runs:</p>
 
@@ -682,7 +649,7 @@ I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and E
 
 <h4>Round 4: Speed of Updating</h4>
 
-<p>We will now run updating on 100, 10,000 and 1 million records in each database each. We will update the records, one by one to have a new book title. As usual, let&rsquo;s start with Active Record first</p>
+<p>We will now run updating on 100, 10,000 and 1 million records in each database each. We will update the records, one by one to have a new book title. As usual, let&#39;s start with Active Record first</p>
 
 <h5>Active Record</h5>
 
@@ -696,15 +663,11 @@ I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and E
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>And run this file:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">time </span>bundle <span class="nb">exec </span>rake db:seed
 </span></code></pre></td></tr></table></div></figure>
-
-
-
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -729,7 +692,6 @@ I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and E
 </span><span class='line'>user  15m22.126s
 </span><span class='line'>sys 1m26.698s
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Active Record took <strong>1.725 seconds</strong>, <strong>12.414 seconds</strong> and <strong>23 minutes, 30.364 seconds</strong> to update all 100, 10,000 and 1 million records respectively.</p>
 
@@ -771,7 +733,6 @@ I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and E
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Before you can run this file, you will need to do a bit modification on <code>postgrex</code> library as this library is throwing a time out if a query spends more than 5 seconds to complete. <code>Repo.all(Book)</code> will definitely take up more than 5 seconds to load up the entire collection of books into the memory</p>
 
 <p>From the project folder, what I did was edit file <code>deps/ecto/lib/ecto/adapters/postgres.ex</code></p>
@@ -780,7 +741,6 @@ I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and E
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim deps/ecto/lib/ecto/adapters/postgres.ex
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Then search for <code>@timeout 5000</code> and replace by <code>@timeout :infinity</code></p>
 
 <p>Now you can run and time the running time of this file</p>
@@ -788,7 +748,6 @@ I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and E
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">time </span>mix run seeds.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Here are the result of 3 runs:</p>
 
@@ -815,7 +774,6 @@ I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and E
 </span><span class='line'>user  3m49.446s
 </span><span class='line'>sys 3m7.004s
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Ecto took merely <strong>0.606 seconds</strong>, <strong>5.495 seconds</strong> and <strong>7 minutes, 12 seconds</strong> to update 100, 10,000 records and 1 million records respectively. Apparently, Ecto is the winner.</p>
 

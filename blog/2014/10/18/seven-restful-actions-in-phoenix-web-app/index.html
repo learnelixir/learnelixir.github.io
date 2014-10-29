@@ -117,30 +117,31 @@
   </header>
 
 
-<div class="entry-content"><p>For a new web application framework, I always start with building a 7 actions RESTful app to try out how good the framework is, and so far for Phoenix, it looks quite promising in term of code readability and the speed of churning out these 7 actions for a model entity. As these 7 RESTful actions are the backbone of the most web apps nowadays, it is crucial that we are familiar with the steps to create them.</p>
+<div class="entry-content"><p><strong>UPDATE</strong> on 30th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
+<hr/><br/>
+For a new web application framework, I always start with building a 7 actions RESTful app to try out how good the framework is, and so far for Phoenix, it looks quite promising in term of code readability and the speed of churning out these 7 actions for a model entity. As these 7 RESTful actions are the backbone of the most web apps nowadays, it is crucial that we are familiar with the steps to create them.</p>
 
 <!-- more -->
 
-
-<p>In this article, we are going through the process of creating these 7 RESTful actions. These 7 actions are <code>index</code>, <code>new</code>, <code>create</code>, <code>edit</code>, <code>update</code>, <code>destroy</code> and <code>show</code>. The <code>index</code> action has already been covered in the very first article of this blog, but for the sake of completeness, it will be recovered in this article.</p>
+<p>In this article, we are going through the process of creating these 7 RESTful actions. These 7 actions are <code>index</code>, <code>new</code>, <code>create</code>, <code>edit</code>, <code>update</code>, <code>destroy</code> and <code>show</code>. The <code>index</code> action has already been covered in the very first article of this blog, but for the sake of completeness, it will be recovered in this article. </p>
 
 <p>Anyway, here is the end result:</p>
 
 <p><img class="center" src="/images/7restful-action/screenshot.png" width="500" height="396" title="image" alt="images"></p>
 
-<p>You are able to download the source code on github -</p>
+<p>You are able to download the source code on github - </p>
 
-<p><a href="https://github.com/learnelixir/hardware-zone">https://github.com/learnelixir/hardware-zone</a></p>
+<p><a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0">https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0</a></p>
 
-<p>as well as check the application online - deployed to Heroku Server at</p>
+<p>as well as check the application online - deployed to Heroku Server at </p>
 
-<p><a href="http://phoenix-hardware-zone.herokuapp.com">http://phoenix-hardware-zone.herokuapp.com</a></p>
+<p><a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0">http://phoenix-hardware-zone.herokuapp.com</a></p>
 
-<p>Let&rsquo;s start with create an application for this. We will be building a public hardware parts posting site where user will be able to post a hardware and other users will be able to see it.</p>
+<p>Let&#39;s start with create an application for this. We will be building a public hardware parts posting site where user will be able to post a hardware and other users will be able to see it.</p>
 
 <h3>0 - Setup</h3>
 
-<p>Let&rsquo;s start by creating a new project</p>
+<p>Let&#39;s start by creating a new project</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -148,8 +149,7 @@
 </span><span class='line'><span class="nv">$ </span>mix phoenix.new hardward_zone ../
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>This will create a all the stuffs that we need to develop the app. Now let&rsquo;s move to that project folder and install all the dependencies by typing the following commands:</p>
+<p>This will create a all the stuffs that we need to develop the app. Now let&#39;s move to that project folder and install all the dependencies by typing the following commands:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -157,13 +157,11 @@
 </span><span class='line'><span class="nv">$ </span>mix deps.get
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Next, we will need to add in 2 <code>postgrex</code> and <code>ecto</code> library for our database.</p>
+<p>Next, we will need to add in 2 <code>postgrex</code> and <code>ecto</code> library for our database. </p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim mix.exs
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Add in line 5 and 6 in the following code to <code>deps</code> method</p>
 
@@ -177,14 +175,13 @@
 <span class='line-number'>8</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
 </span><span class='line'>  <span class="p">[</span>
-</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.4.1&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.5&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">}</span>
 </span><span class='line'>  <span class="p">]</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Also, in the same file, we will also need to add in <code>postgrex</code> and <code>ecto</code> application in <code>application</code> method</p>
 
@@ -204,22 +201,17 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Install the dependencies again:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix deps.get
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Now let go ahead and create a model named <code>hardware</code>. This model will be our central entity, which we will need to have a function to list all the hardwares on our home page, let user to view, create, update and remove individually. To start with this, let&rsquo;s create a Repo file to interface with postgres database:</p>
+<p>Now let go ahead and create a model named <code>hardware</code>. This model will be our central entity, which we will need to have a function to list all the hardwares on our home page, let user to view, create, update and remove individually. To start with this, let&#39;s create a Repo file to interface with postgres database:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/models/repo.ex
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
+</span></code></pre></td></tr></table></div></figure> 
 
 <p>And copy the below code into this file. Remember to change <code>postgresuser</code> and <code>password</code> to the correct username and password of your postgres database:</p>
 
@@ -246,7 +238,6 @@
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Now, we will need to make sure this <code>Repo</code> module to be started with our application and supervised. We can do this by editing <code>lib/hardware_zone.ex</code> and add in the worker to the list of supervised children. It is line 7 in the code below:</p>
 
@@ -276,22 +267,19 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Next, we will need to manually create a postgres database named <code>hardware_zone</code> by typing the following into your terminal:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>createdb hardware_zone --encoding<span class="o">=</span><span class="s1">&#39;utf-8&#39;</span> --locale<span class="o">=</span>en_US.UTF-8 --template<span class="o">=</span>template0<span class="p">;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>This will create <code>hardware_zone</code> postgres database with utf8 encoding</p>
 
-<p>Let&rsquo;s move on by creating a <code>hardware</code> model now:</p>
+<p>Let&#39;s move on by creating a <code>hardware</code> model now:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/models/hardware.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>And paste in the following code:</p>
 
@@ -312,13 +300,12 @@
 </span><span class='line'>
 </span><span class='line'>  <span class="n">schema</span> <span class="s2">&quot;hardwares&quot;</span> <span class="k">do</span>
 </span><span class='line'>    <span class="n">field</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:string</span>
-</span><span class='line'>    <span class="n">field</span> <span class="ss">:description</span>
-</span><span class='line'>    <span class="n">field</span> <span class="ss">:manufacturer</span>
-</span><span class='line'>    <span class="n">field</span> <span class="ss">:sale_contact_number</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:description</span><span class="p">,</span> <span class="ss">:string</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:manufacturer</span><span class="p">,</span> <span class="ss">:string</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:sale_contact_number</span><span class="p">,</span> <span class="ss">:string</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Next, generate a migration script by the following in command in your terminal</p>
 
@@ -326,13 +313,11 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix ecto.gen.migration HardwareZone.Repo create_hardware
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>This command will create a folder <code>migrations</code> under <code>priv/repo</code> and the migration file under this newly created <code>migrations</code> folder. You can go ahead and edit this migration file. In my case, it is <code>20141019010800_create_hardware.exs</code></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim priv/repo/migrations/20141019010800_create_hardware.exs
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>then paste in the following code</p>
 
@@ -358,7 +343,7 @@
 </span><span class='line'>  <span class="kd">def</span> <span class="n">up</span> <span class="k">do</span>
 </span><span class='line'>    <span class="s2">&quot;CREATE TABLE hardwares( </span><span class="err">\</span><span class="s2"></span>
 </span><span class='line'><span class="s2">            id serial primary key, </span><span class="err">\</span><span class="s2"></span>
-</span><span class='line'><span class="s2">            name varchar(125), </span><span class="err">\</span><span class="s2"></span>
+</span><span class='line'><span class="s2">            name varchar(255), </span><span class="err">\</span><span class="s2"></span>
 </span><span class='line'><span class="s2">            description text, </span><span class="err">\</span><span class="s2"></span>
 </span><span class='line'><span class="s2">            manufacturer varchar(255), </span><span class="err">\</span><span class="s2"></span>
 </span><span class='line'><span class="s2">            sale_contact_number varchar(255))&quot;</span>
@@ -370,13 +355,11 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>In <code>up</code> function we are creating a table <code>hardwares</code>. This <code>up</code> function will run when we run the migration. In <code>down</code> function, we will drop the table that we create in <code>up</code> function, this will run when we rollback this migration. Let&rsquo;s move on by running this migration:</p>
+<p>In <code>up</code> function we are creating a table <code>hardwares</code>. This <code>up</code> function will run when we run the migration. In <code>down</code> function, we will drop the table that we create in <code>up</code> function, this will run when we rollback this migration. Let&#39;s move on by running this migration:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix ecto.migrate HardwareZone.Repo
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>In case that you make a mistake and would like to rollback, you can run the following command:</p>
 
@@ -384,13 +367,11 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix ecto.rollback HardwareZone.Repo
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Next, we will need to create a module to store all the hardwares database queries. Let&rsquo;s create <code>web/models/queries.ex</code></p>
+<p>Next, we will need to create a module to store all the hardwares database queries. Let&#39;s create <code>web/models/queries.ex</code></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/models/queries.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>and paste in the following code:</p>
 
@@ -416,13 +397,11 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Next, edit <code>web/router.ex</code> to include RESTful routes to the approriate controller</p>
+<p>Next, edit <code>web/router.ex</code> to include RESTful routes to the approriate controller:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/router.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>and paste in the source code below</p>
 
@@ -432,21 +411,27 @@
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">HardwareZone.Router</span> <span class="k">do</span>
 </span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Router</span>
 </span><span class='line'>
-</span><span class='line'>  <span class="n">get</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="nc">HardwareZone.HardwaresController</span><span class="p">,</span> <span class="ss">:index</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:root</span>
-</span><span class='line'>  <span class="n">resources</span> <span class="s2">&quot;/hardwares&quot;</span><span class="p">,</span> <span class="nc">HardwareZone.HardwaresController</span>
+</span><span class='line'>  <span class="n">scope</span> <span class="s2">&quot;/&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">pipe_through</span> <span class="ss">:browser</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">get</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="nc">HardwareZone.HardwaresController</span><span class="p">,</span> <span class="ss">:index</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:root</span>
+</span><span class='line'>    <span class="n">resources</span> <span class="s2">&quot;/hardwares&quot;</span><span class="p">,</span> <span class="nc">HardwareZone.HardwaresController</span>
+</span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>We have added 2 routes, the first <code>get</code> line is to route the user to the index page of all the hardwares, i.e. it is the index page. On the second line, we are using <code>resources</code> function to route all the 7 RESTful actions to the approriate action in <code>HardwareZone.HardwaresController</code> that we are going to create. To verify all the routes are in, let&rsquo;s run the following command to check:</p>
+<p>We have added 2 routes, the first <code>get</code> line is to route the user to the index page of all the hardwares, i.e. it is the index page. On the second route, we are using <code>resources</code> function to route all the 7 RESTful actions to the approriate action in <code>HardwareZone.HardwaresController</code> that we are going to create. To verify all the routes are in, let&#39;s run the following command to check:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix phoenix.routes
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>The following should come out from your terminal</p>
 
@@ -470,7 +455,6 @@
 </span><span class='line'>hardwares_path  DELETE  /hardwares/:id       HardwareZone.HardwaresController.destroy/2
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>The first column is the helper function name, which we will come back to it shortly. The second column is the HTTP web action that needs to be triggered. The third column is the relative URL to our application that needs to be trigger and the last column is the corresponding action to serve the triggered route.</p>
 
 <p>Let try to start the phoenix server by running the following command from your terminal</p>
@@ -479,8 +463,7 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix phoenix.start
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>At this point of time, if you visit <a href="http://localhost:4000,">http://localhost:4000,</a> it will show you the following error</p>
+<p>At this point of time, if you visit <a href="http://localhost:4000">http://localhost:4000</a>, it will show you the following error</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -488,13 +471,11 @@
 </span><span class='line'><span class="o">(</span>module HardwareZone.HardwaresController is not available<span class="o">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>The reason why is because we have not create any controller and index action to cater for root routes. Let&rsquo;s create <code>HardwareZone.HardwaresController</code> now</p>
+<p>The reason why is because we have not create any controller and index action to cater for root routes. Let&#39;s create <code>HardwareZone.HardwaresController</code> now</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/controller/hardwares_controller.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>and paste in the following initial code</p>
 
@@ -508,17 +489,15 @@
 </span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Controller</span>
 </span><span class='line'>  <span class="kn">alias</span> <span class="nc">HardwareZone.Hardware</span>
 </span><span class='line'>  <span class="kn">alias</span> <span class="nc">HardwareZone.Repo</span>
-</span><span class='line'>  <span class="kn">alias</span> <span class="nc">HardwareZone.Router</span>
+</span><span class='line'>  <span class="kn">import</span> <span class="nc">HardwareZone.Router.Helpers</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Next, let clean up a bit on the application view layout by editing file <code>web/templates/layout/application.html.eex</code></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/templates/layout/application.html.eex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>and replace by the following code. Note that I have removed the phoenix default header and footer</p>
 
@@ -620,13 +599,11 @@
 </span><span class='line'><span class="nt">&lt;/html&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <ul>
 <li>On line 38, we are making use of the Router helper to link to the New hardware page.</li>
-<li>On line 45, the code <code>&lt;%= @inner %&gt;</code> is used to render the content that you create in order view.</li>
-<li>On line 15 and 17, note that I have added in <code>jquery</code> library and borrow <code>jquery-ujs</code> from rails to support the delete function later on.</li>
+<li>On line 45, the code <code>&lt;%= @inner %&gt;</code> is used to render the content that you create in order view. </li>
+<li>On line 15 and 17, note that I have added in <code>jquery</code> library and borrow <code>jquery-ujs</code> from rails to support the delete function later on. </li>
 </ul>
-
 
 <p>Now, replace the content in file <code>priv/static/css/app.css</code> by</p>
 
@@ -742,8 +719,7 @@
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Now, we are ready. It&rsquo;s time for us to create 7 actions. Let&rsquo;s start with index action&hellip;</p>
+<p>Now, we are ready. It&#39;s time for us to create 7 actions. Let&#39;s start with index action&#8230;</p>
 
 <h3>1 - Index action</h3>
 
@@ -752,7 +728,6 @@
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/controller/hardwares_controller.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>and paste in the following <code>index</code> action</p>
 
@@ -766,13 +741,11 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>In this <code>index</code> action, what we have done is querying all the hardwares from our database and render these structs objects inside <code>index</code> view using the <code>render</code> command. Since we do not have an <code>index</code> page at the moment, let&rsquo;s create one by first creating <code>hardware_view.ex</code> in <code>web/views</code> folder:</p>
+<p>In this <code>index</code> action, what we have done is querying all the hardwares from our database and render these structs objects inside <code>index</code> view using the <code>render</code> command. Since we do not have an <code>index</code> page at the moment, let&#39;s create one by first creating <code>hardware_view.ex</code> in <code>web/views</code> folder:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/views/hardwares_view.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>with the following code:</p>
 
@@ -784,20 +757,17 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Then create the hardwares template folder:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mkdir -p web/templates/hardwares
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Then create file <code>web/templates/hardwares/index.html.eex</code>:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/templates/hardwares/index.html.eex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>paste in the following code</p>
 
@@ -825,7 +795,7 @@
 </span><span class='line'>  <span class="err">&lt;</span>%= for hardware <span class="nt">&lt;-</span> <span class="err">@</span><span class="na">hardwares</span> <span class="na">do</span> <span class="err">%</span><span class="nt">&gt;</span>
 </span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-xs-6 col-md-4&quot;</span><span class="nt">&gt;</span>
 </span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;hardware-box&#39;</span>
-</span><span class='line'>           <span class="na">data-url=</span><span class="s">&#39;&lt;%= HardwareZone.Router.hardwares_path(:show, hardware.id) %&gt;&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>           <span class="na">data-url=</span><span class="s">&#39;&lt;%= hardwares_path(:show, hardware.id) %&gt;&#39;</span><span class="nt">&gt;</span>
 </span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;title&#39;</span><span class="nt">&gt;</span><span class="err">&lt;</span>%= hardware.name %&gt;<span class="nt">&lt;/div&gt;</span>
 </span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;manufacturer&#39;</span><span class="nt">&gt;</span><span class="err">&lt;</span>%= hardware.manufacturer %&gt;<span class="nt">&lt;/div&gt;</span>
 </span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;description&#39;</span><span class="nt">&gt;</span><span class="err">&lt;</span>%= hardware.description %&gt;<span class="nt">&lt;/div&gt;</span>
@@ -843,15 +813,13 @@
 </span><span class='line'><span class="nt">&lt;/div&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>It is a loop though all <code>@hardwares</code> object and render out the corresponing HTML. Note that you will need <code>&lt;%=</code> in <code>for</code> loop so that your content can be printed out correctly.</p>
 
-<p>Now visit <a href="http://localhost:4000.">http://localhost:4000.</a> What you can see will just be the navigation bar. This is because we do not have any hardwares in our database yet. Let&rsquo;s create a seeds file to add some initial hardwares. You will need to create file <code>seeds.ex</code> on the application root folder:</p>
+<p>Now visit <a href="http://localhost:4000">http://localhost:4000</a>. What you can see will just be the navigation bar. This is because we do not have any hardwares in our database yet. Let&#39;s create a seeds file to add some initial hardwares. You will need to create file <code>seeds.ex</code> on the application root folder:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim seeds.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>with the following code:</p>
 
@@ -907,26 +875,23 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Then run this seeds file from your terminal:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix run seeds.ex
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Now refresh the page, you should already see some hardwares displayed on the index page. Let&rsquo;s move on to create a hardware.</p>
+<p>Now refresh the page, you should already see some hardwares displayed on the index page. Let&#39;s move on to create a hardware.</p>
 
 <h3>2 - New Action</h3>
 
-<p>As usual, let&rsquo;s start by editing <code>hardwares_controller.ex</code></p>
+<p>As usual, let&#39;s start by editing <code>hardwares_controller.ex</code>:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/controller/hardwares_controller.ex
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Add in the following function:</p>
+<p>Add in the following function: </p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -936,15 +901,13 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Next, create <code>new.html.eex</code> file:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/templates/hardwares/new.html.eex
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>with the following content</p>
+<p>with the following content:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -954,17 +917,15 @@
 </span><span class='line'><span class="err">&lt;</span>%= render &quot;form.html&quot;, hardware: @hardware, errors: @errors %&gt;
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>As we are trying to render a form view from this view, we will need to create a view named <code>web/templates/hardwares/form.html.eex</code>. This is different from Rails, where you will need to create this partial view file name with under score (<code>_</code>). The partial view file does not to be suffixed with underscore (<code>_</code>).</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/templates/hardwares/form.html.eex
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>and use following code content:</p>
 
-<p>Note that line 1 to 13 are for errors displaying. In addition, in this form&rsquo;s action, we are actually checking if the hardware is a new record by looking into its id. If it is, we will just render the create path. otherwise, the update path will be used. Anoter note is from line 21 - 23 where we need to put extra hidden field with <code>PATCH</code> method so that it can be sent over the HTTP request. For <code>PATCH</code>, <code>PUT</code> and <code>DELETE</code> methods, they cannot be specified inside a HTML form method attribute.</p>
+<p>Note that line 1 to 13 are for errors displaying. In addition, in this form&#39;s action, we are actually checking if the hardware is a new record by looking into its id. If it is, we will just render the create path. otherwise, the update path will be used. Anoter note is from line 21 - 23 where we need to put extra hidden field with <code>PATCH</code> method so that it can be sent over the HTTP request. For <code>PATCH</code>, <code>PUT</code> and <code>DELETE</code> methods, they cannot be specified inside a HTML form method attribute.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1035,8 +996,8 @@
 </span><span class='line'><span class="err">&lt;</span>% end %&gt;
 </span><span class='line'><span class="nt">&lt;form</span>
 </span><span class='line'>  <span class="na">action=</span><span class="s">&quot;&lt;%= if @hardware.id, </span>
-</span><span class='line'><span class="s">     do: HardwareZone.Router.hardwares_path(:update, @hardware.id), </span>
-</span><span class='line'><span class="s">     else: HardwareZone.Router.hardwares_path(:create) %&gt;&quot;</span>
+</span><span class='line'><span class="s">     do: hardwares_path(:update, @hardware.id), </span>
+</span><span class='line'><span class="s">     else: hardwares_path(:create) %&gt;&quot;</span>
 </span><span class='line'>  <span class="na">method=</span><span class="s">&quot;post&quot;</span>
 </span><span class='line'>  <span class="na">enctype=</span><span class="s">&quot;multipart/form-data&quot;</span><span class="nt">&gt;</span>
 </span><span class='line'>
@@ -1076,17 +1037,15 @@
 </span><span class='line'><span class="nt">&lt;br/&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Now if you visit <a href="http://localhost:4000/hardwares/new,">http://localhost:4000/hardwares/new,</a> you should see the form. In order to create a hardware, let&rsquo;s move to create a <code>create</code> action to save this form.</p>
+<p>Now if you visit <a href="http://localhost:4000/hardwares/new">http://localhost:4000/hardwares/new</a>, you should see the form. In order to create a hardware, let&#39;s move to create a <code>create</code> action to save this form.</p>
 
 <h4>3 - Create Action</h4>
 
-<p>Let&rsquo;s start with controller <code>hardwares_controller.ex</code>:</p>
+<p>Let&#39;s start with controller <code>hardwares_controller.ex</code>:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/controller/hardwares_controller.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>and add in the following functions:</p>
 
@@ -1109,7 +1068,7 @@
 </span><span class='line'>  <span class="k">case</span> <span class="nc">Hardware</span><span class="p">.</span><span class="n">validate</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="k">do</span>
 </span><span class='line'>    <span class="p">[]</span> <span class="p">-&gt;</span>
 </span><span class='line'>      <span class="n">hardware</span> <span class="p">=</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="nc">Router</span><span class="p">.</span><span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
 </span><span class='line'>    <span class="n">errors</span> <span class="p">-&gt;</span>
 </span><span class='line'>      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;new&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
 </span><span class='line'>  <span class="k">end</span>
@@ -1120,8 +1079,7 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>We have defined another helper private function <code>atomize_keys</code> (<code>defp</code> stands for private definition) which is responsible for converting a struct with string key to a struct with atom key. We then merge the atomized params with the empty <code>Hardware</code> struct, validate the Hardware at line 3, insert at line 5 before redirect the page to <code>show</code> action. If the hardware has validation errors, it will render back the <code>new</code> action at line 8. Let&rsquo;s move on to show action before we can try out the create function.</p>
+<p>We have defined another helper private function <code>atomize_keys</code> (<code>defp</code> stands for private definition) which is responsible for converting a struct with string key to a struct with atom key. We then merge the atomized params with the empty <code>Hardware</code> struct, validate the Hardware at line 3, insert at line 5 before redirect the page to <code>show</code> action. If the hardware has validation errors, it will render back the <code>new</code> action at line 8. Let&#39;s move on to show action before we can try out the create function.</p>
 
 <h4>4 - Show Action</h4>
 
@@ -1130,7 +1088,6 @@
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/controller/hardware_controller.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>The <code>show</code> action code is as below:</p>
 
@@ -1146,19 +1103,17 @@
 </span><span class='line'>    <span class="n">hardware</span> <span class="ow">when</span> <span class="n">is_map</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="p">-&gt;</span>
 </span><span class='line'>      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span>
 </span><span class='line'>    <span class="bp">_</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="nc">Router</span><span class="p">.</span><span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>The code above starts by checking for the existence of the hardware with given parameter name <code>id</code>. By using the <code>case</code> condition on line 2 and the guard condition <code>is_map(hardware)</code> on line 3, it is guaranteed that the hardware does exist to show on line 4. Otherwise, it will redirect to the hardware index page.</p>
 
-<p>Because we are rendering a <code>show</code> view on line 4, let&rsquo;s add <code>show</code> view by creating file <code>web/templates/hardwares/show.html.eex</code></p>
+<p>Because we are rendering a <code>show</code> view on line 4, let&#39;s add <code>show</code> view by creating file <code>web/templates/hardwares/show.html.eex</code></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/templates/hardwares/show.html.eex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>with the following code content</p>
 
@@ -1185,7 +1140,7 @@
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
 </pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;br/&gt;</span>
-</span><span class='line'><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;&lt;%= HardwareZone.Router.hardwares_path(:index) %&gt;&#39;</span><span class="nt">&gt;</span><span class="ni">&amp;larr;</span> List of Hardwares<span class="nt">&lt;/a&gt;</span>
+</span><span class='line'><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;&lt;%= hardwares_path(:index) %&gt;&#39;</span><span class="nt">&gt;</span><span class="ni">&amp;larr;</span> List of Hardwares<span class="nt">&lt;/a&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="nt">&lt;h1&gt;</span><span class="err">&lt;</span>%= @hardware.name %&gt;<span class="nt">&lt;/h1&gt;</span>
 </span><span class='line'>
@@ -1199,19 +1154,18 @@
 </span><span class='line'><span class="err">&lt;</span>% end %&gt;
 </span><span class='line'><span class="nt">&lt;br/&gt;&lt;br/&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;&lt;%= HardwareZone.Router.hardwares_path(:edit, @hardware.id) %&gt;&#39;</span>
+</span><span class='line'><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;&lt;%= hardwares_path(:edit, @hardware.id) %&gt;&#39;</span>
 </span><span class='line'>   <span class="na">class=</span><span class="s">&#39;btn btn-primary&#39;</span><span class="nt">&gt;</span>Edit<span class="nt">&lt;/a&gt;</span>
 </span><span class='line'><span class="ni">&amp;nbsp;</span>
-</span><span class='line'><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;&lt;%= HardwareZone.Router.hardwares_path(:destroy, @hardware.id) %&gt;&#39;</span>
+</span><span class='line'><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;&lt;%= hardwares_path(:destroy, @hardware.id) %&gt;&#39;</span>
 </span><span class='line'>   <span class="na">class=</span><span class="s">&#39;btn btn-danger&#39;</span>
 </span><span class='line'>   <span class="na">data-confirm=</span><span class="s">&quot;Are you sure that you want to delete this hardware?&quot;</span>
 </span><span class='line'>   <span class="na">data-method=</span><span class="s">&quot;DELETE&quot;</span><span class="nt">&gt;</span>Remove<span class="nt">&lt;/a&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Take note that line 19 to 22 are for the delete button with <code>data-confirm</code> and <code>data-method</code> attribute. If you click on it, it will trigger the confirm window and submit with <code>DELETE</code> HTTP method to that link URL. This can be achieved thank to the <code>jquery-ujs</code> that we put inside <code>head</code> tag earlier.</p>
 
-<p>Now let&rsquo;s move on to <code>edit</code> action.</p>
+<p>Now let&#39;s move on to <code>edit</code> action.</p>
 
 <h4>5 - Edit Action</h4>
 
@@ -1220,7 +1174,6 @@
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/controllers/hardwares_controller.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>and add in <code>edit</code> action</p>
 
@@ -1237,18 +1190,16 @@
 </span><span class='line'>    <span class="n">hardware</span> <span class="ow">when</span> <span class="n">is_map</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="p">-&gt;</span>
 </span><span class='line'>      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span>
 </span><span class='line'>    <span class="bp">_</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="nc">Router</span><span class="p">.</span><span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>This is quite similar to <code>show</code> action whereby a query for the Hardware using parameter id happens on line 2 and after that a rendering <code>edit</code> view if there is such a hardware. Otherwise, it redirects to index action. Now, let&rsquo;s create <code>edit</code> view for this action:</p>
+<p>This is quite similar to <code>show</code> action whereby a query for the Hardware using parameter id happens on line 2 and after that a rendering <code>edit</code> view if there is such a hardware. Otherwise, it redirects to index action. Now, let&#39;s create <code>edit</code> view for this action:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/templates/hardwares/edit.html.eex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>and paste in the code below:</p>
 
@@ -1260,8 +1211,7 @@
 </span><span class='line'><span class="err">&lt;</span>%= render &quot;form.html&quot;, hardware: @hardware, errors: @errors %&gt;
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>As you notice, the same form view except the header can be employed for the <code>edit</code> action by using <code>render</code>. Now, to make this <code>edit</code> form be able to save the data, let&rsquo;s create <code>update</code> action.</p>
+<p>As you notice, the same form view except the header can be employed for the <code>edit</code> action by using <code>render</code>. Now, to make this <code>edit</code> form be able to save the data, let&#39;s create <code>update</code> action. </p>
 
 <h4>6 - Update Action</h4>
 
@@ -1270,7 +1220,6 @@
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/controllers/hardwares_controller.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>and add in the <code>update</code> function as below:</p>
 
@@ -1296,18 +1245,17 @@
 </span><span class='line'>      <span class="k">case</span> <span class="nc">Hardware</span><span class="p">.</span><span class="n">validate</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="k">do</span>
 </span><span class='line'>        <span class="p">[]</span> <span class="p">-&gt;</span>
 </span><span class='line'>          <span class="nc">Repo</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span>
-</span><span class='line'>          <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="nc">Router</span><span class="p">.</span><span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
 </span><span class='line'>        <span class="n">errors</span> <span class="p">-&gt;</span>
 </span><span class='line'>          <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
 </span><span class='line'>      <span class="k">end</span>
 </span><span class='line'>    <span class="bp">_</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="nc">Router</span><span class="p">.</span><span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Since there are a few things happening here, let&rsquo;s go through this piece of code line by line so that we can understand more:</p>
+<p>Since there are a few things happening here, let&#39;s go through this piece of code line by line so that we can understand more:</p>
 
 <ul>
 <li>On line 1, as usual it is the function with the second parameters which are the parameters sent from front end. We will need to split these parameters to <code>id</code> and the <code>hardware</code> struct.</li>
@@ -1319,11 +1267,10 @@
 <li>On line 7, trigger the actual update using <code>Repo.update</code></li>
 <li>On line 8, after update, it redirects back to show the hardware.</li>
 <li>On line 9, the <code>case</code> code will go to this branch if errors occur during validation</li>
-<li>On line 10, because of the error, we will re-render <code>edit</code> action with the attached <code>errors</code></li>
+<li>On line 10, because of the error, we will re-render <code>edit</code> action with the attached <code>errors</code> </li>
 </ul>
 
-
-<p>That&rsquo;s it for update action. Now let&rsquo;s move on to destroy or delete action</p>
+<p>That&#39;s it for update action. Now let&#39;s move on to destroy or delete action</p>
 
 <h4>7 - Destroy action</h4>
 
@@ -1332,7 +1279,6 @@
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/controllers/hardwares_controller.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>and add this the destroy action as below:</p>
 
@@ -1349,13 +1295,12 @@
 </span><span class='line'>  <span class="k">case</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="nc">Hardware</span><span class="p">,</span> <span class="nc">String</span><span class="p">.</span><span class="n">to_integer</span><span class="p">(</span><span class="n">id</span><span class="p">))</span> <span class="k">do</span>
 </span><span class='line'>    <span class="n">hardware</span> <span class="ow">when</span> <span class="n">is_map</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="p">-&gt;</span>
 </span><span class='line'>      <span class="nc">Repo</span><span class="p">.</span><span class="n">delete</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="nc">Router</span><span class="p">.</span><span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
 </span><span class='line'>    <span class="bp">_</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="nc">Router</span><span class="p">.</span><span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <h3>Wrap Up</h3>
 
@@ -1384,6 +1329,12 @@
 
 <time class='entry-date' datetime='2014-10-18T23:20:53+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:20 pm</span></time>
       
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/elixir/'>elixir</a>, <a class='category' href='/blog/categories/phoenix/'>phoenix</a>, <a class='category' href='/blog/categories/restful/'>restful</a>
+  
+</span>
 
 
     </p>

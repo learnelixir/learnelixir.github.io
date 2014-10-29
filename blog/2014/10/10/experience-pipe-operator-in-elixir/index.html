@@ -117,10 +117,9 @@
   </header>
 
 
-<div class="entry-content"><p>Pipe operator in Elixir is new to me. When I first saw it, I thought it was weird. However, after I read some Elixir code and experience myself, it is quite an interesting thing to use. Here&rsquo;s why:</p>
+<div class="entry-content"><p>Pipe operator in Elixir is new to me. When I first saw it, I thought it was weird. However, after I read some Elixir code and experience myself, it is quite an interesting thing to use. Here&#39;s why:</p>
 
-<!-- more -->
-
+<!--more-->
 
 <p>Let start with the following code:</p>
 
@@ -133,7 +132,6 @@
 </span><span class='line'>  <span class="kd">def</span> <span class="n">double</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">2</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Now, in a common lanugage like Java or Ruby, in order to increase a number and then double it, here is what I will need to write in Elixir:</p>
 
@@ -157,7 +155,6 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Whereas, using Elixir pipe operator <code>|&gt;</code>, I can write like following and the test should still pass</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -167,7 +164,6 @@
 </span><span class='line'>  <span class="n">assert</span> <span class="mi">1</span> <span class="o">|&gt;</span> <span class="n">increase</span> <span class="o">|&gt;</span> <span class="n">double</span> <span class="o">==</span> <span class="mi">4</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Something to take note here is that I am using number <code>1</code> to pipe its value to function <code>increase</code> and then pipe the result returning from increase to <code>double</code> function. It is quite amazing to read the code in this way instead of the original way whereby I have to read code from inside out. With pipe operator, it is a sequence of operations, which the <strong>linput</strong> of previous operation will be <strong>output</strong> of the next operation and so on. It is truly a way to <strong>transform data</strong> via multiple step functions.</p>
 
@@ -225,10 +221,9 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
+<p>If you look at line 21, the list was used to send itself to the first <code>select</code> function then to the second <code>select</code> function. </p>
 
-<p>If you look at line 21, the list was used to send itself to the first <code>select</code> function then to the second <code>select</code> function.</p>
-
-<p>That&rsquo;s all for this article. We will cover more advanced topic on Pipe on upcoming articles :-)</p>
+<p>That&#39;s all for this article. We will cover more advanced topic on Pipe on upcoming articles :-)</p>
 </div>
 
 

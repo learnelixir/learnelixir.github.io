@@ -119,15 +119,11 @@
 
 <div class="entry-content"><p><strong>UPDATE</strong> on 27th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. The source code is available on the following git URL:</p>
 
-<p><a href="https://github.com/learnelixir/phoenix-heroku">https://github.com/learnelixir/phoenix-heroku</a></p>
-
+<p><a href="https://github.com/learnelixir/phoenix-heroku">https://github.com/learnelixir/phoenix-heroku</a>
 <hr/><br/>
-
-
-<p>Phoenix is a pretty cool web framework for Elixir. However, up to date, there are still very few resources on how to deploy a Phoenix application to a web server. I tried to google on how to deploy but could not find any tutorials that provide very clear and exact steps. Hence, in this article, let walkthrouh step by step how to do that with a heroku server.</p>
+Phoenix is a pretty cool web framework for Elixir. However, up to date, there are still very few resources on how to deploy a Phoenix application to a web server. I tried to google on how to deploy but could not find any tutorials that provide very clear and exact steps. Hence, in this article, let walkthrouh step by step how to do that with a heroku server.</p>
 
 <!-- more -->
-
 
 <h3>Create an awesome Phoenix application</h3>
 
@@ -137,15 +133,13 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix phoenix.new phoenix-heroku ../
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Enter this new application</p>
+<p>Enter this new application </p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ../phoenix-heroku
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>and change the phoenix deps to refer to ref <code>8cffae4</code> sha. There is an error in current Phoenix 0.5 version whereby the view layout file is touched even though it does not exists. This commit <a href="https://github.com/phoenixframework/phoenix/commit/86dee56b42da5f465c81cae6b0556942069a2165">https://github.com/phoenixframework/phoenix/commit/86dee56b42da5f465c81cae6b0556942069a2165</a> has fixed that:</p>
+<p>and change the phoenix deps to refer to ref <code>8cffae4</code> sha. There is an error in current Phoenix 0.5 version whereby the view layout file is touched even though it does not exists. This commit https://github.com/phoenixframework/phoenix/commit/86dee56b42da5f465c81cae6b0556942069a2165 has fixed that:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -157,20 +151,17 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Now, install all the depenencies</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>mix <span class="k">do</span> deps.get, compile
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>You will also need to modify the views to work with this phoenix version:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/views.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>and change it to the following</p>
 
@@ -214,8 +205,7 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>This is a miminal number of steps to setup a phoenix application. Eventually, you will need to add more code to build it up. Moving forward, let&rsquo;s deploy this application.</p>
+<p>This is a miminal number of steps to setup a phoenix application. Eventually, you will need to add more code to build it up. Moving forward, let&#39;s deploy this application. </p>
 
 <p>Here are the steps to deploy to Heroku server</p>
 
@@ -226,7 +216,6 @@
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git init
 </span></code></pre></td></tr></table></div></figure>
-
 
 <h4>Step 2: Create the heroku application</h4>
 
@@ -242,8 +231,7 @@
 </span><span class='line'>Git remote heroku added
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>After this command, Heroku will provide me a URL for my heroku app. But there is nothing there yet. Also, do note down the name, we will use it later. Mine is <code>phoenix-heroku-demo</code>. Let&rsquo;s move to next step</p>
+<p>After this command, Heroku will provide me a URL for my heroku app. But there is nothing there yet. Also, do note down the name, we will use it later. Mine is <code>phoenix-heroku-demo</code>. Let&#39;s move to next step</p>
 
 <h4>Step 3: Add buildback to your app</h4>
 
@@ -255,7 +243,6 @@
 </span><span class='line'><span class="nv">BUILDPACK_URL</span><span class="o">=</span>https://github.com/HashNuke/heroku-buildpack-elixir.git -a phoenix-heroku-demo
 </span></code></pre></td></tr></table></div></figure>
 
-
 <h4>Step 4: Set mix environment config</h4>
 
 <p>You can choose to set mix environment to be staging or production at this step. Here I choose to run my app using production environment:</p>
@@ -264,8 +251,7 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>heroku config:set <span class="nv">MIX_ENV</span><span class="o">=</span>prod
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>After this, you will need to modify some of the config file in this Phoenix application. Let&rsquo;s move to step 5</p>
+<p>After this, you will need to modify some of the config file in this Phoenix application. Let&#39;s move to step 5</p>
 
 <h4>Step 5: Edit Procfile</h4>
 
@@ -275,8 +261,7 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>web: yes <span class="p">|</span> mix compile.protocols <span class="o">&amp;&amp;</span> elixir -pa _build/prod/consolidated -S mix phoenix.start
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>If in step 4, you have specified staging environment, you will need to use the folder <code>_build/staging/consolidated</code> for the <code>-pa</code> option here.</p>
+<p>If in step 4, you have specified staging environment, you will need to use the folder <code>_build/staging/consolidated</code> for the <code>-pa</code> option here. </p>
 
 <h4>Step 6: Edit elixir_buildpack.config</h4>
 
@@ -290,7 +275,6 @@
 </span><span class='line'><span class="nv">always_rebuild</span><span class="o">=</span><span class="nb">true</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <h4>Step 7: Commit everything and push</h4>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -298,7 +282,6 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git add . <span class="o">&amp;&amp;</span> git commit -am <span class="s2">&quot;initial commit&quot;</span>
 </span><span class='line'><span class="nv">$ </span>git push heroku master
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>It can be quite slow in this first time pushing to heroku master as there is a need to compile all the elixir depenencies on Heroku server, but subsequently it will be quite fast. Now I go to <code>http://phoenix-heroku-demo.herokuapp.com/</code> and hooray the phoenix home page is there</p>
 
@@ -312,8 +295,7 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>heroku run mix run seeds.ex
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>This has concluded for Heroku deploy. Happy Deploying :-)</p>
+<p>This has concluded for Heroku deploy. Happy Deploying :-) </p>
 </div>
 
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Spawn | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/spawn/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-30T01:08:20+08:00</updated>
+  <updated>2014-10-30T07:22:37+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -18,160 +18,133 @@
     <link href="http://learnelixir.com/blog/2014/10/14/spawn-process-and-concurrency-in-elixir/"/>
     <updated>2014-10-14T23:36:28+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/14/spawn-process-and-concurrency-in-elixir</id>
-    <content type="html"><![CDATA[<p>Concurrency in Elixir can be achieved by using 3 things. They are <strong>spawning process</strong>, <strong>sending messages</strong> and <strong>receiving messages</strong>. Let&rsquo;s look at how we can spawn a new process in Elixir</p>
+    <content type="html"><![CDATA[<p>Concurrency in Elixir can be achieved by using 3 things. They are <strong>spawning process</strong>, <strong>sending messages</strong> and <strong>receiving messages</strong>. Let&#39;s look at how we can spawn a new process in Elixir</p>
 
 <!-- more -->
 
-
 <h3>Spawning Process</h3>
 
-<p>To spawn a new process in Elixir, we will first need to define a function and call <code>spawn</code>. This function can be an anonymous function or a function defined in a module.</p>
+<p>To spawn a new process in Elixir, we will first need to define a function and call <code>spawn</code>. This function can be an anonymous function or a function defined in a module. </p>
 
 <h4>Spawn process from Anonymous function</h4>
 
 <p>For instance, if we have:</p>
-
-<pre><code class="elixir">iex&gt; fun = fn -&gt; 1 + 1 end
-#Function&lt;20.90072148/0 in :erl_eval.expr/5&gt;
-</code></pre>
-
-<p>We can then call spawn on this function</p>
-
-<pre><code class="elixir">iex&gt; pid = spawn(fun)
-#PID&lt;0.56.0&gt;
-</code></pre>
-
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">iex</span><span class="o">&gt;</span> <span class="n">fun</span> <span class="p">=</span> <span class="k">fn</span> <span class="p">-&gt;</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">end</span>
+<span class="c1">#Function&lt;20.90072148/0 in :erl_eval.expr/5&gt;</span>
+</code></pre></div>
+<p>We can then call spawn on this function </p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">iex</span><span class="o">&gt;</span> <span class="n">pid</span> <span class="p">=</span> <span class="n">spawn</span><span class="p">(</span><span class="n">fun</span><span class="p">)</span>
+<span class="c1">#PID&lt;0.56.0&gt;</span>
+</code></pre></div>
 <p><code>spawn</code> function will return you a <code>PID</code> struct with pid number of the spawn process inside. This process is then by killed by itself after finish running.</p>
-
-<pre><code class="elixir">iex&gt; Process.alive?(pid)
-false
-</code></pre>
-
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Process</span><span class="p">.</span><span class="n">alive?</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
+<span class="no">false</span>
+</code></pre></div>
 <p>Another way to spawn is calling spawn/3 a function defined in <code>defmodule</code>. For example:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">Fib</span> <span class="k">do</span>
+  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">0</span>
+  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">end</span>
 
-<pre><code class="elixir">defmodule Fib do
-  def fib(0), do: 0
-  def fib(1), do: 1
-  def fib(n), do: fib(n - 1) + fib(n - 2)
-end
-
-pid = spawn(Fib, :fib, [10])
-</code></pre>
-
+<span class="n">pid</span> <span class="p">=</span> <span class="n">spawn</span><span class="p">(</span><span class="nc">Fib</span><span class="p">,</span> <span class="ss">:fib</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">])</span>
+</code></pre></div>
 <p>The first argument is the module name, second argument is function name and the last argument is the list of the arguments. Later we will see how this <code>spawn</code> can be used. Before that, let move on to how to send a message to a process.</p>
 
 <h4>Sending Messages</h4>
 
 <p>We can send a message to a running process in Elixir. The most obvious example is sending a message to the process running your <code>iex</code>. The <code>iex</code> is actually a process itself and when we call <code>self()</code>, it will return the PID number:</p>
-
-<pre><code class="elixir">iex&gt; self_pid = self()
-#PID&lt;0.53.0&gt;
-iex&gt; Process.alive?(self_pid)
-true
-</code></pre>
-
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">iex</span><span class="o">&gt;</span> <span class="n">self_pid</span> <span class="p">=</span> <span class="n">self</span><span class="p">()</span>
+<span class="c1">#PID&lt;0.53.0&gt;</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Process</span><span class="p">.</span><span class="n">alive?</span><span class="p">(</span><span class="n">self_pid</span><span class="p">)</span>
+<span class="no">true</span>
+</code></pre></div>
 <p>Since the process is alive, we can send a message to this process by triggering <code>send/2</code> function</p>
-
-<pre><code class="elixir">iex&gt; send self(), {:any, "message"}
-</code></pre>
-
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">iex</span><span class="o">&gt;</span> <span class="n">send</span> <span class="n">self</span><span class="p">(),</span> <span class="p">{</span><span class="ss">:any</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">}</span>
+</code></pre></div>
 <p><code>send</code> takes 2 argument, the first one is the PID of the process that you would like to send the message to and the second argument is the message in a form of a tuple. It can be any tuple.</p>
 
 <h3>Receiving Messages</h3>
 
 <p>Receiving messages in Elixir can be called anywhere after the <code>send</code> command is triggered. When a message is sent to a process, the message is stored in that process <strong>mailbox</strong> and waits there. When <code>receive</code> function is called, that message will then be retrieved.</p>
-
-<pre><code class="elixir">iex&gt; send self(), {:any, "message"}
-{:any, "message"}
-iex&gt; receive do
-       {:any, "message"} -&gt; "We have received a message" 
-     end
-</code></pre>
-
-<p>How these 3 things <strong>spawn processes</strong>, <strong>sending messages</strong> and <strong>receiving messages</strong> can work together? Let&rsquo;s take a look at the following code to generate a fibonacci number by supplying a sequence number</p>
-
-<pre><code class="elixir">defmodule Fib do
-  def fib(0), do: 0
-  def fib(1), do: 1
-  def fib(n), do: fib(n - 1) + fib(n - 2)
-end
-</code></pre>
-
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">iex</span><span class="o">&gt;</span> <span class="n">send</span> <span class="n">self</span><span class="p">(),</span> <span class="p">{</span><span class="ss">:any</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">}</span>
+<span class="p">{</span><span class="ss">:any</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="k">receive</span> <span class="k">do</span>
+       <span class="p">{</span><span class="ss">:any</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">}</span> <span class="p">-&gt;</span> <span class="s2">&quot;We have received a message&quot;</span> 
+     <span class="k">end</span>
+</code></pre></div>
+<p>How these 3 things <strong>spawn processes</strong>, <strong>sending messages</strong> and <strong>receiving messages</strong> can work together? Let&#39;s take a look at the following code to generate a fibonacci number by supplying a sequence number</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">Fib</span> <span class="k">do</span>
+  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">0</span>
+  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div>
 <p>After we defined this module <code>Fib</code>, we can just call:</p>
-
-<pre><code class="elixir">iex&gt; Fib.fib(10)
-55
-</code></pre>
-
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">iex</span><span class="o">&gt;</span> <span class="nc">Fib</span><span class="p">.</span><span class="n">fib</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="mi">55</span>
+</code></pre></div>
 <p>Now, let make Fib module a bit more interesting by making use of the <strong>spawn processes</strong>, <strong>sending messages</strong> and <strong>receiving messages</strong>. Let define a new module called CFib</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">CFib</span> <span class="k">do</span>
+  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">0</span>
+  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">do</span> 
 
-<pre><code class="elixir">defmodule CFib do
-  def fib(0), do: 0
-  def fib(1), do: 1
-  def fib(n) do 
-
-  end
-end
-</code></pre>
-
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
 <p>Now in <code>fib(n)</code> function definition, instead of just calling the the calculation on <code>n - 1</code> and <code>n - 2</code>, we will make these 2 calculations as 2 processes running concurrently.</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">calculate_fib</span> <span class="p">=</span> <span class="k">fn</span> <span class="n">n</span> <span class="p">-&gt;</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">end</span>
+  <span class="n">spawn</span><span class="p">(</span><span class="bp">__MODULE__</span><span class="p">,</span> <span class="ss">:fib_at_child</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">calculate_fib</span><span class="p">,</span> <span class="n">self</span><span class="p">])</span>  
+  <span class="n">spawn</span><span class="p">(</span><span class="bp">__MODULE__</span><span class="p">,</span> <span class="ss">:fib_at_child</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">calculate_fib</span><span class="p">,</span> <span class="n">self</span><span class="p">])</span>  
+<span class="k">end</span>
 
-<pre><code class="elixir">def fib(n) do
-  calculate_fib = fn n -&gt; fib(n) end
-  spawn(__MODULE__, :fib_at_child, [n - 1, calculate_fib, self])  
-  spawn(__MODULE__, :fib_at_child, [n - 2, calculate_fib, self])  
-end
-
-def fib_at_child(sequence, func, parent) do
-  send parent, [self, func.(sequence)]
-end
-</code></pre>
-
+<span class="kd">def</span> <span class="n">fib_at_child</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">send</span> <span class="n">parent</span><span class="p">,</span> <span class="p">[</span><span class="n">self</span><span class="p">,</span> <span class="n">func</span><span class="p">.(</span><span class="n">sequence</span><span class="p">)]</span>
+<span class="k">end</span>
+</code></pre></div>
 <p>Inside <code>fib</code> function, we have spawned 2 processes for function <code>fib_at_child</code> with arguments <code>n - 1</code> and <code>n - 2</code> respectively, the anonymous function to calculate fibonacci based on a sequence number and the parent process itself. We have also defined an extra function call <code>fib_at_child</code> which will be used to execute the function on the sequence number and send back the result of the calculation back to the parent process. Take note that the function <code>fib_at_child</code> now is running at the child process instead of the parent process. That is the reason why we will need to use <code>send</code> function to send back the result to parent.</p>
 
 <p>The last step is to receive the result at the original process and add the two results</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">calculate_fib</span> <span class="p">=</span> <span class="k">fn</span> <span class="n">n</span> <span class="p">-&gt;</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">end</span>
+  <span class="n">first_pid</span> <span class="p">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">__MODULE__</span><span class="p">,</span> <span class="ss">:fib_at_child</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">calculate_fib</span><span class="p">,</span> <span class="n">self</span><span class="p">])</span>  
+  <span class="n">second_pid</span> <span class="p">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">__MODULE__</span><span class="p">,</span> <span class="ss">:fib_at_child</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">calculate_fib</span><span class="p">,</span> <span class="n">self</span><span class="p">])</span>
 
-<pre><code class="elixir">def fib(n) do
-  calculate_fib = fn n -&gt; fib(n) end
-  first_pid = spawn(__MODULE__, :fib_at_child, [n - 1, calculate_fib, self])  
-  second_pid = spawn(__MODULE__, :fib_at_child, [n - 2, calculate_fib, self])
+  <span class="n">fib_of_n_1</span> <span class="p">=</span> <span class="k">receive</span> <span class="ss">do</span><span class="p">:</span> <span class="p">{</span><span class="o">^</span><span class="n">first_pid</span><span class="p">,</span> <span class="n">value</span><span class="p">}</span> <span class="p">-&gt;</span> <span class="n">value</span>
+  <span class="n">fib_of_n_2</span> <span class="p">=</span> <span class="k">receive</span> <span class="ss">do</span><span class="p">:</span> <span class="p">{</span><span class="o">^</span><span class="n">second_pid</span><span class="p">,</span> <span class="n">value</span><span class="p">}</span> <span class="p">-&gt;</span> <span class="n">value</span>
 
-  fib_of_n_1 = receive do: {^first_pid, value} -&gt; value
-  fib_of_n_2 = receive do: {^second_pid, value} -&gt; value
+  <span class="n">fib_of_n_1</span> <span class="o">+</span> <span class="n">fib_of_n_2</span>
+<span class="k">end</span>
 
-  fib_of_n_1 + fib_of_n_2
-end
-
-def fib_at_child(sequence, func, parent) do
-  send parent, {self, func.(sequence)}
-end
-</code></pre>
-
+<span class="kd">def</span> <span class="n">fib_at_child</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">send</span> <span class="n">parent</span><span class="p">,</span> <span class="p">{</span><span class="n">self</span><span class="p">,</span> <span class="n">func</span><span class="p">.(</span><span class="n">sequence</span><span class="p">)}</span>
+<span class="k">end</span>
+</code></pre></div>
 <p>And here is the complete program of CFib</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">CFib</span> <span class="k">do</span>
+  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">0</span>
+  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="kd">def</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">do</span>
+      <span class="n">calculate_fib</span> <span class="p">=</span> <span class="k">fn</span> <span class="n">n</span> <span class="p">-&gt;</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">end</span> 
+      <span class="n">first_pid</span> <span class="p">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">__MODULE__</span><span class="p">,</span> <span class="ss">:fib_at_child</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">calculate_fib</span><span class="p">,</span> <span class="n">self</span><span class="p">])</span>  
+      <span class="n">second_pid</span> <span class="p">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">__MODULE__</span><span class="p">,</span> <span class="ss">:fib_at_child</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">calculate_fib</span><span class="p">,</span> <span class="n">self</span><span class="p">])</span>
 
-<pre><code class="elixir">defmodule CFib do
-  def fib(0), do: 0
-  def fib(1), do: 1
-  def fib(n) do
-      calculate_fib = fn n -&gt; fib(n) end 
-      first_pid = spawn(__MODULE__, :fib_at_child, [n - 1, calculate_fib, self])  
-      second_pid = spawn(__MODULE__, :fib_at_child, [n - 2, calculate_fib, self])
+      <span class="n">fib_of_n_1</span> <span class="p">=</span> <span class="k">receive</span> <span class="ss">do</span><span class="p">:</span> <span class="p">({</span><span class="o">^</span><span class="n">first_pid</span><span class="p">,</span> <span class="n">value</span><span class="p">}</span> <span class="p">-&gt;</span> <span class="n">value</span><span class="p">)</span>
+      <span class="n">fib_of_n_2</span> <span class="p">=</span> <span class="k">receive</span> <span class="ss">do</span><span class="p">:</span> <span class="p">({</span><span class="o">^</span><span class="n">second_pid</span><span class="p">,</span> <span class="n">value</span><span class="p">}</span> <span class="p">-&gt;</span> <span class="n">value</span><span class="p">)</span>
 
-      fib_of_n_1 = receive do: ({^first_pid, value} -&gt; value)
-      fib_of_n_2 = receive do: ({^second_pid, value} -&gt; value)
+      <span class="n">fib_of_n_1</span> <span class="o">+</span> <span class="n">fib_of_n_2</span>
+  <span class="k">end</span> 
 
-      fib_of_n_1 + fib_of_n_2
-  end 
+  <span class="kd">def</span> <span class="n">fib_at_child</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span> <span class="k">do</span>
+    <span class="n">send</span> <span class="n">parent</span><span class="p">,</span> <span class="p">{</span><span class="n">self</span><span class="p">,</span> <span class="n">func</span><span class="p">.(</span><span class="n">sequence</span><span class="p">)}</span>
+  <span class="k">end</span> 
+<span class="k">end</span>
 
-  def fib_at_child(sequence, func, parent) do
-    send parent, {self, func.(sequence)}
-  end 
-end
-
-CFib.fib(10) # 55
-</code></pre>
-
-<p>That&rsquo;s all for this article. I hope you enjoyed this. Happy coding :-)</p>
+<span class="nc">CFib</span><span class="p">.</span><span class="n">fib</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="c1"># 55</span>
+</code></pre></div>
+<p>That&#39;s all for this article. I hope you enjoyed this. Happy coding :-)</p>
 ]]></content>
   </entry>
   

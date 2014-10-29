@@ -117,10 +117,9 @@
   </header>
 
 
-<div class="entry-content"><p>In this article, we will go through some basic testing syntax with elixir. Elixir is a language that very well supports unit test and I totally love it when I first see it on the video. Let&rsquo;s start by writing a simple assertion</p>
+<div class="entry-content"><p>In this article, we will go through some basic testing syntax with elixir. Elixir is a language that very well supports unit test and I totally love it when I first see it on the video. Let&#39;s start by writing a simple assertion</p>
 
 <!--more-->
-
 
 <p>You can use your favorite editor to edit an <code>.ex</code> file. In my case, I create a test folder and edit my <code>sample.ex</code> inside</p>
 
@@ -129,7 +128,6 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mkdir <span class="nb">test</span>
 </span><span class='line'><span class="nv">$ </span>vim <span class="nb">test</span>/sample.ex
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Now, inside this <code>sample.ex</code>, I can immediately write my first assertion like below</p>
 
@@ -153,7 +151,6 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>As you can see, the test case can be written in a very simple manner. It starts with <code>ExUnit.start</code> and then make use of <code>ExUnit.Case</code> in <code>use ExUnit.Case</code></p>
 
 <p>You can then run this file by this command</p>
@@ -174,10 +171,9 @@
 </span><span class='line'>Randomized with seed 322828
 </span></code></pre></td></tr></table></div></figure>
 
+<p>That&#39;s for the start, now we can following a Test Driven Development method (TDD) to develop something basic just for learning purpose. Let&#39;s write fibonacci generate. </p>
 
-<p>That&rsquo;s for the start, now we can following a Test Driven Development method (TDD) to develop something basic just for learning purpose. Let&rsquo;s write fibonacci generate.</p>
-
-<p>Giving a sequence number, the program will generate out a fibonacci number. Before we start writing, let&rsquo;s review the definition of fibonacci number</p>
+<p>Giving a sequence number, the program will generate out a fibonacci number. Before we start writing, let&#39;s review the definition of fibonacci number </p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -186,7 +182,6 @@
 </span><span class='line'>fibonacci<span class="o">(</span>1<span class="o">)</span> <span class="o">=</span> 1
 </span><span class='line'>fibonacci<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> fibonacci<span class="o">(</span>n - 1<span class="o">)</span> + fibonacci<span class="o">(</span>n - 2<span class="o">)</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>With this definition in mind, let start by writing the first test:</p>
 
@@ -210,7 +205,6 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Run this test and you can expect a failure:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -228,11 +222,13 @@
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
+<span class='line-number'>16</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>elixir sample.ex
 </span><span class='line'>
 </span><span class='line'>  1<span class="o">)</span> <span class="nb">test </span>fibonacci number <span class="m">0</span> is <span class="m">1</span> <span class="o">(</span>TestIt<span class="o">)</span>
 </span><span class='line'>     sample.ex:6
-</span><span class='line'>     ** <span class="o">(</span>UndefinedFunctionError<span class="o">)</span> undefined <span class="k">function</span>: Sequence.fibonacci/1 <span class="o">(</span>module Sequence is not available<span class="o">)</span>
+</span><span class='line'>     ** <span class="o">(</span>UndefinedFunctionError<span class="o">)</span> undefined <span class="k">function</span>: <span class="se">\</span>
+</span><span class='line'>            Sequence.fibonacci/1 <span class="o">(</span>module Sequence is not available<span class="o">)</span>
 </span><span class='line'>     stacktrace:
 </span><span class='line'>       Sequence.fibonacci<span class="o">(</span>0<span class="o">)</span>
 </span><span class='line'>       sample.ex:7
@@ -244,7 +240,6 @@
 </span><span class='line'>
 </span><span class='line'>Randomized with seed 490020
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>As you can expect, the failure is because we do not have any module <code>Sequence</code> and function <code>fibonacci</code>. Let go to <code>sample.ex</code> and add in a function fibonacci:</p>
 
@@ -280,7 +275,6 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Now we have <code>fibonacci</code> function in <code>Sequence</code> module, which takes in a number and always return 1. Run the test again</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -298,7 +292,6 @@
 </span><span class='line'>
 </span><span class='line'>Randomized with seed 311294
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Great! It passed. We are at green state now. We can now refactor a bit to make our source code a bit shorter:</p>
 
@@ -330,7 +323,6 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>I have moved the block inside <code>def fibonacci</code> to become something shorter. In fact, <code>def</code> is a function call in Elixir, which takes in a pattern (<code>fibonacci(n)</code>) and <code>do</code> something. This something needs to be a regular expression.</p>
 
 <p>Now run the test again and you would expect it to pass</p>
@@ -353,8 +345,7 @@
 </span><span class='line'>Randomized with seed 999642
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>You can ignore the warning of unused variable n for now. We will come back to that shortly. Now, let&rsquo;s write some more test cases:</p>
+<p>You can ignore the warning of unused variable n for now. We will come back to that shortly. Now, let&#39;s write some more test cases:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -423,7 +414,6 @@
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>And when run the test, it will fail as expected</p>
 
@@ -527,7 +517,6 @@
 </span><span class='line'>Randomized with seed 982355
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Now let try to write the code to pass these cases using the definition</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -539,7 +528,6 @@
 </span><span class='line'>  <span class="kd">def</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Note that <code>when n &lt;= 1</code> in the first function definition is Elixir guard conidtion&#8220;. Now, run the test and everything is passed</p>
 
@@ -559,7 +547,6 @@
 </span><span class='line'>Randomized with seed 456516
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Since elixir function definition is patterned matching. You also can write as following to match according to the mathematic definition</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -573,7 +560,6 @@
 </span><span class='line'>  <span class="kd">def</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Here we do not need a guard condition for n in third function as it will match first and second if n is 0 or 1. The function matching is top to bottom. Run the test again</p>
 
@@ -593,7 +579,6 @@
 </span><span class='line'>Randomized with seed 163178
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>We concluded this article here and hope you have learned and enjoyed the following from Elixir. Thank you for your time</p>
 
 <ul>
@@ -602,7 +587,6 @@
 <li>Function Pattern Matching</li>
 <li>Guard Conditions</li>
 </ul>
-
 </div>
 
 

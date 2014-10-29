@@ -117,15 +117,12 @@
   </header>
 
 
-<div class="entry-content"><p><strong>UPDATE</strong> on 26th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1</p>
+<div class="entry-content"><p><strong>UPDATE</strong> on 26th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
+<hr/><br/></p>
 
-<hr/><br/>
-
-
-<p>In this article, let&rsquo;s go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postgres and Ecto. I hope you will enjoy :-)</p>
+<p>In this article, let&#39;s go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postgres and Ecto. I hope you will enjoy :-)</p>
 
 <!--more-->
-
 
 <h3>Create Elixir Book Store Project</h3>
 
@@ -134,7 +131,6 @@
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix phoenix.new book_store ../
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Now enter the project folder and get all the dependencies and start the phoenix project:</p>
 
@@ -146,7 +142,6 @@
 </span><span class='line'><span class="nv">$ </span>mix phoenix.start
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Open the browser, and go to the url <code>http://localhost:4000</code></p>
 
 <p><img class="left" src="/images/build-web-app-with-elixir/phoenix_page.png" width="800" height="510" title="image" alt="images"></p>
@@ -156,10 +151,9 @@
 <p>From the project root folder, open file <code>mix.exs</code>, scroll down to the end of the file, then you will see <code>defp deps do</code> function definition. You will need to add in <code>postgrex</code> and <code>ecto</code> dependencies</p>
 
 <ul>
-<li><code>postgrex</code> (<a href="https://github.com/ericmj/postgrex">https://github.com/ericmj/postgrex</a>) is the PostgresSQL driver for Elixir</li>
-<li><code>ecto</code> (<a href="https://github.com/elixir-lang/ecto">https://github.com/elixir-lang/ecto</a>) is a database wrapper and language integrated query for Elixir</li>
+<li><code>postgrex</code> (https://github.com/ericmj/postgrex) is the PostgresSQL driver for Elixir</li>
+<li><code>ecto</code> (https://github.com/elixir-lang/ecto) is a database wrapper and language integrated query for Elixir </li>
 </ul>
-
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -179,7 +173,6 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>In the same file, you will also need to update the application function definition to include <code>postgrex</code> and <code>ecto</code></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -196,13 +189,11 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Run the following commands in the terminal to get all the dependencies.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix deps.get
 </span></code></pre></td></tr></table></div></figure>
-
 
 <h3>Create A Repo</h3>
 
@@ -231,7 +222,6 @@
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>We have defined PostgreSQL connection with a URL format. What you will need to do is changing the <code>postgresuser</code> and <code>password</code> to be the real postgres username and password on your database.</p>
 
@@ -273,22 +263,19 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Line number 11 is the only line that we add inside this file.</p>
 
-<p>To make sure that everything is good, let&rsquo;s compile the project:</p>
+<p>To make sure that everything is good, let&#39;s compile the project:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix compile
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Next, let&rsquo;s create the <code>book_store</code> database in postgres</p>
+<p>Next, let&#39;s create the <code>book_store</code> database in postgres</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>createdb book_store --encoding<span class="o">=</span><span class="s1">&#39;utf-8&#39;</span> --locale<span class="o">=</span>en_US.UTF-8 --template<span class="o">=</span>template0<span class="p">;</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <h3>Create a model</h3>
 
@@ -316,7 +303,6 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <h3>Generate Migration Script</h3>
 
 <p>We will also need to create a database migration for books model by using the following command:</p>
@@ -334,7 +320,6 @@
 </span><span class='line'>* creating priv/repo/migrations
 </span><span class='line'>* creating priv/repo/migrations/20141005013526_create_book.exs
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Now open the just generated migration file <code>priv/repo/migrations/20141005013526_create_book.exs</code> and change with the following code</p>
 
@@ -388,7 +373,6 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Inside this migration file, you will see up and down function. <code>up</code> function is run when you run the database migration, <code>down</code> function is run when you revert or rollback this database migration</p>
 
 <p>Now run the migration</p>
@@ -399,10 +383,9 @@
 </span><span class='line'>* running UP _build/dev/lib/book_store/priv/repo/migrations/20141005013526_create_book.exs<span class="sb">``</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <h3>Create A Query</h3>
 
-<p>Create <code>web/models/queries.ex</code> folder.</p>
+<p>Create <code>web/models/queries.ex</code> folder. </p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -423,7 +406,6 @@
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <h3>Route books index page to Book controller index action</h3>
 
@@ -448,7 +430,6 @@
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <h3>Create BookController and get all books</h3>
 
@@ -476,15 +457,13 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <h3>Create books index page view</h3>
 
-<p>Next thing that we will need to do is to create an index page for books listing. First, create folder <code>book</code> inside <code>web/template</code>.</p>
+<p>Next thing that we will need to do is to create an index page for books listing. First, create folder <code>book</code> inside <code>web/template</code>. </p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir web/templates/book
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Second, create a book view file - <code>web/views/book_view.ex</code> with the following content</p>
 
@@ -495,7 +474,6 @@
 </span><span class='line'>  <span class="kn">use</span> <span class="nc">BookStore.Views</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
-
 
 <p>Finally, create file <code>web/template/book/index.html.eex</code> and paste in the following code:</p>
 
@@ -549,15 +527,13 @@
 </span><span class='line'><span class="nt">&lt;/table&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Refresh the browser and voila, this is what we will get:</p>
 
 <p><img class="left" src="/images/build-web-app-with-elixir/complete.png" width="800" height="346" title="image" alt="images"></p>
 
 <h3>Common Pitfall</h3>
 
-<p>I seldom hit the following error when trying to restart phoenix although all the codes are correct</p>
-
+<p>I seldom hit the following error when trying to restart phoenix although all the codes are correct 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -572,16 +548,15 @@
 </span><span class='line'>    application: logger
 </span><span class='line'>    exited: stopped
 </span><span class='line'>    <span class="nb">type</span>: temporary
-</span><span class='line'>** <span class="o">(</span>Mix<span class="o">)</span> Could not start application book_store: exited in: BookStore.start<span class="o">(</span>:normal, <span class="o">[])</span>
+</span><span class='line'>** <span class="o">(</span>Mix<span class="o">)</span> Could not start application book<em>store: exited in: BookStore.start<span class="o">(</span>:normal, <span class="o">[])</span>
 </span><span class='line'>    ** <span class="o">(</span>EXIT<span class="o">)</span> an exception was raised:
 </span><span class='line'>        ** <span class="o">(</span>UndefinedFunctionError<span class="o">)</span> undefined <span class="k">function</span>: BookStore.start/2
 </span><span class='line'>          <span class="o">(</span>module BookStore is not available<span class="o">)</span>
 </span><span class='line'>            BookStore.start<span class="o">(</span>:normal, <span class="o">[])</span>
-</span><span class='line'>            <span class="o">(</span>kernel<span class="o">)</span> application_master.erl:272: :application_master.start_it_old/4
-</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>            <span class="o">(</span>kernel<span class="o">)</span> application</em>master.erl:272: :application<em>master.start</em>it_old/4
+</span></code></pre></td></tr></table></div></figure></p>
 
-
-<p>To fix this, you will need to clean compile all your elixir code:</p>
+<p>To fix this, you will need to clean compile all your elixir code: </p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -590,7 +565,6 @@
 </span><span class='line'><span class="nv">$ </span>mix compile
 </span><span class='line'><span class="nv">$ </span>mix phoenix.start
 </span></code></pre></td></tr></table></div></figure>
-
 </div>
 
 
