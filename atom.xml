@@ -4,7 +4,7 @@
   <title><![CDATA[Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-29T08:07:11+08:00</updated>
+  <updated>2014-10-29T08:09:23+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -532,7 +532,7 @@
     <id>http://learnelixir.com/blog/2014/10/23/image-upload-in-phoenix-web-app</id>
     <content type="html"><![CDATA[<p>I was trying to find on Internet a way to receive uploaded image and format the uploaded image in multiple styles for Elixir and Phoenix but unable to find one. Hence I decide to make a library to handle the image upload and blog about it. The end point that we would like to have in this article is the hardware gapplication that we have in the last article integrated with this library to allow user to upload a photo for each hardware. Here is the screenshot of the finished application:</p>
 
-<p><a href="http://learnelixir.com/blog/2014/10/23/image-upload-in-phoenix-web-app/"><img src='http://learnelixir.com/images/upload_image/final.png' width='800' height='394'/></a></p>
+<p><img src='http://learnelixir.com/images/upload_image/final.png' width='800' height='394'/></p>
 
 <!-- more -->
 

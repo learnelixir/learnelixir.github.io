@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Postgres | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/postgres/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-29T08:07:24+08:00</updated>
+  <updated>2014-10-29T08:09:23+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -44,7 +44,7 @@ $ mix phoenix.start
 
 <p>Open the browser, and go to the url <code>http://localhost:4000</code></p>
 
-<p>{% img left /images/build-web-app-with-elixir/phoenix_page.png 800 510 &lsquo;image&rsquo; &lsquo;images&rsquo; %}</p>
+<p><img class="left" src="/images/build-web-app-with-elixir/phoenix_page.png" width="800" height="510" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
 
 <h3>Add Ecto To The Project</h3>
 
@@ -293,7 +293,7 @@ end
 <pre><code>
 Refresh the browser and voila, this is what we will get:
 
-{% img left /images/build-web-app-with-elixir/complete.png 800 346 'image' 'images' %}
+<img class="left" src="/images/build-web-app-with-elixir/complete.png" width="800" height="346" title="image" alt="images">
 
 
 ### Common Pitfall

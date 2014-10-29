@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Unquote | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/unquote/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-29T08:07:24+08:00</updated>
+  <updated>2014-10-29T08:09:23+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -42,7 +42,7 @@
 
 <p>Ignoring the keyword list containing meta data, it can be understood as an abstract syntax tree, where the function name is the root node and the 2 arguments are the leaves of the tree</p>
 
-<p>{% img center /images/quote_and_unquote/ast1.png 250 250 &lsquo;image&rsquo; &lsquo;images&rsquo; %}</p>
+<p><img class="center" src="/images/quote_and_unquote/ast1.png" width="250" height="250" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
 
 <p>If now we try on a more complex expression <code>1 + 2 * 3</code>, it will present a more complex abstract syntax tree</p>
 
@@ -51,7 +51,7 @@
  [1, {:*, [context: Elixir, import: Kernel], [2, 3]}]}
 </code></pre>
 
-<p>{% img center /images/quote_and_unquote/ast2.png 325 400 &lsquo;image&rsquo; &lsquo;images&rsquo; %}</p>
+<p><img class="center" src="/images/quote_and_unquote/ast2.png" width="325" height="400" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
 
 <p>When evaluating this expression, Elixir compiler will travel upward starting from the most left leaf. For example, the AST tree above will be evaluated as <code>(2 * 3) + 1</code>.</p>
 
