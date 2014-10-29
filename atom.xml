@@ -4,7 +4,7 @@
   <title><![CDATA[Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-30T07:27:15+08:00</updated>
+  <updated>2014-10-30T07:32:47+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -5940,9 +5940,8 @@ I am using Ruby 2.1.2, running on Rails 4.1.4 and Elixir 1.0.0. Both Rails and E
     <updated>2014-10-05T23:22:42+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/05/build-web-app-with-elixir</id>
     <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 26th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
-<hr/><br/></p>
-
-<p>In this article, let&#39;s go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postgres and Ecto. I hope you will enjoy :-)</p>
+<hr/><br/>
+In this article, let&#39;s go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postgres and Ecto. I hope you will enjoy :-)</p>
 
 <!--more-->
 

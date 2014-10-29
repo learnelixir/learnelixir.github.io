@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Phoenix | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/phoenix/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-30T07:27:15+08:00</updated>
+  <updated>2014-10-30T07:33:23+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -400,7 +400,7 @@ I was trying to find on Internet a way to receive uploaded image and format the 
 </code></pre></div>
 <p>Now try to visit the new hardware page <a href="http://localhost:4000/hardwares/new">http://localhost:4000/hardwares/new</a>, select a random file and click save then check the server log. What you will see is the parameter as something similar to what is inside the below screenshot I took from my Mac:</p>
 
-<p><img class="center" src="/images/upload<em>image/upload</em>image_terminal.png&#8221; width=&#8221;637&#8221; height=&#8221;269&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
+<p>{% img center /images/upload<em>image/upload</em>image_terminal.png 637 269 &#39;image&#39; &#39;images&#39; %}</p>
 
 <p>Let&#39;s reformat the parameters for readable purpose:</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">Parameters: %<span class="o">{</span>
@@ -1028,7 +1028,7 @@ For a new web application framework, I always start with building a 7 actions RE
 
 <p>Anyway, here is the end result:</p>
 
-<p><img class="center" src="/images/7restful-action/screenshot.png" width="500" height="396" title="&#39;image&#39; &#39;images&#39;" ></p>
+<p>{% img center /images/7restful-action/screenshot.png 500 396 &#39;image&#39; &#39;images&#39; %}</p>
 
 <p>You are able to download the source code on github - </p>
 
@@ -1955,7 +1955,7 @@ server <span class="o">{</span>
 
 <p>Now after so many steps, finally I can enjoy my small victory by visiting the site and see it has been deployed up :-)</p>
 
-<p><img class="center" src="/images/deploy<em>app</em>to_server/ubuntu.png&#8221; width=&#8221;800&#8221; height=&#8221;509&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
+<p>{% img center /images/deploy<em>app</em>to_server/ubuntu.png 800 509 &#39;image&#39; &#39;images&#39; %}</p>
 
 <p>Happy Deploying!</p>
 ]]></content>
@@ -2067,7 +2067,7 @@ Git remote heroku added
 </code></pre></div>
 <p>It can be quite slow in this first time pushing to heroku master as there is a need to compile all the elixir depenencies on Heroku server, but subsequently it will be quite fast. Now I go to <code>http://phoenix-heroku-demo.herokuapp.com/</code> and hooray the phoenix home page is there</p>
 
-<p><img class="center" src="/images/deploy<em>app</em>to_server/heroku.png&#8221; width=&#8221;800&#8221; height=&#8221;509&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
+<p>{% img center /images/deploy<em>app</em>to_server/heroku.png 800 509 &#39;image&#39; &#39;images&#39; %}</p>
 
 <p>In subsequent deploys, you will just need to perform this step - step 7</p>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Elixir | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/elixir/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-30T07:27:15+08:00</updated>
+  <updated>2014-10-30T07:33:23+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -28,7 +28,7 @@ For a new web application framework, I always start with building a 7 actions RE
 
 <p>Anyway, here is the end result:</p>
 
-<p><img class="center" src="/images/7restful-action/screenshot.png" width="500" height="396" title="&#39;image&#39; &#39;images&#39;" ></p>
+<p>{% img center /images/7restful-action/screenshot.png 500 396 &#39;image&#39; &#39;images&#39; %}</p>
 
 <p>You are able to download the source code on github - </p>
 
