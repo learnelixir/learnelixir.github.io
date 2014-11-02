@@ -4,7 +4,7 @@
   <title><![CDATA[Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-10-30T07:32:47+08:00</updated>
+  <updated>2014-11-02T12:33:20+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -12,6 +12,1276 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Real Time To-Do List With Phoenix Channel]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/30/real-time-to-do-list-with-phoenix-channel/"/>
+    <updated>2014-10-30T21:44:38+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/30/real-time-to-do-list-with-phoenix-channel</id>
+    <content type="html"><![CDATA[<p>Channel websocket is a pretty cool feature built in Phoenix framework. It is like a controller, but bidirectional and the connection stay alive after server response. The server can push information to the browser without browser asking for it unlike traditional web server. To fully understand and make use of this awesome feature, let&#39;s try to build a Real Time To Do List application in this article. This will be basically a To Do list but it can be shared among your team. Hence everytime a person inside your team check / uncheck a To Do Item, everyone will see that without refreshing the page. 
+&lt;!&#8211; more &#8211;&gt;</p>
+
+<h3>Setup a Phoenix project</h3>
+
+<p>Before we start any thing on this. Let&#39;s look at the end result:</p>
+
+<p><img src="http://learnelixir.com/images/real-time-to-do-app/first_version.gif" alt="Demo" title="Demo"></p>
+
+<p>The source code is available at: <a href="https://github.com/learnelixir/real-time-to-do-app">https://github.com/learnelixir/real-time-to-do-app</a></p>
+
+<hr style='border: 0 none; border-top: 1px dashed #ccc; margin-bottom: 20px;'/>
+
+<p>Now let&#39;s start by setting up a Phoenix project. From Phoenix source folder, key in the following command on your terminal:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix phoenix.new real-time-to-do ../real-time-to-do
+</span></code></pre></td></tr></table></div></figure>
+
+<p>And enter that project folder:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ../real-time-to-do
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Let&#39;s edit <code>mix.exs</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim mix.exs
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Then add in 2 dependencies <code>postgrex</code> and <code>ecto</code>. Remember to include them in the application function as well.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">application</span> <span class="k">do</span>
+</span><span class='line'>  <span class="p">[</span><span class="ss">mod</span><span class="p">:</span> <span class="p">{</span><span class="n">realtimetodo</span><span class="p">,</span> <span class="p">[]},</span>
+</span><span class='line'>   <span class="ss">applications</span><span class="p">:</span> <span class="p">[</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">:cowboy</span><span class="p">,</span> <span class="ss">:logger</span><span class="p">,</span> <span class="ss">:ecto</span><span class="p">,</span> <span class="ss">:postgrex</span><span class="p">]]</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># specifies your project dependencies</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># type `mix help deps` for examples and options</span>
+</span><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
+</span><span class='line'>  <span class="p">[{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
+</span><span class='line'>   <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0&quot;</span><span class="p">},</span>
+</span><span class='line'>   <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">},</span>
+</span><span class='line'>   <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.6.0&quot;</span><span class="p">}]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Next, install all the dependencies for the project:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix <span class="k">do</span> deps.get, compile
+</span></code></pre></td></tr></table></div></figure>
+
+<p>We are done with the setting up. Let&#39;s move on to prepare our views. </p>
+
+<h3>Setup views for our to-do list</h3>
+
+<p>open <code>application.html.eex</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/templates/layout/application.html.eex
+</span></code></pre></td></tr></table></div></figure>
+
+<p>and replace its content with the below code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;utf-8&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;X-UA-Compatible&quot;</span> <span class="na">content=</span><span class="s">&quot;IE=edge&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content=</span><span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">&quot;description&quot;</span> <span class="na">content=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">&quot;author&quot;</span> <span class="na">content=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;title&gt;</span>Awesome To Do List<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://code.jquery.com/jquery-1.11.1.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;/js/phoenix.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;/js/Sortable.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;/js/app.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;/css/phoenix.css&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;/css/app.css&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/head&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="err">&lt;</span>%= @inner %&gt;
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span> <span class="c">&lt;!-- /container --&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>The followings have been changed in this file:</p>
+
+<ul>
+<li>Remove phoenix header and footer</li>
+<li>Include jquery library on line 11</li>
+<li>Include phoenix library on line 12. Note that <code>phoenix.js</code> is available in <code>priv/static/js</code> folder.</li>
+<li>Include <code>Sortable.min.js</code> on line 13. The sortable is a library from this site <a href="http://rubaxa.github.io/Sortable/">http://rubaxa.github.io/Sortable/</a>.</li>
+<li>Include <code>app.js</code> on line 14.</li>
+<li>Include <code>app.css</code> on line 16.</li>
+</ul>
+
+<p>We will need to create an empty <code>app.js</code> file for now inside <code>priv/static/js</code> folder. For <code>app.css</code>, we will not go through the css code in this article. However you can grab the source code for <code>/css/app.css</code> at <a href="https://raw.githubusercontent.com/learnelixir/real-time-to-do-app/master/priv/static/css/app.css">https://raw.githubusercontent.com/learnelixir/real-time-to-do-app/master/priv/static/css/app.css</a> and put inside the <code>priv/static/css</code> folder.</p>
+
+<p>Let&#39;s move on to creating a channel in our router.</p>
+
+<h3>Set up a Channel in router</h3>
+
+<p>First open <code>web/router.ex</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/router.ex
+</span></code></pre></td></tr></table></div></figure>
+
+<p>we will need to add in the following line to use of phoenix socket:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kn">use</span> <span class="nc">Phoenix.Router.Socket</span><span class="p">,</span> <span class="ss">mount</span><span class="p">:</span> <span class="s2">&quot;/ws&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Then add in the following 2 things:</p>
+
+<ul>
+<li>An <code>index</code> page for our app, which will link to one of our controllers.</li>
+<li>Create a channel so that everybody can subscribe to this channel to see our awesome to do list.</li>
+</ul>
+
+<p>These can be achieved by adding 2 lines below under <code>scope &quot;/&quot;</code> do block</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">get</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="nc">RealTimeToDo.ToDosController</span><span class="p">,</span> <span class="ss">:index</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:root</span>
+</span><span class='line'><span class="n">channel</span> <span class="s2">&quot;to_dos&quot;</span><span class="p">,</span> <span class="nc">RealTimeToDo.ToDoChannel</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Our final router will look like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">RealTimeToDo.Router</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Router</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Router.Socket</span><span class="p">,</span> <span class="ss">mount</span><span class="p">:</span> <span class="s2">&quot;/ws&quot;</span>
+</span><span class='line'>  <span class="n">scope</span> <span class="s2">&quot;/&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="c1"># Use the default browser stack.</span>
+</span><span class='line'>    <span class="n">pipe_through</span> <span class="ss">:browser</span>
+</span><span class='line'>    <span class="n">get</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="nc">RealTimeToDo.ToDosController</span><span class="p">,</span> <span class="ss">:index</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:root</span>
+</span><span class='line'>    <span class="n">channel</span> <span class="s2">&quot;to_dos&quot;</span><span class="p">,</span> <span class="nc">RealTimeToDo.ToDoChannel</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>We are done with router for now. Let&#39;s move to create a <code>Repo</code> and <code>Item</code> model</p>
+
+<h3>Create Repo and Item model</h3>
+
+<p>First create a database name <code>to_dos</code> from your terminal:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>createdb to_dos --encoding<span class="o">=</span><span class="s1">&#39;utf-8&#39;</span> --locale<span class="o">=</span>en_US.UTF-8 --template<span class="o">=</span>template0<span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Next, create a Repo by creating file <code>web/models/repo.ex</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/models/repo.ex
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Paste in the following code. You will need to change <code>postgresuser</code> and <code>password</code> according to your database:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">RealTimeToDo.Repo</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Ecto.Repo</span><span class="p">,</span> <span class="ss">adapter</span><span class="p">:</span> <span class="nc">Ecto.Adapters.Postgres</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">conf</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">parse_url</span> <span class="s2">&quot;ecto://postgresuser:password@localhost/to_dos&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">priv</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">app_dir</span><span class="p">(</span><span class="ss">:real_time_to_do</span><span class="p">,</span> <span class="s2">&quot;priv/repo&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Next, create <code>Item</code> model:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/models/item.ex
+</span></code></pre></td></tr></table></div></figure>
+
+<p>and add in the code below:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">Item</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Ecto.Model</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">schema</span> <span class="s2">&quot;items&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:description</span><span class="p">,</span> <span class="ss">:string</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:position</span><span class="p">,</span> <span class="ss">:integer</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:done</span><span class="p">,</span> <span class="ss">:boolean</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:updated_at</span><span class="p">,</span> <span class="ss">:datetime</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Next, trigger the following command to create Item migration from your terminal:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix ecto.gen.migration RealTimeToDo.Repo create_item
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Open the newly created migration file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim priv/repo/migrations/20141031230205_create_item.exs
+</span></code></pre></td></tr></table></div></figure>
+
+<p>And paste in the code below:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">RealTimeToDo.Repo.Migrations.CreateItem</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Ecto.Migration</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">up</span> <span class="k">do</span>
+</span><span class='line'>    <span class="s2">&quot;CREATE TABLE items( </span><span class="err">\</span><span class="s2"></span>
+</span><span class='line'><span class="s2">          id serial primary key, </span><span class="err">\</span><span class="s2"></span>
+</span><span class='line'><span class="s2">          description text, </span><span class="err">\</span><span class="s2"></span>
+</span><span class='line'><span class="s2">          position integer,</span>
+</span><span class='line'><span class="s2">          done boolean, </span><span class="err">\</span><span class="s2"></span>
+</span><span class='line'><span class="s2">          updated_at timestamp)&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">down</span> <span class="k">do</span>
+</span><span class='line'>    <span class="s2">&quot;DROP TABLE items&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Lastly for this section, let&#39;s run the migration</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix ecto.migrate RealTimeToDo.Repo
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Next we will create <code>RealTimeToDo.ToDosController</code> in order to show the index page for our app.</p>
+
+<h3>Create TodosController for index page</h3>
+
+<p>Let&#39;s start by creating the controller file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/controllers/to_dos_controller.ex
+</span></code></pre></td></tr></table></div></figure>
+
+<p>We will only need an <code>index</code> action, which will retrieve all the to-do items and done items sorted by position attribute and render the <code>index</code> page. The code for this controller is presented below:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">RealTimeToDo.ToDosController</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Controller</span>
+</span><span class='line'>  <span class="kn">alias</span> <span class="nc">RealTimeToDo.Repo</span>
+</span><span class='line'>  <span class="kn">import</span> <span class="nc">Ecto.Query</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">plug</span> <span class="ss">:action</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">index</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">_params</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">to_do_items</span> <span class="p">=</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">all</span><span class="p">(</span><span class="nc">Item</span>
+</span><span class='line'>                            <span class="o">|&gt;</span> <span class="n">where</span><span class="p">([</span><span class="n">item</span><span class="p">],</span> <span class="n">item</span><span class="p">.</span><span class="n">done</span> <span class="o">==</span> <span class="no">false</span><span class="p">)</span>
+</span><span class='line'>                            <span class="o">|&gt;</span> <span class="n">order_by</span><span class="p">([</span><span class="n">item</span><span class="p">],</span> <span class="ss">asc</span><span class="p">:</span> <span class="n">item</span><span class="p">.</span><span class="n">position</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">done_items</span> <span class="p">=</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">all</span><span class="p">(</span><span class="nc">Item</span>
+</span><span class='line'>                            <span class="o">|&gt;</span> <span class="n">where</span><span class="p">([</span><span class="n">item</span><span class="p">],</span> <span class="n">item</span><span class="p">.</span><span class="n">done</span> <span class="o">==</span> <span class="no">true</span><span class="p">)</span>
+</span><span class='line'>                            <span class="o">|&gt;</span> <span class="n">order_by</span><span class="p">([</span><span class="n">item</span><span class="p">],</span> <span class="ss">asc</span><span class="p">:</span> <span class="n">item</span><span class="p">.</span><span class="n">position</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="ss">to_do_items</span><span class="p">:</span> <span class="n">to_do_items</span><span class="p">,</span> <span class="ss">done_items</span><span class="p">:</span> <span class="n">done_items</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Note that we are querying for <code>to_do_item</code> from line 9 - 11 and querying for <code>done_items</code> from line 13 - 15.</p>
+
+<p>Now, let&#39;s move on to create <code>index</code> page:</p>
+
+<h3>Create index page for items list</h3>
+
+<p>First we will need to create <code>to_dos_view.ex</code> file under <code>web/views</code> folder:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/views/to_dos_view.ex
+</span></code></pre></td></tr></table></div></figure>
+
+<p>and paste in the code below:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">RealTimeToDo.ToDosView</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">RealTimeToDo.Views</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Next create a folder <code>to_dos</code> under <code>web/templates</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mkdir web/templates/to_dos
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Then create <code>index.html.eex</code> under this folder:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/templates/to_dos/index.html.eex
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Inside this view we will need to list down all the items that are not yet done and are done grouped into 2 sections. Each displayed item is then rendered using a partial view <code>item.html.eex</code>, which will be described shortly. There is also a textbox on top to let user key in anew item and a link for arranging the items within each of the to-do and done lists mentioned above:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;description&quot;</span> <span class="na">id=</span><span class="s">&quot;new_item&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;New Item&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&#39;to_do_list_container&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;h3&gt;</span>
+</span><span class='line'>    To Do List
+</span><span class='line'>    <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;arrange-items&#39;</span> <span class="na">for=</span><span class="s">&quot;#to_do_list&quot;</span><span class="nt">&gt;</span>Arrange items<span class="nt">&lt;span&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/h3&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">&#39;to_do_list&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="err">&lt;</span>%= for item <span class="nt">&lt;-</span> <span class="err">@</span><span class="na">to_do_items</span> <span class="na">do</span> <span class="err">%</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="err">&lt;</span>%= render &quot;item.html&quot;, item: item %&gt;
+</span><span class='line'>    <span class="err">&lt;</span>% end %&gt;
+</span><span class='line'>  <span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;h3&gt;</span>
+</span><span class='line'>    Done List
+</span><span class='line'>    <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;arrange-items&#39;</span> <span class="na">for=</span><span class="s">&quot;#done_list&quot;</span><span class="nt">&gt;</span>Arrange items<span class="nt">&lt;span&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/h3&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">&#39;done_list&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="err">&lt;</span>%= for item <span class="nt">&lt;-</span> <span class="err">@</span><span class="na">done_items</span> <span class="na">do</span> <span class="err">%</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="err">&lt;</span>%= render &quot;item.html&quot;, item: item %&gt;
+</span><span class='line'>    <span class="err">&lt;</span>% end %&gt;
+</span><span class='line'>  <span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">language=</span><span class="s">&#39;javascript&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nx">ToDoApp</span><span class="p">.</span><span class="nx">init</span><span class="p">();</span>
+</span><span class='line'><span class="nt">&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>The partial view <code>item.html.eex</code> file can be created in the same folder <code>web/templates/todos</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/templates/to_dos/item.html.eex
+</span></code></pre></td></tr></table></div></figure>
+
+<p>with the content:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;li</span> <span class="na">data-id=</span><span class="s">&#39;&lt;%= @item.id %&gt;&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&#39;checkbox&#39;</span> <span class="na">id=</span><span class="s">&#39;item_&lt;%= @item.id %&gt;&#39;</span>
+</span><span class='line'>         <span class="na">class=</span><span class="s">&#39;item-done&#39;</span> <span class="err">&lt;%=</span> <span class="na">if</span> <span class="err">@</span><span class="na">item</span><span class="err">.</span><span class="na">done</span><span class="err">,</span> <span class="na">do:</span> <span class="err">&quot;</span><span class="na">checked</span><span class="err">&quot;</span> <span class="err">%</span><span class="nt">&gt;</span> /&gt;
+</span><span class='line'>  <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;item-description&#39;</span><span class="nt">&gt;</span><span class="err">&lt;</span>%= @item.description %&gt;<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;edit-item-description hidden&#39;</span><span class="nt">&gt;&lt;input</span> <span class="na">type=</span><span class="s">&#39;text&#39;</span> <span class="nt">/&gt;&lt;/span&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;edit-item&#39;</span><span class="nt">&gt;</span>edit<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;delete-item&#39;</span><span class="nt">&gt;</span>remove<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'><span class="nt">&lt;/li&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<ul>
+<li>On line 1, we include <code>data-id</code> attribute with rendering item&#39;s id. This is for the sort function described in the next section.</li>
+<li>On line 2, we have a check box, which will be checked if the item is marked as done.</li>
+<li>On line 4, we are showing item description.</li>
+<li>On line 5, we are having an hidden textbox. This is going to be shown when the edit link is clicked by a user.</li>
+<li>On line 6, we are showing the edit button for this item.</li>
+<li>On line 7, we are showing the remove button for this item.</li>
+</ul>
+
+<h4>To Do List Channel</h4>
+
+<p>Let&#39;s start by creating a channel file <code>web/channels/to_do_channel.ex</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/channels/to_do_channel.ex
+</span></code></pre></td></tr></table></div></figure>
+
+<p>with the initial code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">RealTimeToDo.ToDoChannel</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Channel</span>
+</span><span class='line'>  <span class="kn">alias</span> <span class="nc">RealTimeToDo.Repo</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">join</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">socket</span><span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">defp</span> <span class="n">atomize_keys</span><span class="p">(</span><span class="n">struct</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nc">Enum</span><span class="p">.</span><span class="n">reduce</span> <span class="n">struct</span><span class="p">,</span> <span class="p">%{},</span> <span class="k">fn</span><span class="p">({</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">},</span> <span class="n">map</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="nc">Map</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="n">map</span><span class="p">,</span> <span class="nc">String</span><span class="p">.</span><span class="n">to_atom</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">v</span><span class="p">)</span> <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Note that the action <code>join</code> must always be there for Phoenix Channel. This is to authorize users joining this socket. In order to let someone pass the check and join the channel, we will only need to return <code>{:ok, socket}</code>. Otherwise, you will need to return <code>{:error, socket, :unauthorized}</code>. For this case, just let our awesome list open to public by returning <code>{:ok, socket}</code> without any checking. This can be easily extended when we have a login function, we can check if the current logged in user is authorized to subscribe to a list&#39;s events.</p>
+
+<p>As mentioned earlier, we will need to think Channel as Controller. Hence, there will be somewhat similar CRUD actions inside Channel&#39;s code. On top of that is the implementation for the information pushing to channel subscribers. Let&#39;s first list down all the actions that the user will take when dealing with a To-do list. These actions a user takes will then trigger corresponding events in a channel. This channel will then reply to the client or broadcast an event to everyone. The required list of actions is as following:</p>
+
+<ul>
+<li>Create a New Item.</li>
+<li>Mark an Item as done by clicking on the unchecked check box.</li>
+<li>Mark an Item as undone by clicking on the checked check box.</li>
+<li>Delete an item.</li>
+<li>Update an item description.</li>
+<li>Arrange items in a certain order</li>
+</ul>
+
+<p>These actions will be mapped to 6 events in a Channel. For action 2 and 3, let&#39;s group them under toggle an item done status. Now, let&#39;s list them all in the channel <code>defmodule</code> created earlier:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">event</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;create:item&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">socket</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">def</span> <span class="n">event</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;toggle:item&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">socket</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">def</span> <span class="n">event</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;delete:item&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">socket</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">def</span> <span class="n">event</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;update:item&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">socket</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">def</span> <span class="n">event</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;arrange:items&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">socket</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Note that for each socket, there is a need to return <code>socket</code> so that it can take effect. Now, let&#39;s go through each event and put in the implementation for each. As you will notice, the implementation for each of the events is quite closed to the implementation described in the corresponding actions of the CRUD actions implemented in a controler.</p>
+
+<h4>create:item event</h4>
+
+<p>This event is triggered when a user submits a new item to the channel. The app needs to insert the new item into the database and then broadcast this newly created item to everyone in the channel [Line 5]. The code for this event is presented below: </p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">event</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;create:item&quot;</span><span class="p">,</span> <span class="p">%{</span><span class="s2">&quot;item&quot;</span> <span class="p">=&gt;</span> <span class="n">params</span><span class="p">})</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">item</span> <span class="p">=</span> <span class="n">create_item</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">item</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">item_html</span> <span class="p">=</span> <span class="nc">Phoenix.View</span><span class="p">.</span><span class="n">render</span> <span class="nc">RealTimeToDo.ToDosView</span><span class="p">,</span> <span class="s2">&quot;item.html&quot;</span><span class="p">,</span> <span class="ss">item</span><span class="p">:</span> <span class="n">item</span>
+</span><span class='line'>    <span class="n">broadcast</span> <span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;create:item&quot;</span><span class="p">,</span> <span class="p">%{</span><span class="ss">item_html</span><span class="p">:</span> <span class="n">item_html</span><span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="n">socket</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">defp</span> <span class="n">create_item</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">item</span> <span class="p">=</span> <span class="nc">Map</span><span class="p">.</span><span class="n">merge</span><span class="p">(%</span><span class="nc">Item</span><span class="p">{</span><span class="ss">done</span><span class="p">:</span> <span class="no">false</span><span class="p">},</span> <span class="n">atomize_keys</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
+</span><span class='line'>  <span class="k">case</span> <span class="nc">Item</span><span class="p">.</span><span class="n">validate</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="p">[]</span> <span class="p">-&gt;</span>
+</span><span class='line'>      <span class="n">item</span> <span class="p">=</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">errors</span> <span class="p">-&gt;</span>
+</span><span class='line'>      <span class="no">nil</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>One thing to highlight is line 4, this is where we render the HTML of the item using <code>Phoenix.View.render</code>, this html is then broadcast to everyone on the channel. It is the same HTML that we use to render individual item inside the <code>index</code> event mentioned ealier.</p>
+
+<h4>toggle:item event</h4>
+
+<p>This event is triggered when a user clicks on an item check box to mark an item as done or undone. Once this event is received on the channel, the channel will then broadcast this event to everyone [Line 3]. The code for this event is presented below: 
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">event</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;toggle:item&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">item</span> <span class="p">=</span> <span class="n">toggle<em>item</em>done<em>status</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;item</em>id&quot;</span><span class="p">])</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">item</span><span class="p">,</span> <span class="ss">do</span><span class="p">:</span> <span class="n">broadcast</span> <span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;toggle:item&quot;</span><span class="p">,</span> <span class="p">%{</span><span class="ss">item</span><span class="p">:</span> <span class="n">item</span><span class="p">}</span>
+</span><span class='line'>  <span class="n">socket</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">defp</span> <span class="n">toggle<em>item</em>done<em>status</span><span class="p">(</span><span class="n">item</em>id</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">case</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="nc">Item</span><span class="p">,</span> <span class="nc">String</span><span class="p">.</span><span class="n">to<em>integer</span><span class="p">(</span><span class="n">item</em>id</span><span class="p">))</span>
+</span><span class='line'>    <span class="n">item</span> <span class="ow">when</span> <span class="n">is<em>map</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="p">-&gt;</span>
+</span><span class='line'>      <span class="n">item</span> <span class="p">=</span> <span class="p">%{</span><span class="n">item</span> <span class="p">|</span> <span class="ss">done</span><span class="p">:</span> <span class="o">!</span><span class="n">item</span><span class="p">.</span><span class="n">done</span><span class="p">}</span>
+</span><span class='line'>      <span class="nc">Repo</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">item</span>
+</span><span class='line'>    <span class="bp"></em></span> <span class="p">-&gt;</span>
+</span><span class='line'>      <span class="no">nil</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>Note that on line 9, we are negating <code>item.done</code> to toggle the current status of an item.</p>
+
+<h4>delete:item event</h4>
+
+<p>This event is triggered when a user clicks on the delete link next an item. Once this event is received on the channel, we will need broadcast this event to everyone on the same channel if the deletion is successful [Line 3]. The code for this event is as following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">event</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;delete:item&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">delete_item</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;item_id&quot;</span><span class="p">])</span>
+</span><span class='line'>  <span class="n">broadcast</span> <span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;delete:item&quot;</span><span class="p">,</span> <span class="p">%{</span><span class="ss">item</span><span class="p">:</span> <span class="n">item</span><span class="p">}</span>
+</span><span class='line'>  <span class="n">socket</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">def</span> <span class="n">delete_item</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">case</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="nc">Item</span><span class="p">,</span> <span class="nc">String</span><span class="p">.</span><span class="n">to_integer</span><span class="p">(</span><span class="n">item_id</span><span class="p">))</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">item</span> <span class="ow">when</span> <span class="n">is_map</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="p">-&gt;</span>
+</span><span class='line'>      <span class="nc">Repo</span><span class="p">.</span><span class="n">delete</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">item</span>
+</span><span class='line'>    <span class="bp">_</span> <span class="p">-&gt;</span>
+</span><span class='line'>      <span class="no">nil</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<h4>update:item event</h4>
+
+<p>This event is triggered when a user clicks on edit an item, change the description and hit save button. Once this event is received on the channel, the system will then broadcast this event to everyone in the channel with the updated item. The code for this event is as following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">event</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;update:item&quot;</span><span class="p">,</span> <span class="p">%{</span><span class="s2">&quot;item_id&quot;</span> <span class="p">=&gt;</span> <span class="n">item_id</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span> <span class="p">=&gt;</span> <span class="n">params</span><span class="p">})</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">item</span> <span class="p">=</span> <span class="n">update_item</span><span class="p">(</span><span class="n">item_id</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">item</span><span class="p">,</span> <span class="ss">do</span><span class="p">:</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;update:item&quot;</span><span class="p">,</span> <span class="p">%{</span><span class="ss">item</span><span class="p">:</span> <span class="n">item</span><span class="p">})</span>
+</span><span class='line'>  <span class="n">socket</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">defp</span> <span class="n">update_item</span><span class="p">(</span><span class="n">item_id</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">case</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="nc">Item</span><span class="p">,</span> <span class="nc">String</span><span class="p">.</span><span class="n">to_integer</span><span class="p">(</span><span class="n">item_id</span><span class="p">))</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">item</span> <span class="ow">when</span> <span class="n">is_map</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="p">-&gt;</span>
+</span><span class='line'>      <span class="n">atomized_keys_params</span> <span class="p">=</span> <span class="n">atomize_keys</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">item</span> <span class="p">=</span> <span class="nc">Map</span><span class="p">.</span><span class="n">merge</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">atomized_keys_params</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">case</span> <span class="nc">Item</span><span class="p">.</span><span class="n">validate</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>        <span class="p">[]</span> <span class="p">-&gt;</span>
+</span><span class='line'>          <span class="nc">Repo</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">item</span>
+</span><span class='line'>        <span class="bp">_</span> <span class="p">-&gt;</span>
+</span><span class='line'>          <span class="no">nil</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="bp">_</span> <span class="p">-&gt;</span>
+</span><span class='line'>      <span class="no">nil</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<h4>arange:item event</h4>
+
+<p>This event is triggered every time a user drags an item to move it to a new position. This will then trigger event <code>arrange:items</code> on the server. The system will need to broadcast this event to everyone in the channel with the new orders of the item [Line 3]. The code for this event is as following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">event</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;arrange:items&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">update_positions</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;item_ids&quot;</span><span class="p">])</span>
+</span><span class='line'>  <span class="n">broadcast</span> <span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;arrange:items&quot;</span><span class="p">,</span> <span class="p">%{</span><span class="ss">item_ids</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;item_ids&quot;</span><span class="p">],</span> <span class="ss">for_list</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;for_list&quot;</span><span class="p">]}</span>
+</span><span class='line'>  <span class="n">socket</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">defp</span> <span class="n">update_positions</span><span class="p">(</span><span class="n">item_ids</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">item_ids</span> <span class="p">=</span> <span class="nc">String</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="n">item_ids</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span>
+</span><span class='line'>                    <span class="o">|&gt;</span> <span class="nc">Enum</span><span class="p">.</span><span class="n">map</span> <span class="k">fn</span> <span class="n">item_id</span> <span class="p">-&gt;</span> <span class="nc">String</span><span class="p">.</span><span class="n">to_integer</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span> <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">items</span> <span class="p">=</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">all</span><span class="p">(</span><span class="nc">Item</span> <span class="o">|&gt;</span> <span class="n">where</span><span class="p">([</span><span class="n">item</span><span class="p">],</span> <span class="n">item</span><span class="p">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">array</span><span class="p">(</span><span class="o">^</span><span class="n">item_ids</span><span class="p">,</span> <span class="ss">:integer</span><span class="p">)))</span>
+</span><span class='line'>  <span class="n">item_hash</span> <span class="p">=</span> <span class="nc">Enum</span><span class="p">.</span><span class="n">reduce</span> <span class="n">items</span><span class="p">,</span> <span class="p">%{},</span> <span class="k">fn</span> <span class="n">item</span><span class="p">,</span> <span class="n">map</span> <span class="p">-&gt;</span> <span class="nc">Map</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="n">map</span><span class="p">,</span> <span class="n">item</span><span class="p">.</span><span class="n">id</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">item_ids</span>
+</span><span class='line'>    <span class="o">|&gt;</span> <span class="nc">Stream</span><span class="p">.</span><span class="n">with_index</span>
+</span><span class='line'>    <span class="o">|&gt;</span> <span class="nc">Enum</span><span class="p">.</span><span class="n">each</span> <span class="k">fn</span> <span class="p">{</span><span class="n">item_id</span><span class="p">,</span> <span class="n">index</span><span class="p">}</span> <span class="p">-&gt;</span>
+</span><span class='line'>      <span class="n">item</span> <span class="p">=</span> <span class="n">item_hash</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span>
+</span><span class='line'>      <span class="nc">Repo</span><span class="p">.</span><span class="n">update</span><span class="p">(%{</span><span class="n">item</span> <span class="p">|</span> <span class="ss">position</span><span class="p">:</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">})</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>There are quite a number of things happening here. Let&#39;s go through a few key points:</p>
+
+<ul>
+<li>On line 2, we are calling <code>update_position</code> with the list of item IDs.</li>
+<li>On line 8 and 9 inside <code>update_positions</code> function, we are spliting the list of ids string to form an array of string. It is then converted to cbecome array of integers.</li>
+<li>On line 11, we are querying all the items using the list of received item&#39;s ids by using the <code>where</code> condition: <code>where([item], item.id in array(^item_ids, :integer))</code>. This will trigger one SQL query only in order to get all the needed items.</li>
+<li>On line 12, we are converting the list of items produced on line 11 to become a map of items whereby the key is the item&#39;s id. This is for instant item retrieval later on using id as the key.</li>
+<li>On line 14 - 18, we going through each <code>item_id</code> in the list of received <code>tem_ids</code> and update accordingly the position of each of the item according to the position it appears in the lits of <code>item_ids</code>.</li>
+</ul>
+
+<p>For instance, let say we get from the client the string <code>6,4,1,5</code>, we will update item with ID <code>6</code> to have position <code>1</code>, item with ID <code>4</code> to have position <code>2</code>, item with ID <code>1</code> to have position <code>3</code> and so on.</p>
+
+<p>That&#39;s all we need to work on the Channel. Let&#39;s move to the javascript to bind and listen to the events as a result of the broadcast from Phoenix Channel.</p>
+
+<h4>Phoenix channel javascript integration</h4>
+
+<p>What we are going to do for this part is to create event bindings for the following events:</p>
+
+<ul>
+<li>Create An Item</li>
+<li>Update An Item</li>
+<li>Toggle Done Status on An Item</li>
+<li>Delete An Item</li>
+<li>Arrange items</li>
+</ul>
+
+<p>First, let&#39;s edit our <code>app.js</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim priv/static/js/app.js
+</span></code></pre></td></tr></table></div></figure>
+
+<p>and put in the <code>init</code> function</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">ToDoApp</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">socket</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Phoenix</span><span class="p">.</span><span class="nx">Socket</span><span class="p">(</span><span class="s2">&quot;/ws&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">toDoListContainer</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#to_do_list_container&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">toDoList</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#to_do_list&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">doneList</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#done_list&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">newItem</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#new_item&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">sortableCollection</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">socket</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;to_dos&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="p">{},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">app</span><span class="p">.</span><span class="nx">bindAndListenToEvents</span><span class="p">(</span><span class="nx">channel</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">bindAndListenToEvents</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// ...</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Inside this <code>init</code> function, we are creating a socket and binding all the variables with its corresponding DOM. Then we let the Phoenix socket to join the <code>to_dos</code> socket with <code>list</code> as a topic. Next what we will need to do is to fill in the <code>...</code> to initialise the events binding and listening mentioned above</p>
+
+<h4>Create Item Event</h4>
+
+<p>When a user hits enter in the <code>#new_item</code> text box, we will use the channel to send the event <code>create:item</code> with the text that has been typed inside that text box. This text will be used as the description of the new item. Let&#39;s create a function named <code>bindEventsForCreatingItem</code> with the following source code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">bindEventsForCreatingItem</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">newItem</span><span class="p">.</span><span class="nx">off</span><span class="p">(</span><span class="s2">&quot;keypress&quot;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;keypress&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">==</span> <span class="mi">13</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// enter key</span>
+</span><span class='line'>      <span class="nx">channel</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">&quot;create:item&quot;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">item</span><span class="o">:</span> <span class="p">{</span> <span class="nx">description</span><span class="o">:</span> <span class="nx">app</span><span class="p">.</span><span class="nx">newItem</span><span class="p">.</span><span class="nx">val</span><span class="p">()</span> <span class="p">}</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>      <span class="nx">app</span><span class="p">.</span><span class="nx">newItem</span><span class="p">.</span><span class="nx">val</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Then call this <code>bindEventsForCreatingItem</code> inside <code>bindAndListenToEvents</code> function</p>
+
+<p>On the server side, once the channel receives this <code>create:item</code> event, it will creates the item and broadcast the newly created item event <code>create:item</code>. Hence, let&#39;s add in a function to listen for this <code>create:item</code> broadcast event. Name the fuction <code>listenToCreatingItemEvent</code> and call this function inside <code>bindAndListenToEvents</code> function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">listenToCreatingItemEvent</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">channel</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;create:item&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">app</span><span class="p">.</span><span class="nx">toDoList</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">item_html</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>One the event is received on the front end, the app will simply append the newly created item&#39;s html returning from the channel. </p>
+
+<h4>Toggle Item Event</h4>
+
+<p>Next, we will need to bind the event to all the check boxes, so that every time a check box of an item is checked, an event will be triggered and send to the the channel the event. To do so, let&#39;s create <code>bindEventsForTogglingItem</code> and call it inside <code>bindAndListenToEvents</code> function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">bindEventsForTogglingItem</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">app</span><span class="p">.</span><span class="nx">toDoListContainer</span><span class="p">.</span><span class="nx">delegate</span><span class="p">(</span><span class="s2">&quot;input.item-done&quot;</span><span class="p">,</span> <span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">channel</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">&quot;toggle:item&quot;</span><span class="p">,</span> <span class="p">{</span><span class="nx">item_id</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="s2">&quot;item_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)});</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>On the server side, once the channel receives this <code>toggle:item</code> event, it will creates toggle the item done status and broadcast the event <code>toggle:item</code>. Hence, let&#39;s add in a function to listen for this <code>create:item</code> broadcast event. Name the fuction <code>listToTogglingItemEvent</code> and call this function inside <code>bindAndListenToEvents</code> function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">listenToTogglingItemEvent</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">channel</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;toggle:item&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">item</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">item</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">targetItemList</span> <span class="o">=</span> <span class="nx">app</span><span class="p">.</span><span class="nx">toDoList</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">fromItemList</span> <span class="o">=</span> <span class="nx">app</span><span class="p">.</span><span class="nx">doneList</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nx">item</span><span class="p">.</span><span class="nx">done</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">targetItemList</span> <span class="o">=</span> <span class="nx">app</span><span class="p">.</span><span class="nx">doneList</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">fromItemList</span> <span class="o">=</span> <span class="nx">app</span><span class="p">.</span><span class="nx">toDoList</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">fromItemList</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;#item_&quot;</span> <span class="o">+</span> <span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">parent</span><span class="p">().</span><span class="nx">fadeOut</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">targetItemList</span><span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">fadeIn</span><span class="p">());</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">},</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>One the event is received on the front end, the app will find the toggled item using item&#39;s id, determine the list that the item is original from, infer the targeted list. It will then fade out the item and prepend it to the list targeted list before fading it in again.</p>
+
+<h4>Update Item Event</h4>
+
+<p>There will be few actions that user need to take before being able to send the updated item to the channel. First, a user will need to click on the edit button. A text box with the content of the item is expected to appear and user can key in the new description. He will then hits enter to submit the new description for that item. Hence, let&#39;s start with creating a function to listen to the click <code>edit</code> button event. Let&#39;s named it <code>bindEventForEditingsItem</code> and call this function in call this function inside <code>bindAndListenToEvents</code> function.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">bindEventForEditingsItem</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">toDoListContainer</span><span class="p">.</span><span class="nx">delegate</span><span class="p">(</span><span class="s2">&quot;span.edit-item&quot;</span><span class="p">,</span> <span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">itemContainer</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">parent</span><span class="p">();</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">itemDescription</span> <span class="o">=</span> <span class="nx">itemContainer</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;span.item-description&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">editItemDescription</span> <span class="o">=</span> <span class="nx">itemContainer</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;span.edit-item-description&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">itemDescription</span><span class="p">.</span><span class="nx">toggleClass</span><span class="p">(</span><span class="s2">&quot;hidden&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">editItemDescription</span><span class="p">.</span><span class="nx">toggleClass</span><span class="p">(</span><span class="s2">&quot;hidden&quot;</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">itemDescription</span><span class="p">.</span><span class="nx">html</span><span class="p">()).</span><span class="nx">focus</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">hasClass</span><span class="p">(</span><span class="s2">&quot;cancel-edit-item&quot;</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="s2">&quot;edit&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="s2">&quot;cancel&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span><span class="c1">//end else</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">toggleClass</span><span class="p">(</span><span class="s2">&quot;cancel-edit-item&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Let&#39;s go through the above code:</p>
+
+<ul>
+<li>On line 3, we will find the item container, which is an <code>li</code> DOM.</li>
+<li>On line 4, we will find the <code>item-description</code> span.</li>
+<li>On line 5, we will find the <code>edit-item-description</code> span which contains the text box inside.</li>
+<li>On line 6, we will just toggle show/hide the item description. </li>
+<li>On line 7, we will just toggle show/hide the item description text box container and assign the text box value to be the description of the item.</li>
+<li>From line 8 - 12, we wiill show the approriate text for the <code>edit</code> button after being clicked. If the item is not edited at that moment, the text will be set to <code>edit</code>, otherwise, it will be set to <code>cancel</code> instead.</li>
+<li>On line 13, we will toggle the <code>cancel-edit-item</code> class the <code>edit</code> button just to mark if the item is being edited.</li>
+</ul>
+
+<p>Next, we are going to define the listener for the event that user hits enter on the edit item text box to commit the changes he/she has made. Let&#39;s create a function named <code>bindEventsForUpdatingItem</code> for this purpose and call this function inside <code>bindAndListenToEvents</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">bindEventsForUpdatingItem</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">app</span><span class="p">.</span><span class="nx">toDoListContainer</span><span class="p">.</span><span class="nx">delegate</span><span class="p">(</span><span class="s2">&quot;span.edit-item-description input&quot;</span><span class="p">,</span> <span class="s2">&quot;keypress&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">==</span> <span class="mi">13</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">newDescription</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">val</span><span class="p">();</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">itemContainer</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">parents</span><span class="p">(</span><span class="s2">&quot;li:first&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">itemDescription</span> <span class="o">=</span> <span class="nx">itemContainer</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;span.item-description&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">itemCheckBox</span> <span class="o">=</span> <span class="nx">itemContainer</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;input.item-done&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">editItemLink</span> <span class="o">=</span> <span class="nx">itemContainer</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;span.edit-item&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">editItemDescription</span> <span class="o">=</span> <span class="nx">itemContainer</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;span.edit-item-description&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">itemDescription</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">newDescription</span><span class="p">).</span><span class="nx">toggleClass</span><span class="p">(</span><span class="s2">&quot;hidden&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">editItemDescription</span><span class="p">.</span><span class="nx">toggleClass</span><span class="p">(</span><span class="s2">&quot;hidden&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">editItemLink</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="s2">&quot;edit&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">channel</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">&quot;update:item&quot;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">item_id</span><span class="o">:</span> <span class="nx">itemCheckBox</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="s2">&quot;item_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="nx">item</span><span class="o">:</span> <span class="p">{</span> <span class="nx">description</span><span class="o">:</span> <span class="nx">newDescription</span> <span class="p">}</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>    <span class="p">}</span><span class="c1">//end if</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<ul>
+<li>On line 5 - 10 of the above code, we are assigning the approriate DOMs for those that we need. Then we assign back the item description to the description  span on line 11, hide the edit textbox container on line 12 and set the edit link to show the <code>edit</code> text.</li>
+<li>From line 15 - 17, we are sending back the event <code>update:item</code> back to server with the item&#39;s ID and its new description. On the server, the application will update the item description and broadcast the event <code>update:item</code>. </li>
+<li>We will need to add in the function to listen to the event <code>update:item</code> as the result of the server&#39;s broadcast. Let&#39;s name the function <code>listenToUpdatingItemEvent</code> and call this function inside <code>bindAndListToEvents</code> function:</li>
+</ul>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">listenToUpdatingItemEvent</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">channel</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;update:item&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">item</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">item</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">app</span><span class="p">.</span><span class="nx">toDoListContainer</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;#item_&quot;</span> <span class="o">+</span> <span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">parent</span><span class="p">().</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;span.item-description&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">item</span><span class="p">.</span><span class="nx">description</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Once the event is received on the client side, the app will find the approriate item given the item&#39;s id and update the description span of that item according to the received item&#39;s description.</p>
+
+<h4>Delete Item event</h4>
+
+<p>We will also need to bind an event to the delete button next to each of item to trigger <code>delete:item</code> event when user hits this link. Let&#39;s create function named <code>bindEventsForDeletingItem</code> and call this function inside <code>bindAndListToEvents</code> function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">bindEventsForDeletingItem</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">app</span><span class="p">.</span><span class="nx">toDoListContainer</span><span class="p">.</span><span class="nx">delegate</span><span class="p">(</span><span class="s2">&quot;span.delete-item&quot;</span><span class="p">,</span> <span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">itemContainer</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">parent</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">itemContainer</span><span class="p">.</span><span class="nx">fadeOut</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">itemCheckBox</span> <span class="o">=</span> <span class="nx">itemContainer</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;input.item-done&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">itemContainer</span><span class="p">.</span><span class="nx">remove</span><span class="p">();</span> <span class="c1">// remove the item from the list</span>
+</span><span class='line'>      <span class="nx">channel</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">&quot;delete:item&quot;</span><span class="p">,</span> <span class="p">{</span><span class="nx">item_id</span><span class="o">:</span> <span class="nx">itemCheckBox</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="s2">&quot;item_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)});</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>After the server receives this <code>delete:item</code> event, it will broadcast this event <code>delete:item</code> with the deleted item. Hence, let&#39;s implement a function to listen to this broadcast event and remove the item accordingly. Let&#39;s name the  function <code>listenToDeletingItemEvent</code> and call its inside <code>bindAndListToEvents</code> function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">listenToDeletingItemEvent</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">channel</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;delete:item&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">item</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">item</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">app</span><span class="p">.</span><span class="nx">toDoListContainer</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;#item_&quot;</span> <span class="o">+</span> <span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">parent</span><span class="p">().</span><span class="nx">fadeIn</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">remove</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<h4>Arrange Items event</h4>
+
+<p>When a user clicks on the link Arrange Items, the list of items will need to become sortable, i.e. the item can be dragged to different places. We will need a function to cater for this. Let&#39;s create a function named <code>bindEventsForArrangingItems</code> and call this function inside inside <code>bindAndListToEvents</code> function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">bindEventsForArrangingItems</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;span.arrange-items&quot;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">forList</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;for&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">listUl</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">forList</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">listUl</span><span class="p">.</span><span class="nx">toggleClass</span><span class="p">(</span><span class="s2">&quot;arranging&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nx">listUl</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="s2">&quot;arranging&quot;</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="s2">&quot;I&#39;m done with arrangement&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">sortable</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sortable</span><span class="p">(</span><span class="nx">listUl</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">ghostClass</span><span class="o">:</span> <span class="s2">&quot;sortable-ghost&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">onUpdate</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">listOfOrderedIds</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>          <span class="nx">listUl</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;li&quot;</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">listOfOrderedIds</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;input.item-done&quot;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="s2">&quot;item_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">));</span>
+</span><span class='line'>          <span class="p">});</span>
+</span><span class='line'>          <span class="nx">channel</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">&quot;arrange:items&quot;</span><span class="p">,</span> <span class="p">{</span><span class="nx">item_ids</span><span class="o">:</span> <span class="nx">listOfOrderedIds</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">),</span> <span class="nx">for_list</span><span class="o">:</span> <span class="nx">forList</span><span class="p">});</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>      <span class="nx">app</span><span class="p">.</span><span class="nx">sortableCollection</span><span class="p">[</span><span class="nx">forList</span><span class="p">]</span> <span class="o">=</span> <span class="nx">sortable</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span><span class="c1">//end if</span>
+</span><span class='line'>    <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="s2">&quot;Arrange Items&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">app</span><span class="p">.</span><span class="nx">sortableCollection</span><span class="p">[</span><span class="nx">forList</span><span class="p">].</span><span class="nx">destroy</span><span class="p">();</span>
+</span><span class='line'>      <span class="nx">app</span><span class="p">.</span><span class="nx">sortableCollection</span><span class="p">[</span><span class="nx">forList</span><span class="p">]</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span><span class="c1">//end else</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>There are quite a bit of things here so let&#39;s quickly go through a few of them:</p>
+
+<ul>
+<li>On line 4, we are getting the <code>for</code> attribute of the <code>arrange-items</code> link. This <code>for</code> value will be the DOM&#39;s id of the targeted list. Hence on line 5, we can retrieve out the list using the id on line 4. </li>
+<li>On line 6, we toggle the class <code>arranging</code> and check on line 7 if the list is in <code>arranging</code> mode.</li>
+<li>On line 9 - 18, we then create a sortable list based on  the current item list. When an item is dropped on the list, the <code>onUpdate</code> function is triggered. It will then calculate the list of the IDs following the new order and send back this list of ids back to the server tapping on the event <code>arrange:items</code>.</li>
+<li>On line 19, we keep the sortable object inside the <code>sortableCollection</code> object so that it can be <code>destroy()</code> on line 23 later  when user click on the <code>I&#39;m done with the arrangement</code> link. </li>
+</ul>
+
+<p>As the server will broadcast the event <code>arrange:items</code>, let&#39;s create function named <code>listenToArrangingItemsEvent</code> to listen to this event. Remember to call <code>listenToArrangingItemsEvent</code> function on <code>bindAndListToEvents</code> function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">listenToArrangingItemsEvent</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">channel</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;arrange:items&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">itemIds</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="s2">&quot;item_ids&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">forList</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="s2">&quot;for_list&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">listUl</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">forList</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">itemIdsArray</span> <span class="o">=</span> <span class="nx">itemIds</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">sortable</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sortable</span><span class="p">(</span><span class="nx">listUl</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+</span><span class='line'>    <span class="nx">sortable</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="nx">itemIdsArray</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">sortable</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>The server will send back the list of item&#39;s ids the same format when we send the item&#39;s ids to the server (i.e. <code>1,2,3,4</code>) and the DOM id (inside <code>data[for_list</code>) of the targeted list. The list of ids will then be split into an array on line 6. The sortable object is then created on line 7 on top of the targeted list. The sortable object will then trigger the sort function to sort the list based on the received array of ids created on line 6. </p>
+
+<p>That&#39;s it. We are now done with all the events. You can try out the complete application on <a href="http://localhost:4000">http://localhost:4000</a></p>
+
+<h3>Conclusion</h3>
+
+<p>Now, you can sit back, relax and enjoy the real time to do list. Note that, this is just an experiment with javascript and Phoenix channel. If you want to build a better JS code for this to do list, <a href="http://backbonejs.org/">Backbone JS</a>, <a href="https://angularjs.org/">Angular JS</a> or <a href="http://facebook.github.io/react/">ReactJS</a> can do a much better job with shorter source code and more comprehensive comparing to just plain jQuery. We&#39;ll come back to it later in another article.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Migrating Applications From Phoenix 0.4.1 to Phoenix 0.5.0]]></title>

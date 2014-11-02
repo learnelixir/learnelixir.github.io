@@ -3,6 +3,14 @@
   
   
   <url>
+    <loc>http://learnelixir.com/blog/2014/10/30/real-time-to-do-list-with-phoenix-channel/</loc>
+    
+    <lastmod>2014-10-30T21:44:38+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://learnelixir.com/blog/2014/10/29/migrating-applications-from-phoenix-0-dot-4-1-to-phoenix-0-dot-5-0/</loc>
     
     <lastmod>2014-10-29T06:16:12+08:00</lastmod>
@@ -117,28 +125,28 @@
   
   <url>
     <loc>http://learnelixir.com/blog/archives/</loc>
-    <lastmod>2014-10-30T07:33:23+08:00</lastmod>
+    <lastmod>2014-11-02T12:33:20+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://learnelixir.com/about/</loc>
-    <lastmod>2014-10-30T07:33:23+08:00</lastmod>
+    <lastmod>2014-11-02T12:33:20+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://learnelixir.com/</loc>
-    <lastmod>2014-10-30T07:33:23+08:00</lastmod>
+    <lastmod>2014-11-02T12:33:20+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://learnelixir.com/posts/</loc>
-    <lastmod>2014-10-30T07:33:23+08:00</lastmod>
+    <lastmod>2014-11-02T12:33:20+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
