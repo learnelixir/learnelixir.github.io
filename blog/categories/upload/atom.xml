@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Upload | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/upload/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-11-02T12:33:20+08:00</updated>
+  <updated>2014-11-02T12:34:55+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -126,7 +126,7 @@ I was trying to find on Internet a way to receive uploaded image and format the 
 </code></pre></div>
 <p>Now try to visit the new hardware page <a href="http://localhost:4000/hardwares/new">http://localhost:4000/hardwares/new</a>, select a random file and click save then check the server log. What you will see is the parameter as something similar to what is inside the below screenshot I took from my Mac:</p>
 
-<p><img class="center" src="/images/upload<em>image/upload</em>image_terminal.png&#8221; width=&#8221;637&#8221; height=&#8221;269&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
+<p>{% img center /images/upload<em>image/upload</em>image_terminal.png 637 269 &#39;image&#39; &#39;images&#39; %}</p>
 
 <p>Let&#39;s reformat the parameters for readable purpose:</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">Parameters: %<span class="o">{</span>

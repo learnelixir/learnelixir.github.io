@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Query | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/query/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-11-02T12:33:20+08:00</updated>
+  <updated>2014-11-02T12:34:55+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -323,7 +323,7 @@ sys 2m53.117s
 
 <p>Here is the chart that shows the performance of Ecto vs Active Record through 3 runs:</p>
 
-<p><img class="center" src="/images/ecto<em>vs</em>active<em>record/creation</em>chart.png&#8221; width=&#8221;710&#8221; height=&#8221;467&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
+<p>{% img center /images/ecto<em>vs</em>active<em>record/creation</em>chart.png 710 467 &#39;image&#39; &#39;images&#39; %}</p>
 
 <p>Ecto is approximately <strong>62%</strong> faster than Active Record. Hence, Ecto is the winner in this round.</p>
 
@@ -401,7 +401,7 @@ sys 3m7.004s
 
 <p>Here is the chart showing the above elapsed time:</p>
 
-<p><img class="center" src="/images/ecto<em>vs</em>active<em>record/update</em>chart.png&#8221; width=&#8221;633&#8221; height=&#8221;444&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
+<p>{% img center /images/ecto<em>vs</em>active<em>record/update</em>chart.png 633 444 &#39;image&#39; &#39;images&#39; %}</p>
 
 <h3>Conclusion</h3>
 

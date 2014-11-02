@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Channel | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/channel/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-11-02T12:33:20+08:00</updated>
+  <updated>2014-11-02T12:34:55+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -18,8 +18,9 @@
     <link href="http://learnelixir.com/blog/2014/10/30/real-time-to-do-list-with-phoenix-channel/"/>
     <updated>2014-10-30T21:44:38+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/30/real-time-to-do-list-with-phoenix-channel</id>
-    <content type="html"><![CDATA[<p>Channel websocket is a pretty cool feature built in Phoenix framework. It is like a controller, but bidirectional and the connection stay alive after server response. The server can push information to the browser without browser asking for it unlike traditional web server. To fully understand and make use of this awesome feature, let&#39;s try to build a Real Time To Do List application in this article. This will be basically a To Do list but it can be shared among your team. Hence everytime a person inside your team check / uncheck a To Do Item, everyone will see that without refreshing the page. 
-&lt;!&#8211; more &#8211;&gt;</p>
+    <content type="html"><![CDATA[<p>Channel websocket is a pretty cool feature built in Phoenix framework. It is like a controller, but bidirectional and the connection stay alive after server response. The server can push information to the browser without browser asking for it unlike traditional web server. To fully understand and make use of this awesome feature, let&#39;s try to build a Real Time To Do List application in this article. This will be basically a To Do list but it can be shared among your team. Hence everytime a person inside your team check / uncheck a To Do Item, everyone will see that without refreshing the page. </p>
+
+<!-- more -->
 
 <h3>Setup a Phoenix project</h3>
 
@@ -383,39 +384,24 @@
 <h4>toggle:item event</h4>
 
 <p>This event is triggered when a user clicks on an item check box to mark an item as done or undone. Once this event is received on the channel, the channel will then broadcast this event to everyone [Line 3]. The code for this event is presented below: 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">event</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">quot</span><span class="p">;</span><span class="n">toggle</span><span class="ss">:item</span><span class="o">&amp;</span><span class="n">quot</span><span class="p">;,</span> <span class="n">data</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">item</span> <span class="p">=</span> <span class="n">toggle</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">item</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">done</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">status</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">&amp;</span><span class="n">quot</span><span class="p">;</span><span class="n">item</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">id</span><span class="o">&amp;</span><span class="n">quot</span><span class="p">;])</span>
-</span><span class='line'>  <span class="k">if</span> <span class="n">item</span><span class="p">,</span> <span class="ss">do</span><span class="p">:</span> <span class="n">broadcast</span> <span class="n">socket</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">quot</span><span class="p">;</span><span class="n">toggle</span><span class="ss">:item</span><span class="o">&amp;</span><span class="n">quot</span><span class="p">;,</span> <span class="p">%{</span><span class="ss">item</span><span class="p">:</span> <span class="n">item</span><span class="p">}</span>
-</span><span class='line'>  <span class="n">socket</span>
-</span><span class='line'><span class="k">end</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">defp</span> <span class="n">toggle</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">item</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">done</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">status</span><span class="p">(</span><span class="n">item</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">id</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>  <span class="k">case</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="nc">Item</span><span class="p">,</span> <span class="nc">String</span><span class="p">.</span><span class="n">to</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">integer</span><span class="p">(</span><span class="n">item</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">id</span><span class="p">))</span>
-</span><span class='line'>    <span class="n">item</span> <span class="ow">when</span> <span class="n">is_map</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">item</span> <span class="p">=</span> <span class="p">%{</span><span class="n">item</span> <span class="p">|</span> <span class="ss">done</span><span class="p">:</span> <span class="o">!</span><span class="n">item</span><span class="p">.</span><span class="n">done</span><span class="p">}</span>
-</span><span class='line'>      <span class="nc">Repo</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">item</span>
-</span><span class='line'>    <span class="bp">_</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span>
-</span><span class='line'>      <span class="no">nil</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure></p>
+&#8220;`elixir
+def event(socket, &quot;toggle:item&quot;, data) do
+  item = toggle<em>item</em>done<em>status(data[&quot;item</em>id&quot;])
+  if item, do: broadcast socket, &quot;toggle:item&quot;, %{item: item}
+  socket 
+end</p>
+
+<p>defp toggle<em>item</em>done<em>status(item</em>id) do
+  case Repo.get(Item, String.to<em>integer(item</em>id))
+    item when is_map(item) -&gt;
+      item = %{item | done: !item.done}
+      Repo.update(item)
+      item
+    _ -&gt;
+      nil
+  end
+end
+&#8220;`</p>
 
 <p>Note that on line 9, we are negating <code>item.done</code> to toggle the current status of an item.</p>
 

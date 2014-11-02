@@ -4,7 +4,7 @@
   <title><![CDATA[Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-11-02T12:33:20+08:00</updated>
+  <updated>2014-11-02T12:34:32+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -18,8 +18,9 @@
     <link href="http://learnelixir.com/blog/2014/10/30/real-time-to-do-list-with-phoenix-channel/"/>
     <updated>2014-10-30T21:44:38+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/30/real-time-to-do-list-with-phoenix-channel</id>
-    <content type="html"><![CDATA[<p>Channel websocket is a pretty cool feature built in Phoenix framework. It is like a controller, but bidirectional and the connection stay alive after server response. The server can push information to the browser without browser asking for it unlike traditional web server. To fully understand and make use of this awesome feature, let&#39;s try to build a Real Time To Do List application in this article. This will be basically a To Do list but it can be shared among your team. Hence everytime a person inside your team check / uncheck a To Do Item, everyone will see that without refreshing the page. 
-&lt;!&#8211; more &#8211;&gt;</p>
+    <content type="html"><![CDATA[<p>Channel websocket is a pretty cool feature built in Phoenix framework. It is like a controller, but bidirectional and the connection stay alive after server response. The server can push information to the browser without browser asking for it unlike traditional web server. To fully understand and make use of this awesome feature, let&#39;s try to build a Real Time To Do List application in this article. This will be basically a To Do list but it can be shared among your team. Hence everytime a person inside your team check / uncheck a To Do Item, everyone will see that without refreshing the page. </p>
+
+<!-- more -->
 
 <h3>Setup a Phoenix project</h3>
 
