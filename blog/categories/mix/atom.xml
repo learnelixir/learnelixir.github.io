@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Phoenix | Learn Elixir Language]]></title>
-  <link href="http://learnelixir.com/blog/categories/phoenix/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Mix | Learn Elixir Language]]></title>
+  <link href="http://learnelixir.com/blog/categories/mix/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
   <updated>2014-11-07T07:12:27+08:00</updated>
   <id>http://learnelixir.com/</id>
