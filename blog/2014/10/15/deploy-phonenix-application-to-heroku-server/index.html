@@ -1,0 +1,445 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Deploy Phonenix Application to Heroku - Learn Elixir Language</title>
+  <meta name="google-site-verification" content="Csx5SF9iNZ6ktKEUFVVFcxhhHQQQRu5Eokma5T8Scls" />
+  <meta name="author" content="<a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>&#8221;>
+
+  
+  <meta name="description" content="Deploy Phoenix Application to Heroku" />
+
+  
+  <meta name="keywords" content="deploy, heroku, elixir, phoenix, automation" />
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Learn Elixir Language" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-55420151-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/"><div class='logo' title='Learn Elixir Language'></div></a></h1>
+  
+    <h2>Elixir Language, Phoenix Framework and Me.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscription">
+  <li><a href="https://github.com/learnelixir" rel="subscribe-github" title="@learnelixir on GitHub">GitHub</a></li>
+</ul>
+  
+  
+  
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:learnelixir.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Deploy Phonenix Application to Heroku</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+<time class='entry-date' datetime='2014-10-15T23:16:00+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:16 pm</span></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://learnelixir.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><strong>UPDATE</strong> on 27th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. The source code is available on the following git URL:</p>
+
+<p><a href="https://github.com/learnelixir/phoenix-heroku">https://github.com/learnelixir/phoenix-heroku</a>
+<hr/><br/>
+Phoenix is a pretty cool web framework for Elixir. However, up to date, there are still very few resources on how to deploy a Phoenix application to a web server. I tried to google on how to deploy but could not find any tutorials that provide very clear and exact steps. Hence, in this article, let walkthrouh step by step how to do that with a heroku server.</p>
+
+<!-- more -->
+
+<h3>Create an awesome Phoenix application</h3>
+
+<p>From phoenix installation folder, run the following command. You can name it any name as long as you remember to use the same app name in subsequent steps.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix phoenix.new phoenix-heroku ../
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Enter this new application </p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ../phoenix-heroku
+</span></code></pre></td></tr></table></div></figure>
+
+<p>and change the phoenix deps to refer to ref <code>8cffae4</code> sha. There is an error in current Phoenix 0.5 version whereby the view layout file is touched even though it does not exists. This commit https://github.com/phoenixframework/phoenix/commit/86dee56b42da5f465c81cae6b0556942069a2165 has fixed that:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
+</span><span class='line'>  <span class="p">[{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">git</span><span class="p">:</span> <span class="s2">&quot;https://github.com/phoenixframework/phoenix.git&quot;</span><span class="p">,</span> <span class="ss">ref</span><span class="p">:</span> <span class="s2">&quot;8cffae4&quot;</span><span class="p">},</span>
+</span><span class='line'>   <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0&quot;</span><span class="p">}]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Now, install all the depenencies</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mix <span class="k">do</span> deps.get, compile
+</span></code></pre></td></tr></table></div></figure>
+
+<p>You will also need to modify the views to work with this phoenix version:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/views.ex
+</span></code></pre></td></tr></table></div></figure>
+
+<p>and change it to the following</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">PhoenixHeroku.Views</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.View</span><span class="p">,</span> <span class="ss">root</span><span class="p">:</span> <span class="s2">&quot;web/templates&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># Everything in this block is available runs in this</span>
+</span><span class='line'>  <span class="c1"># module and in other views that use MyApp.View</span>
+</span><span class='line'>  <span class="n">using</span> <span class="k">do</span>
+</span><span class='line'>    <span class="c1"># Import common functionality</span>
+</span><span class='line'>    <span class="kn">import</span> <span class="nc">PhoenixHeroku.I</span><span class="mi">18</span><span class="n">n</span>
+</span><span class='line'>    <span class="kn">import</span> <span class="nc">PhoenixHeroku.Router.Helpers</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># Use Phoenix.HTML to import all HTML functions (forms, tags, etc)</span>
+</span><span class='line'>    <span class="kn">use</span> <span class="nc">Phoenix.HTML</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># Common aliases</span>
+</span><span class='line'>    <span class="kn">alias</span> <span class="nc">Phoenix.Controller.Flash</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># Functions defined here are available to all other views/templates</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>This is a miminal number of steps to setup a phoenix application. Eventually, you will need to add more code to build it up. Moving forward, let&#39;s deploy this application. </p>
+
+<p>Here are the steps to deploy to Heroku server</p>
+
+<h4>Step 1: Run git init</h4>
+
+<p>Pretty straight forward. Just run this command in your application folder</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git init
+</span></code></pre></td></tr></table></div></figure>
+
+<h4>Step 2: Create the heroku application</h4>
+
+<p><strong>Note</strong>: You will need to change the heroku application name, which is in this post -  <code>phoenix-heroku-demo</code> to your application name.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>heroku create phoenix-heroku-demo
+</span><span class='line'>Creating phoenix-heroku-demo... <span class="k">done</span>, stack is cedar
+</span><span class='line'>http://phoenix-heroku-demo.herokuapp.com/ <span class="p">|</span> git@heroku.com:phoenix-heroku-demo.git
+</span><span class='line'>Git remote heroku added
+</span></code></pre></td></tr></table></div></figure>
+
+<p>After this command, Heroku will provide me a URL for my heroku app. But there is nothing there yet. Also, do note down the name, we will use it later. Mine is <code>phoenix-heroku-demo</code>. Let&#39;s move to next step</p>
+
+<h4>Step 3: Add buildback to your app</h4>
+
+<p>Run a heroku config:set command as following</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>heroku config:set <span class="se">\ </span>
+</span><span class='line'><span class="nv">BUILDPACK_URL</span><span class="o">=</span>https://github.com/HashNuke/heroku-buildpack-elixir.git -a phoenix-heroku-demo
+</span></code></pre></td></tr></table></div></figure>
+
+<h4>Step 4: Set mix environment config</h4>
+
+<p>You can choose to set mix environment to be staging or production at this step. Here I choose to run my app using production environment:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>heroku config:set <span class="nv">MIX_ENV</span><span class="o">=</span>prod
+</span></code></pre></td></tr></table></div></figure>
+
+<p>After this, you will need to modify some of the config file in this Phoenix application. Let&#39;s move to step 5</p>
+
+<h4>Step 5: Edit Procfile</h4>
+
+<p>Create file <code>Procfile</code> inside the root of your application folder with the following content</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>web: yes <span class="p">|</span> mix compile.protocols <span class="o">&amp;&amp;</span> elixir -pa _build/prod/consolidated -S mix phoenix.start
+</span></code></pre></td></tr></table></div></figure>
+
+<p>If in step 4, you have specified staging environment, you will need to use the folder <code>_build/staging/consolidated</code> for the <code>-pa</code> option here. </p>
+
+<h4>Step 6: Edit elixir_buildpack.config</h4>
+
+<p>Create file <code>elixir_buildpack.config</code> inside the root of your application folder with the following content. Note that we will need to use Elixir 1.0.1 here as the Phoenix build at the point that I wrote this article requires that.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">erlang_version</span><span class="o">=</span>17.2
+</span><span class='line'><span class="nv">elixir_version</span><span class="o">=</span>1.0.1
+</span><span class='line'><span class="nv">always_rebuild</span><span class="o">=</span><span class="nb">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<h4>Step 7: Commit everything and push</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git add . <span class="o">&amp;&amp;</span> git commit -am <span class="s2">&quot;initial commit&quot;</span>
+</span><span class='line'><span class="nv">$ </span>git push heroku master
+</span></code></pre></td></tr></table></div></figure>
+
+<p>It can be quite slow in this first time pushing to heroku master as there is a need to compile all the elixir depenencies on Heroku server, but subsequently it will be quite fast. Now I go to <code>http://phoenix-heroku-demo.herokuapp.com/</code> and hooray the phoenix home page is there</p>
+
+<p><img class="center" src="/images/deploy_app_to_server/heroku.png" width="800" height="509" title="image" alt="images"></p>
+
+<p>In subsequent deploys, you will just need to perform this step - step 7</p>
+
+<p><strong>Tips</strong>: On your terminal, in order to run custom command for your phoenix app, you can trigger <code>heroku run</code>. For instance, if I want to run seed file, I can type the following command from my terminal:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>heroku run mix run seeds.ex
+</span></code></pre></td></tr></table></div></figure>
+
+<p>This has concluded for Heroku deploy. Happy Deploying :-) </p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>
+  
+  </span></span>
+
+
+      
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-27T23:16:00+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:16 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/deploy/'>deploy</a>, <a class='category' href='/blog/categories/heroku/'>heroku</a>, <a class='category' href='/blog/categories/phoenix/'>phoenix</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/" data-via="learnelixir" data-counturl="http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-layout="button_count" data-send="false" data-width="300" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/14/spawn-process-and-concurrency-in-elixir/" title="Previous Post: Spawn Process and Concurrency in Elixir">&laquo; Spawn Process and Concurrency in Elixir</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server/" title="Next Post: Deploy Phoenix Application to a Ubuntu Server">Deploy Phoenix Application to a Ubuntu Server &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a> -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'learnelixir';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/';
+        var disqus_url = 'http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

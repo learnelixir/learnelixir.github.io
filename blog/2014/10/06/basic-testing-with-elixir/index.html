@@ -1,0 +1,736 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Basic Testing With Elixir - Learn Elixir Language</title>
+  <meta name="google-site-verification" content="Csx5SF9iNZ6ktKEUFVVFcxhhHQQQRu5Eokma5T8Scls" />
+  <meta name="author" content="<a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>&#8221;>
+
+  
+  <meta name="description" content="Basic Testing concept in Elixir" />
+
+  
+  <meta name="keywords" content="elixir, test, TDD" />
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://learnelixir.com/blog/2014/10/06/basic-testing-with-elixir">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Learn Elixir Language" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-55420151-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/"><div class='logo' title='Learn Elixir Language'></div></a></h1>
+  
+    <h2>Elixir Language, Phoenix Framework and Me.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscription">
+  <li><a href="https://github.com/learnelixir" rel="subscribe-github" title="@learnelixir on GitHub">GitHub</a></li>
+</ul>
+  
+  
+  
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:learnelixir.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Basic Testing With Elixir</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+<time class='entry-date' datetime='2014-10-06T22:31:16+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:31 pm</span></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://learnelixir.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this article, we will go through some basic testing syntax with elixir. Elixir is a language that very well supports unit test and I totally love it when I first see it on the video. Let&#39;s start by writing a simple assertion</p>
+
+<!--more-->
+
+<p>You can use your favorite editor to edit an <code>.ex</code> file. In my case, I create a test folder and edit my <code>sample.ex</code> inside</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mkdir <span class="nb">test</span>
+</span><span class='line'><span class="nv">$ </span>vim <span class="nb">test</span>/sample.ex
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Now, inside this <code>sample.ex</code>, I can immediately write my first assertion like below</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="nc">ExUnit</span><span class="p">.</span><span class="n">start</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">defmodule</span> <span class="nc">TestIt</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">ExUnit.Case</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">test</span> <span class="s2">&quot;1 + 1 is 2&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">assert</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">2</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>As you can see, the test case can be written in a very simple manner. It starts with <code>ExUnit.start</code> and then make use of <code>ExUnit.Case</code> in <code>use ExUnit.Case</code></p>
+
+<p>You can then run this file by this command</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>elixir sample.ex
+</span><span class='line'>.
+</span><span class='line'>
+</span><span class='line'>Finished in 0.03 seconds <span class="o">(</span>0.03s on load, 0.00s on tests<span class="o">)</span>
+</span><span class='line'><span class="m">1</span> tests, <span class="m">0</span> failures
+</span><span class='line'>
+</span><span class='line'>Randomized with seed 322828
+</span></code></pre></td></tr></table></div></figure>
+
+<p>That&#39;s for the start, now we can following a Test Driven Development method (TDD) to develop something basic just for learning purpose. Let&#39;s write fibonacci generate. </p>
+
+<p>Giving a sequence number, the program will generate out a fibonacci number. Before we start writing, let&#39;s review the definition of fibonacci number </p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>fibonacci<span class="o">(</span>0<span class="o">)</span> <span class="o">=</span> 1
+</span><span class='line'>fibonacci<span class="o">(</span>1<span class="o">)</span> <span class="o">=</span> 1
+</span><span class='line'>fibonacci<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> fibonacci<span class="o">(</span>n - 1<span class="o">)</span> + fibonacci<span class="o">(</span>n - 2<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>With this definition in mind, let start by writing the first test:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="nc">ExUnit</span><span class="p">.</span><span class="n">start</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">defmodule</span> <span class="nc">TestIt</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">ExUnit.Case</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">test</span> <span class="s2">&quot;fibonacci number 0 is 1&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">assert</span> <span class="nc">Sequence</span><span class="p">.</span><span class="n">fibonacci</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Run this test and you can expect a failure:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>elixir sample.ex
+</span><span class='line'>
+</span><span class='line'>  1<span class="o">)</span> <span class="nb">test </span>fibonacci number <span class="m">0</span> is <span class="m">1</span> <span class="o">(</span>TestIt<span class="o">)</span>
+</span><span class='line'>     sample.ex:6
+</span><span class='line'>     ** <span class="o">(</span>UndefinedFunctionError<span class="o">)</span> undefined <span class="k">function</span>: <span class="se">\</span>
+</span><span class='line'>            Sequence.fibonacci/1 <span class="o">(</span>module Sequence is not available<span class="o">)</span>
+</span><span class='line'>     stacktrace:
+</span><span class='line'>       Sequence.fibonacci<span class="o">(</span>0<span class="o">)</span>
+</span><span class='line'>       sample.ex:7
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Finished in 0.03 seconds <span class="o">(</span>0.03s on load, 0.00s on tests<span class="o">)</span>
+</span><span class='line'><span class="m">1</span> tests, <span class="m">1</span> failures
+</span><span class='line'>
+</span><span class='line'>Randomized with seed 490020
+</span></code></pre></td></tr></table></div></figure>
+
+<p>As you can expect, the failure is because we do not have any module <code>Sequence</code> and function <code>fibonacci</code>. Let go to <code>sample.ex</code> and add in a function fibonacci:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="nc">ExUnit</span><span class="p">.</span><span class="n">start</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">defmodule</span> <span class="nc">Sequence</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">defmodule</span> <span class="nc">TestIt</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">ExUnit.Case</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">test</span> <span class="s2">&quot;fibonacci number 0 is 1&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">assert</span> <span class="nc">Sequence</span><span class="p">.</span><span class="n">fibonacci</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Now we have <code>fibonacci</code> function in <code>Sequence</code> module, which takes in a number and always return 1. Run the test again</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>elixir sample.ex
+</span><span class='line'>.
+</span><span class='line'>
+</span><span class='line'>Finished in 0.04 seconds <span class="o">(</span>0.04s on load, 0.00s on tests<span class="o">)</span>
+</span><span class='line'><span class="m">1</span> tests, <span class="m">0</span> failures
+</span><span class='line'>
+</span><span class='line'>Randomized with seed 311294
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Great! It passed. We are at green state now. We can now refactor a bit to make our source code a bit shorter:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="nc">ExUnit</span><span class="p">.</span><span class="n">start</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">defmodule</span> <span class="nc">Sequence</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">defmodule</span> <span class="nc">TestIt</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">ExUnit.Case</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">test</span> <span class="s2">&quot;fibonacci number 0 is 1&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">assert</span> <span class="nc">Sequence</span><span class="p">.</span><span class="n">fibonacci</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>I have moved the block inside <code>def fibonacci</code> to become something shorter. In fact, <code>def</code> is a function call in Elixir, which takes in a pattern (<code>fibonacci(n)</code>) and <code>do</code> something. This something needs to be a regular expression.</p>
+
+<p>Now run the test again and you would expect it to pass</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>elixir sample.ex
+</span><span class='line'>sample.ex:4: warning: variable n is unused
+</span><span class='line'>.
+</span><span class='line'>
+</span><span class='line'>Finished in 0.04 seconds <span class="o">(</span>0.04s on load, 0.00s on tests<span class="o">)</span>
+</span><span class='line'><span class="m">1</span> tests, <span class="m">0</span> failures
+</span><span class='line'>
+</span><span class='line'>Randomized with seed 999642
+</span></code></pre></td></tr></table></div></figure>
+
+<p>You can ignore the warning of unused variable n for now. We will come back to that shortly. Now, let&#39;s write some more test cases:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="nc">ExUnit</span><span class="p">.</span><span class="n">start</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">defmodule</span> <span class="nc">Sequence</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">defmodule</span> <span class="nc">TestIt</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">ExUnit.Case</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">test</span> <span class="s2">&quot;fibonacci number 0 is 1&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">assert</span> <span class="nc">Sequence</span><span class="p">.</span><span class="n">fibonacci</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">test</span> <span class="s2">&quot;fibonacci number 1 is 1&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">assert</span> <span class="nc">Sequence</span><span class="p">.</span><span class="n">fibonacci</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">test</span> <span class="s2">&quot;fibonacci number 2 is 2&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">assert</span> <span class="nc">Sequence</span><span class="p">.</span><span class="n">fibonacci</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">test</span> <span class="s2">&quot;fibonacci number 3 is 3&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">assert</span> <span class="nc">Sequence</span><span class="p">.</span><span class="n">fibonacci</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">test</span> <span class="s2">&quot;fibonacci number 4 is 5&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">assert</span> <span class="nc">Sequence</span><span class="p">.</span><span class="n">fibonacci</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">test</span> <span class="s2">&quot;fibonacci number 10 is 89&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">assert</span> <span class="nc">Sequence</span><span class="p">.</span><span class="n">fibonacci</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">==</span> <span class="mi">89</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>And when run the test, it will fail as expected</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>elixir sample.ex
+</span><span class='line'>  1<span class="o">)</span> <span class="nb">test </span>fibonacci number <span class="m">2</span> is <span class="m">2</span> <span class="o">(</span>TestIt<span class="o">)</span>
+</span><span class='line'>     sample.ex:18
+</span><span class='line'>     Assertion <span class="nv">with</span> <span class="o">==</span> failed
+</span><span class='line'>     code: Sequence.fibonacci<span class="o">(</span>2<span class="o">)</span> <span class="o">==</span> 2
+</span><span class='line'>     lhs:  1
+</span><span class='line'>     rhs:  2
+</span><span class='line'>     stacktrace:
+</span><span class='line'>       sample.ex:19
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  2<span class="o">)</span> <span class="nb">test </span>fibonacci number <span class="m">3</span> is <span class="m">3</span> <span class="o">(</span>TestIt<span class="o">)</span>
+</span><span class='line'>     sample.ex:22
+</span><span class='line'>     Assertion <span class="nv">with</span> <span class="o">==</span> failed
+</span><span class='line'>     code: Sequence.fibonacci<span class="o">(</span>2<span class="o">)</span> <span class="o">==</span> 2
+</span><span class='line'>     lhs:  1
+</span><span class='line'>     rhs:  2
+</span><span class='line'>     stacktrace:
+</span><span class='line'>       sample.ex:23
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  3<span class="o">)</span> <span class="nb">test </span>fibonacci number <span class="m">4</span> is <span class="m">5</span> <span class="o">(</span>TestIt<span class="o">)</span>
+</span><span class='line'>     sample.ex:26
+</span><span class='line'>     Assertion <span class="nv">with</span> <span class="o">==</span> failed
+</span><span class='line'>     code: Sequence.fibonacci<span class="o">(</span>2<span class="o">)</span> <span class="o">==</span> 2
+</span><span class='line'>     lhs:  1
+</span><span class='line'>     rhs:  2
+</span><span class='line'>     stacktrace:
+</span><span class='line'>       sample.ex:27
+</span><span class='line'>
+</span><span class='line'>..
+</span><span class='line'>
+</span><span class='line'>  4<span class="o">)</span> <span class="nb">test </span>fibonacci number <span class="m">10</span> is <span class="m">89</span> <span class="o">(</span>TestIt<span class="o">)</span>
+</span><span class='line'>     sample.ex:30
+</span><span class='line'>     Assertion <span class="nv">with</span> <span class="o">==</span> failed
+</span><span class='line'>     code: Sequence.fibonacci<span class="o">(</span>10<span class="o">)</span> <span class="o">==</span> 89
+</span><span class='line'>     lhs:  1
+</span><span class='line'>     rhs:  89
+</span><span class='line'>     stacktrace:
+</span><span class='line'>       sample.ex:31
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Finished in 0.06 seconds <span class="o">(</span>0.06s on load, 0.00s on tests<span class="o">)</span>
+</span><span class='line'><span class="m">6</span> tests, <span class="m">4</span> failures
+</span><span class='line'>
+</span><span class='line'>Randomized with seed 982355
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Now let try to write the code to pass these cases using the definition</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">Sequence</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="ow">when</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Note that <code>when n &lt;= 1</code> in the first function definition is Elixir guard conidtion&#8220;. Now, run the test and everything is passed</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>elixir sample.ex
+</span><span class='line'>......
+</span><span class='line'>
+</span><span class='line'>Finished in 0.06 seconds <span class="o">(</span>0.06s on load, 0.00s on tests<span class="o">)</span>
+</span><span class='line'><span class="m">6</span> tests, <span class="m">0</span> failures
+</span><span class='line'>
+</span><span class='line'>Randomized with seed 456516
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Since elixir function definition is patterned matching. You also can write as following to match according to the mathematic definition</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">Sequence</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fibonacci</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fibonacci</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="kd">def</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Here we do not need a guard condition for n in third function as it will match first and second if n is 0 or 1. The function matching is top to bottom. Run the test again</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>elixir sample.ex
+</span><span class='line'>......
+</span><span class='line'>
+</span><span class='line'>Finished in 0.06 seconds <span class="o">(</span>0.06s on load, 0.00s on tests<span class="o">)</span>
+</span><span class='line'><span class="m">6</span> tests, <span class="m">0</span> failures
+</span><span class='line'>
+</span><span class='line'>Randomized with seed 163178
+</span></code></pre></td></tr></table></div></figure>
+
+<p>We concluded this article here and hope you have learned and enjoyed the following from Elixir. Thank you for your time</p>
+
+<ul>
+<li>TDD in Elixir</li>
+<li>ExUnit Test</li>
+<li>Function Pattern Matching</li>
+<li>Guard Conditions</li>
+</ul>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>
+  
+  </span></span>
+
+
+      
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-06T22:31:16+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:31 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/tdd/'>tdd</a>, <a class='category' href='/blog/categories/test/'>test</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://learnelixir.com/blog/2014/10/06/basic-testing-with-elixir/" data-via="learnelixir" data-counturl="http://learnelixir.com/blog/2014/10/06/basic-testing-with-elixir/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-layout="button_count" data-send="false" data-width="300" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/05/build-web-app-with-elixir/" title="Previous Post: Book Listing App with Elixir, Phoenix, Postgres and Ecto">&laquo; Book Listing App with Elixir, Phoenix, Postgres and Ecto</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/10/07/have-fun-with-pattern-matching-in-elixir/" title="Next Post: Have Fun with Pattern Matching in Elixir">Have Fun with Pattern Matching in Elixir &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a> -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'learnelixir';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://learnelixir.com/blog/2014/10/06/basic-testing-with-elixir/';
+        var disqus_url = 'http://learnelixir.com/blog/2014/10/06/basic-testing-with-elixir/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

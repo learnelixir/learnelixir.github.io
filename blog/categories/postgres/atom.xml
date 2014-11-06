@@ -36,7 +36,7 @@ In this article, let&#39;s go through the process of creating and build a simple
 </code></pre></div>
 <p>Open the browser, and go to the url <code>http://localhost:4000</code></p>
 
-<p>{% img left /images/build-web-app-with-elixir/phoenix_page.png 800 510 &#39;image&#39; &#39;images&#39; %}</p>
+<p><img class="left" src="/images/build-web-app-with-elixir/phoenix_page.png" width="800" height="510" title="&#39;image&#39; &#39;images&#39;" ></p>
 
 <h3>Add Ecto To The Project</h3>
 
@@ -244,7 +244,7 @@ Generated book_store.app
 </code></pre></div>
 <p>Refresh the browser and voila, this is what we will get:</p>
 
-<p>{% img left /images/build-web-app-with-elixir/complete.png 800 346 &#39;image&#39; &#39;images&#39; %}</p>
+<p><img class="left" src="/images/build-web-app-with-elixir/complete.png" width="800" height="346" title="&#39;image&#39; &#39;images&#39;" ></p>
 
 <h3>Common Pitfall</h3>
 

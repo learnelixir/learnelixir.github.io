@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Upgrade | Learn Elixir Language]]></title>
+  <link href="http://learnelixir.com/blog/categories/upgrade/atom.xml" rel="self"/>
+  <link href="http://learnelixir.com/"/>
+  <updated>2014-11-07T07:12:48+08:00</updated>
+  <id>http://learnelixir.com/</id>
+  <author>
+    <name><![CDATA[Learn Elixir]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Migrating Applications From Phoenix 0.4.1 to Phoenix 0.5.0]]></title>
+    <link href="http://learnelixir.com/blog/2014/10/29/migrating-applications-from-phoenix-0-dot-4-1-to-phoenix-0-dot-5-0/"/>
+    <updated>2014-10-29T06:16:12+08:00</updated>
+    <id>http://learnelixir.com/blog/2014/10/29/migrating-applications-from-phoenix-0-dot-4-1-to-phoenix-0-dot-5-0</id>
+    <content type="html"><![CDATA[<p>Phoenix 0.5.0 was released 2 weeks ago and it was a great release with bug fixes and a lot enhancements, performance tweaks. If you are running your application on Phoenix 0.4.1, it&#39;s now a good time to upgrade your app to utilise the speed of Phoenix 0.5.0. Besides those, there are some backward incompatible changes which may break your app that you should watch out when you upgrade to Phoenix 0.5.0. In this article, we are going to go through in details how to upgrade a Phoenix 0.4.0 application to a Phoenix 0.5.0.</p>
+
+<p>The source code for the Phoenix application after upgrade to 0.5.0, which I applied inside this article is available at:</p>
+
+<p><a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0">https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0</a></p>
+
+<!--more-->
+
+<p>To start, you will need to branch your application to another branch called phoenix-0.5.0:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>git checkout -b phoenix-0.5.0
+</code></pre></div>
+<h3>Before upgrading</h3>
+
+<p>Before we start any upgrading, it&#39;s important to note that Phoenix 0.5.0 will only run on Elixir 1.0.1 and it&#39;s not compatible with Elixir 1.0.0. Hence you will need to upgrade your Elixir to 1.0.1 first if you have not done so. On your Mac, you can simply run the <code>brew install</code> command:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>brew install elixir
+</code></pre></div>
+<p>On Ubuntu server, you can refer to this updated article - http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server/ - <strong>Step Number 4</strong> on how to bring up your Elixir to version 1.0.1</p>
+
+<h3>Upgrading to Phoenix 0.5.0</h3>
+
+<p>You will need to delete your Phoenix source folder and install the latest one by typing the following command on your terminal. This way, next time, when you generate a new Phoenix application, it will Phoenix 0.5.0:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>git clone https://github.com/phoenixframework/phoenix.git <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  <span class="nb">cd </span>phoenix <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  git checkout v0.5.0 <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  mix <span class="k">do</span> deps.get, compile
+</code></pre></div>
+<h3>Upgrading application running Phoenix 0.4.1 to Phoenix 0.5.0</h3>
+
+<p>Now enter the application folder that are still running Phoenix 0.4.1. For my case, I will upgrade the hardware zone app described in the <a href="http://learnelixir.com/blog/2014/10/18/seven-restful-actions-in-phoenix-web-app/">Seven RESTful Actions in Phoenix Web App</a>.</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">cd</span> ~/learn/elixir/hardware_zone
+</code></pre></div>
+<p>And then follow the following steps:</p>
+
+<h4>Step 1 - Change Phoenix version to 0.5.0 in <code>mix.exs</code></h4>
+
+<p>Open <code>mix.exs</code> file:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim mix.exs
+</code></pre></div>
+<p>On <code>def project</code> function, make sure your <code>elixir</code> is using <code>~&gt; 1.0.0</code>. You will also need to add in the <code>compilers</code> line below <code>elixrc_paths</code> line as following:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">def</span> <span class="n">project</span> <span class="k">do</span>
+  <span class="p">[</span> <span class="ss">app</span><span class="p">:</span> <span class="ss">:hardware_zone</span><span class="p">,</span>
+    <span class="ss">version</span><span class="p">:</span> <span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+    <span class="ss">elixir</span><span class="p">:</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">,</span>
+    <span class="ss">elixirc_paths</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;web&quot;</span><span class="p">],</span>
+    <span class="ss">compilers</span><span class="p">:</span> <span class="p">[</span><span class="ss">:phoenix</span><span class="p">]</span> <span class="o">++</span> <span class="nc">Mix</span><span class="p">.</span><span class="n">compilers</span><span class="p">,</span>
+    <span class="ss">deps</span><span class="p">:</span> <span class="n">deps</span> <span class="p">]</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>On <code>defp deps</code> function, make sure <code>phoenix</code> version is now <code>0.5.0</code>.</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
+  <span class="p">[</span>
+    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.5&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="ss">:plug</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.8.1&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="ss">:mogrify</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.1&quot;</span><span class="p">}</span>
+  <span class="p">]</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>After that, run <code>deps.get, compile</code>:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>mix <span class="k">do</span> deps.get, compile
+</code></pre></div>
+<h4>Step 2 - Upgrade config files</h4>
+
+<p>There have a been a huge change in config files in config folder. Those files are <code>config.exs</code>, <code>def.exs</code>, <code>prod.exs</code> and <code>test.exs</code>. Let&#39;s look at them one by one</p>
+
+<h5>config.exs</h5>
+
+<p>Open <code>config.exs</code> file</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim config/config.exs
+</code></pre></div>
+<p>Inside the function call <code>config :phoenix, HardwareZone.Router, ...</code>, you will need to change the lines for <code>port</code>, <code>ssl</code>, <code>static_assets</code>, <code>cookies</code>, <code>session_key</code> and <code>session_secret</code>:</p>
+
+<ul>
+<li>Line <code>port: System.get_env(&quot;PORT&quot;),</code> will need to change to <code>http: [port: System.get_env(&quot;PORT&quot;)],</code>.</li>
+<li>Line <code>ssl: false,</code> will need to change to <code>https: false,</code>.</li>
+<li>Line <code>cookies: true,</code> will need to be removed.</li>
+<li>Line <code>session_key: &quot;_hardware_zone_key&quot;,</code> will need to be removed.</li>
+<li>Line <code>session_secret: ...</code>, will need to change to <code>secret_key_base: ...</code></li>
+</ul>
+
+<p>Add line <code>url: [host: &quot;localhost&quot;],</code> to be right under <code>config :phoenix, HardwareZone.Router,</code> function call. </p>
+
+<p>Effectively, the function call: <code>config :phoenix, HardwareZone.Router</code> will be like following after change:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="nc">HardwareZone.Router</span><span class="p">,</span>
+  <span class="ss">url</span><span class="p">:</span> <span class="p">[</span><span class="ss">host</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">],</span>
+  <span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)],</span>
+  <span class="ss">https</span><span class="p">:</span> <span class="no">false</span><span class="p">,</span>
+  <span class="ss">secret_key_base</span><span class="p">:</span> <span class="s2">&quot;oXLywfYvLeqUBlTmg2ly4HL64UpJycMiwqG2OlN95TM30AwXqXEFb...&quot;</span><span class="p">,</span>
+  <span class="ss">catch_errors</span><span class="p">:</span> <span class="no">true</span><span class="p">,</span>
+  <span class="ss">debug_errors</span><span class="p">:</span> <span class="no">false</span><span class="p">,</span>
+  <span class="ss">error_controller</span><span class="p">:</span> <span class="nc">HardwareZone.PageController</span>
+</code></pre></div>
+<p>You will also need to remove the entire function call:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">:code_reloader</span><span class="p">,</span>
+  <span class="ss">enabled</span><span class="p">:</span> <span class="no">false</span>
+</code></pre></div>
+<p>And add in the following. Note that you will need to change the key name according to the project&#39;s name:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="nc">HardwareZone.Router</span><span class="p">,</span>
+  <span class="ss">session</span><span class="p">:</span> <span class="p">[</span><span class="ss">store</span><span class="p">:</span> <span class="ss">:cookie</span><span class="p">,</span>
+            <span class="ss">key</span><span class="p">:</span> <span class="s2">&quot;_hardware_zone_key&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p>That&#39;s all for <code>config.exs</code>. Let&#39;s move on to <code>dev.exs</code></p>
+
+<h5>dev.exs</h5>
+
+<p>Open <code>dev.exs</code> file:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim config/dev.exs
+</code></pre></div>
+<p>Under <code>config :phoenix, HardwareZone.Router,</code> call you will need to remove the following lines:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4000</span><span class="p">,</span>
+<span class="ss">ssl</span><span class="p">:</span> <span class="no">false</span><span class="p">,</span>
+<span class="ss">host</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+<span class="ss">cookies</span><span class="p">:</span> <span class="no">true</span><span class="p">,</span>
+<span class="ss">session_key</span><span class="p">:</span> <span class="s2">&quot;_hardware_zone_key&quot;</span><span class="p">,</span>
+<span class="ss">session_secret</span><span class="p">:</span> <span class="s2">&quot;VQP)JU1Z7*5L+^09X*L=6RKN9R1HL0O2E7^(1B%V3W64Z7@J9^7(M&amp;TXW8*C)...&quot;</span><span class="p">,</span>
+</code></pre></div>
+<p>and add in this line:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4000</span><span class="p">],</span>
+</code></pre></div>
+<p>Also, remove the following block of code:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">:code_reloader</span><span class="p">,</span>
+  <span class="ss">enabled</span><span class="p">:</span> <span class="no">true</span>
+
+<span class="n">config</span> <span class="ss">:logger</span><span class="p">,</span> <span class="ss">:console</span><span class="p">,</span>
+  <span class="ss">level</span><span class="p">:</span> <span class="ss">:debug</span>
+</code></pre></div>
+<p>And add in the following line:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">:code_reloader</span><span class="p">,</span> <span class="no">true</span>
+</code></pre></div>
+<p>Effectively, for my case, it will look like following after these changes have been  made:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kn">use</span> <span class="nc">Mix.Config</span>
+
+<span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="nc">HardwareZone.Router</span><span class="p">,</span>
+  <span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4000</span><span class="p">],</span>
+  <span class="ss">debug_errors</span><span class="p">:</span> <span class="no">true</span>
+
+<span class="c1"># Enables code reloading for development</span>
+<span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">:code_reloader</span><span class="p">,</span> <span class="no">true</span>
+</code></pre></div>
+<p>Let&#39;s move on to <code>prod.exs</code></p>
+
+<h5>prod.exs</h5>
+
+<p>Open <code>prod.exs</code> file:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim config/prod.exs
+</code></pre></div>
+<p>under the function call <code>config :phoenix, HardwareZone.Router,</code>, you will also need to remove the block of code:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4000</span><span class="p">,</span>
+<span class="ss">ssl</span><span class="p">:</span> <span class="no">false</span><span class="p">,</span>
+<span class="ss">host</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+<span class="ss">cookies</span><span class="p">:</span> <span class="no">true</span><span class="p">,</span>
+<span class="ss">session_key</span><span class="p">:</span> <span class="s2">&quot;_hardware_zone_key&quot;</span><span class="p">,</span>
+<span class="ss">session_secret</span><span class="p">:</span> <span class="s2">&quot;VQP)JU1Z7*5L+^09X*L=6RKN9R1HL0O2E7^(1B%V3W64Z7@J9^7(M&amp;TXW8*C)I....&quot;</span><span class="p">,</span>
+</code></pre></div>
+<p>and replace by the following code. Note that the secret key is different per application, hence make sure you change it:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">url: [host: &quot;estark-sands-7697.herokuapp.com&quot;],
+http: [port: System.get_env(&quot;PORT&quot;)],
+secret_key_base: &quot;oXLywfYvLeqUBlTmg2ly4HL64UpJycMiwqG2OlN95TM30AwXqXEFbwjAbD/tgnfDDNpqFeEc...&quot;
+</code></pre></div>
+<p>Under <code>config :logger, :console,</code> call, remove the line <code>metadata: [:request_id]</code>.</p>
+
+<p>After all the <code>prod.exs</code> should look like below:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kn">use</span> <span class="nc">Mix.Config</span>
+
+<span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="nc">HardwareZone.Router</span><span class="p">,</span>
+  <span class="ss">url</span><span class="p">:</span> <span class="p">[</span><span class="ss">host</span><span class="p">:</span> <span class="s2">&quot;estark-sands-7697.herokuapp.com&quot;</span><span class="p">],</span>
+  <span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)],</span>
+  <span class="ss">secret_key_base</span><span class="p">:</span> <span class="s2">&quot;oXLywfYvLeqUBlTmg2ly4HL64UpJycMiwqG2OlN95TM30AwXqXEFbwjAbD/tgnfDDNpq....&quot;</span>
+
+<span class="n">config</span> <span class="ss">:logger</span><span class="p">,</span> <span class="ss">:console</span><span class="p">,</span>
+  <span class="ss">level</span><span class="p">:</span> <span class="ss">:info</span>
+</code></pre></div>
+<p>Now, let&#39;s move on to <code>prod/test.exs</code>:</p>
+
+<h5>test.exs</h5>
+
+<p>Open <code>test.exs</code> file:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim config/test.exs
+</code></pre></div>
+<p>under the function call <code>config :phoenix, HardwareZone.Router,</code>, you will also need to remove the block of code:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4000</span><span class="p">,</span>
+<span class="ss">ssl</span><span class="p">:</span> <span class="no">false</span><span class="p">,</span>
+<span class="ss">host</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+<span class="ss">cookies</span><span class="p">:</span> <span class="no">true</span><span class="p">,</span>
+<span class="ss">session_key</span><span class="p">:</span> <span class="s2">&quot;_hardware_zone_key&quot;</span><span class="p">,</span>
+<span class="ss">session_secret</span><span class="p">:</span> <span class="s2">&quot;VQP)JU1Z7*5L+^09X*L=6RKN9R1HL0O2E7^(1B%V3W64Z7@J9^7(M&amp;TXW8*C)I....&quot;</span><span class="p">,</span>
+</code></pre></div>
+<p>and replace by:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4001</span><span class="p">],</span>
+<span class="ss">catch_errors</span><span class="p">:</span> <span class="no">false</span>
+</code></pre></div>
+<p>You will also need to remove the 2 function calls:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">:code_reloader</span><span class="p">,</span>
+  <span class="ss">enabled</span><span class="p">:</span> <span class="no">true</span>
+
+<span class="n">config</span> <span class="ss">:logger</span><span class="p">,</span> <span class="ss">:console</span><span class="p">,</span>
+  <span class="ss">level</span><span class="p">:</span> <span class="ss">:debug</span>
+</code></pre></div>
+<p>Effectively, <code>test.exs</code> will look like following:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kn">use</span> <span class="nc">Mix.Config</span>
+
+<span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="nc">HardwareZone.Router</span><span class="p">,</span>
+  <span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4001</span><span class="p">],</span>
+  <span class="ss">catch_errors</span><span class="p">:</span> <span class="no">false</span>
+</code></pre></div>
+<p>That&#39;s all for config files. We can move on to the next one: <code>test/test_helper.exs</code></p>
+
+<h4>Step 3 - <code>test/test_helper.exs</code></h4>
+
+<p>Open <code>test/test_helper.exs</code>:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim <span class="nb">test</span>/test_helper.exs
+</code></pre></div>
+<p>and remove the top line:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="nc">Phoenix.CodeReloader</span><span class="p">.</span><span class="n">reload!</span>
+</code></pre></div>
+<h4>Step 4 - router.ex</h4>
+
+<p>Open <code>router.ex</code>: </p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim web/router.ex
+</code></pre></div>
+<p>In this file, you will need to move all the current routes to be under <code>scope &quot;/&quot;</code>. This change is because in Phoenix 0.5.0 introduces pipeline DSL whereby a arrival request will be eventually dispatched to a desired end-point. More information can be found <a href="https://github.com/phoenixframework/phoenix/blob/bdd9a88324d7a95fd54ba0d9904f7ff304f019d0/lib/phoenix/router.ex#L113-L220">here</a>. Let&#39;s start by adding on the following</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">scope</span> <span class="s2">&quot;/&quot;</span> <span class="k">do</span>
+  <span class="n">pipe_through</span> <span class="ss">:browser</span>
+  <span class="p">...</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>And then copy all your existing routes to the <code>...</code> position in the above code. For our Hardware Zone application, the end result is as following:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">scope</span> <span class="s2">&quot;/&quot;</span> <span class="k">do</span>
+    <span class="n">pipe_through</span> <span class="ss">:browser</span>
+
+    <span class="n">get</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="nc">HardwareZone.HardwaresController</span><span class="p">,</span> <span class="ss">:index</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:root</span>
+    <span class="n">resources</span> <span class="s2">&quot;/hardwares&quot;</span><span class="p">,</span> <span class="nc">HardwareZone.HardwaresController</span>
+  <span class="k">end</span>
+</code></pre></div>
+<p>That&#39;s all for <code>router.ex</code>, let&#39;s move on to upgrade our controllers</p>
+
+<h4>Step 5 - Controllers</h4>
+
+<p>Open all your controllers and put in <code>plug :action</code> under your controller name, aka.</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">HardwareZone.HardwaresController</span> <span class="k">do</span>
+  <span class="kn">use</span> <span class="nc">Phoenix.Controller</span>
+  <span class="p">...</span>
+  <span class="n">plug</span> <span class="ss">:action</span>
+
+  <span class="kd">def</span> <span class="n">index</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">_params</span><span class="p">)</span> <span class="k">do</span>
+    <span class="p">...</span>
+  <span class="k">end</span>  
+  <span class="p">...</span>
+</code></pre></div>
+<p>That&#39;s all for Controllers. Let&#39;s move on to view.</p>
+
+<h4>Step 6 - Views</h4>
+
+<p>You will need to open <code>web/views.ex</code> file</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim web/views.ex
+</code></pre></div>
+<p>and add in the following line under the <code>import</code> <code>Router.Helpers</code> line:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kn">alias</span> <span class="nc">Phoenix.Controller.Flash</span> 
+</code></pre></div>
+<p>There are no step 7 :-). Happy Upgrading.</p>
+
+<h3>Wrap Up</h3>
+
+<p>That&#39;s all how we migrate from Phoenix 0.4.1 to Phoenix 0.5.0. Please leave any comments if you find anyway better way. All your comments and questions are always welcomed. :-)</p>
+]]></content>
+  </entry>
+  
+</feed>

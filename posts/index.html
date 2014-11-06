@@ -142,6 +142,596 @@
         </div>
       </div>
       
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/30/real-time-to-do-list-with-phoenix-channel/">Real Time To-Do List With Phoenix Channel</a></h2>
+  
+  <p>
+    <p>Channel websocket is a pretty cool feature built in Phoenix framework. It is like a controller, but bidirectional and the connection stay alive after server response. The server can push information to the browser without browser asking for it unlike traditional web server. To fully understand and make use of this awesome feature, let&#39;s try to build a Real Time To Do List application in this article. This will be basically a To Do list but it can be shared among your team. Hence everytime a person inside your team check / uncheck a To Do Item, everyone will see that without refreshing the page. </p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-30T21:44:38+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:44 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/channel/'>channel</a>, <a class='category' href='/blog/categories/phoenix/'>phoenix</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/30/real-time-to-do-list-with-phoenix-channel/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/29/migrating-applications-from-phoenix-0-dot-4-1-to-phoenix-0-dot-5-0/">Migrating Applications From Phoenix 0.4.1 to Phoenix 0.5.0</a></h2>
+  
+  <p>
+    <p>Phoenix 0.5.0 was released 2 weeks ago and it was a great release with bug fixes and a lot enhancements, performance tweaks. If you are running your application on Phoenix 0.4.1, it&#39;s now a good time to upgrade your app to utilise the speed of Phoenix 0.5.0. Besides those, there are some backward incompatible changes which may break your app that you should watch out when you upgrade to Phoenix 0.5.0. In this article, we are going to go through in details how to upgrade a Phoenix 0.4.0 application to a Phoenix 0.5.0.</p>
+
+<p>The source code for the Phoenix application after upgrade to 0.5.0, which I applied inside this article is available at:</p>
+
+<p><a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0">https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0</a></p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-29T06:16:12+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>6:16 am</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/phoenix/'>phoenix</a>, <a class='category' href='/blog/categories/upgrade/'>upgrade</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/29/migrating-applications-from-phoenix-0-dot-4-1-to-phoenix-0-dot-5-0/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/23/image-upload-in-phoenix-web-app/">Image Upload in Phoenix Web App</a></h2>
+  
+  <p>
+    <p><strong>UPDATE</strong> on 30th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
+<hr/><br/>
+I was trying to find on Internet a way to receive uploaded image and format the uploaded image in multiple styles for Elixir and Phoenix but unable to find one. Hence I decide to make a library to handle the image upload and blog about it. The end point that we would like to have in this article is the hardware gapplication that we have in the last article integrated with this library to allow user to upload a photo for each hardware. Here is the screenshot of the finished application:</p>
+
+<p><img src='/images/upload_image/final.png' width='800' height='394'/></p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-30T06:46:02+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>6:46 am</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/phoenix/'>phoenix</a>, <a class='category' href='/blog/categories/upload/'>upload</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/23/image-upload-in-phoenix-web-app/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/18/seven-restful-actions-in-phoenix-web-app/">Seven RESTful Actions in Phoenix Web App</a></h2>
+  
+  <p>
+    <p><strong>UPDATE</strong> on 30th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
+<hr/><br/>
+For a new web application framework, I always start with building a 7 actions RESTful app to try out how good the framework is, and so far for Phoenix, it looks quite promising in term of code readability and the speed of churning out these 7 actions for a model entity. As these 7 RESTful actions are the backbone of the most web apps nowadays, it is crucial that we are familiar with the steps to create them.</p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-30T23:20:53+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:20 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/elixir/'>elixir</a>, <a class='category' href='/blog/categories/phoenix/'>phoenix</a>, <a class='category' href='/blog/categories/restful/'>restful</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/18/seven-restful-actions-in-phoenix-web-app/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server/">Deploy Phoenix Application to a Ubuntu Server</a></h2>
+  
+  <p>
+    <p><strong>UPDATE</strong> on 28th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. The source code is available on the following git URL:</p>
+
+<p><a href="https://github.com/learnelixir/my-awesome-app">https://github.com/learnelixir/my-awesome-app</a>
+<hr/><br/>
+In previous article, we have already learned how to deploy a Phoenix Application to Heroku server. I am actually quite curious to see how Elixir, and Phoenix can work with nginx server. That&#39;s the reason why I try to dig into this topic. Here are the steps that I managed to find out how to automate the deployment process and run the application on nginx server.</p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-28T22:26:46+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:26 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/deploy/'>deploy</a>, <a class='category' href='/blog/categories/phoenix/'>phoenix</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/">Deploy Phonenix Application to Heroku</a></h2>
+  
+  <p>
+    <p><strong>UPDATE</strong> on 27th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. The source code is available on the following git URL:</p>
+
+<p><a href="https://github.com/learnelixir/phoenix-heroku">https://github.com/learnelixir/phoenix-heroku</a>
+<hr/><br/>
+Phoenix is a pretty cool web framework for Elixir. However, up to date, there are still very few resources on how to deploy a Phoenix application to a web server. I tried to google on how to deploy but could not find any tutorials that provide very clear and exact steps. Hence, in this article, let walkthrouh step by step how to do that with a heroku server.</p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-27T23:16:00+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:16 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/deploy/'>deploy</a>, <a class='category' href='/blog/categories/heroku/'>heroku</a>, <a class='category' href='/blog/categories/phoenix/'>phoenix</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/14/spawn-process-and-concurrency-in-elixir/">Spawn Process and Concurrency in Elixir</a></h2>
+  
+  <p>
+    <p>Concurrency in Elixir can be achieved by using 3 things. They are <strong>spawning process</strong>, <strong>sending messages</strong> and <strong>receiving messages</strong>. Let&#39;s look at how we can spawn a new process in Elixir</p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-14T23:36:28+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:36 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/concurrency/'>concurrency</a>, <a class='category' href='/blog/categories/process/'>process</a>, <a class='category' href='/blog/categories/spawn/'>spawn</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/14/spawn-process-and-concurrency-in-elixir/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/13/quote-and-unquote-in-elixir/">Quote and Unquote in Elixir</a></h2>
+  
+  <p>
+    <p>Quote and Unquote function in Elixir can be confusing in the beginning. However, once you know them quite well, they can become very handy. In this article, we will look deeper into Quote and Unquote and see how it can help in doing some meta programming.</p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-13T22:35:08+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:35 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/quote/'>quote</a>, <a class='category' href='/blog/categories/unquote/'>unquote</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/13/quote-and-unquote-in-elixir/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/11/ecto-vs-active-record/">Ecto vs Active Record</a></h2>
+  
+  <p>
+    <p>This post is about comparing the feature and performance between Elixir&#39;s Ecto library - database wrapper and languge integrated query for Elixir and Ruby on Rails Active Record.</p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-11T21:37:22+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:37 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ecto/'>ecto</a>, <a class='category' href='/blog/categories/query/'>query</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/11/ecto-vs-active-record/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/10/experience-pipe-operator-in-elixir/">Experience Pipe Operator in Elixir</a></h2>
+  
+  <p>
+    <p>Pipe operator in Elixir is new to me. When I first saw it, I thought it was weird. However, after I read some Elixir code and experience myself, it is quite an interesting thing to use. Here&#39;s why:</p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-10T21:09:55+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:09 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pipe/'>pipe</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/10/experience-pipe-operator-in-elixir/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/09/anonymous-function-in-elixir/">Anonymous Function in Elixir</a></h2>
+  
+  <p>
+    <p>This is one of my favorite topic when talking about anonymous function. The reason why is that anonymous function in Elixir is a very simple way to express something without having to turn on a text editor. I can specify an anonymous function right away in an Elixir console and test it straight away. Here&#39;s how:</p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-09T08:05:11+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>8:05 am</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/function/'>function</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/09/anonymous-function-in-elixir/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/08/playing-with-model-in-elixir-phoenix-console/">Playing With Model in Elixir Phoenix Console</a></h2>
+  
+  <p>
+    <p>You will need to have the source code of this article http://learnelixir.com/blog/2014/10/04/build-web-app-with-elixir/ before being able to follow this article. So basically, after you finish that article, you will have a model Book. Let turn on elixir console to play around with this model. To turn on elixir console with phoenix, type the following command</p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-08T07:20:21+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>7:20 am</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/console/'>console</a>, <a class='category' href='/blog/categories/ecto/'>ecto</a>, <a class='category' href='/blog/categories/model/'>model</a>, <a class='category' href='/blog/categories/phoenix/'>phoenix</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/08/playing-with-model-in-elixir-phoenix-console/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/07/have-fun-with-pattern-matching-in-elixir/">Have Fun With Pattern Matching in Elixir</a></h2>
+  
+  <p>
+    <p>In this article, we will look deeper into pattern matching in Elixir. Coming from prologue background, I think pattern matching is quite a fun thing to do. Prologue is a too hard core language for this kind of thing, whereas Elixir is mixing just well between normal programming language and pattern matching&#8230;</p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-07T22:28:03+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:28 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pattern-matching/'>pattern-matching</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/07/have-fun-with-pattern-matching-in-elixir/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/06/basic-testing-with-elixir/">Basic Testing With Elixir</a></h2>
+  
+  <p>
+    <p>In this article, we will go through some basic testing syntax with elixir. Elixir is a language that very well supports unit test and I totally love it when I first see it on the video. Let&#39;s start by writing a simple assertion</p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-06T22:31:16+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:31 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/tdd/'>tdd</a>, <a class='category' href='/blog/categories/test/'>test</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/06/basic-testing-with-elixir/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/05/build-web-app-with-elixir/">Book Listing App With Elixir, Phoenix, Postgres and Ecto</a></h2>
+  
+  <p>
+    <p><strong>UPDATE</strong> on 26th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
+<hr/><br/>
+In this article, let&#39;s go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postgres and Ecto. I hope you will enjoy :-)</p>
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+
+
+<time class='updated' datetime='2014-10-26T23:22:42+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:22 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ecto/'>ecto</a>, <a class='category' href='/blog/categories/phoenix/'>phoenix</a>, <a class='category' href='/blog/categories/postgres/'>postgres</a>
+  
+</span>
+
+
+  </span>
+
+  
+    <a class="full-article-link pull-right" rel="full-article" href="/blog/2014/10/05/build-web-app-with-elixir/">Read on &rarr;</a>
+  
+</article>
+
+        </div>
+      </div>
+      
     </div>
   </div>
 </div>
