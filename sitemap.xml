@@ -10,31 +10,151 @@
     <priority>0.8</priority>
   </url>
   
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/30/real-time-to-do-list-with-phoenix-channel/</loc>
+    
+    <lastmod>2014-10-30T21:44:38+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/29/migrating-applications-from-phoenix-0-dot-4-1-to-phoenix-0-dot-5-0/</loc>
+    
+    <lastmod>2014-10-29T06:16:12+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/23/image-upload-in-phoenix-web-app/</loc>
+    
+    <lastmod>2014-10-23T06:46:02+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/18/seven-restful-actions-in-phoenix-web-app/</loc>
+    
+    <lastmod>2014-10-18T23:20:53+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server/</loc>
+    
+    <lastmod>2014-10-16T22:26:46+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/</loc>
+    
+    <lastmod>2014-10-15T23:16:00+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/14/spawn-process-and-concurrency-in-elixir/</loc>
+    
+    <lastmod>2014-10-14T23:36:28+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/13/quote-and-unquote-in-elixir/</loc>
+    
+    <lastmod>2014-10-13T22:35:08+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/11/ecto-vs-active-record/</loc>
+    
+    <lastmod>2014-10-11T21:37:22+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/10/experience-pipe-operator-in-elixir/</loc>
+    
+    <lastmod>2014-10-10T21:09:55+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/09/anonymous-function-in-elixir/</loc>
+    
+    <lastmod>2014-10-09T08:05:11+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/08/playing-with-model-in-elixir-phoenix-console/</loc>
+    
+    <lastmod>2014-10-08T07:20:21+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/07/have-fun-with-pattern-matching-in-elixir/</loc>
+    
+    <lastmod>2014-10-07T22:28:03+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/06/basic-testing-with-elixir/</loc>
+    
+    <lastmod>2014-10-06T22:31:16+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://learnelixir.com/blog/2014/10/05/build-web-app-with-elixir/</loc>
+    
+    <lastmod>2014-10-05T23:22:42+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
   
   <url>
     <loc>http://learnelixir.com/blog/archives/</loc>
-    <lastmod>2014-11-07T07:12:27+08:00</lastmod>
+    <lastmod>2014-11-07T07:12:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://learnelixir.com/about/</loc>
-    <lastmod>2014-11-07T07:12:27+08:00</lastmod>
+    <lastmod>2014-11-07T07:12:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://learnelixir.com/</loc>
-    <lastmod>2014-11-07T07:12:27+08:00</lastmod>
+    <lastmod>2014-11-07T07:12:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://learnelixir.com/posts/</loc>
-    <lastmod>2014-11-07T07:12:27+08:00</lastmod>
+    <lastmod>2014-11-07T07:12:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
