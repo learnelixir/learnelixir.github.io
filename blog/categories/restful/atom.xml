@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Restful | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/restful/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-11-14T08:17:37+08:00</updated>
+  <updated>2014-11-14T08:18:52+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -28,7 +28,7 @@ For a new web application framework, I always start with building a 7 actions RE
 
 <p>Anyway, here is the end result:</p>
 
-<p>{% img center /images/7restful-action/screenshot.png 500 396 &#39;image&#39; &#39;images&#39; %}</p>
+<p><img class="center" src="/images/7restful-action/screenshot.png" width="500" height="396" title="&#39;image&#39; &#39;images&#39;" ></p>
 
 <p>You are able to download the source code on github - </p>
 
@@ -341,7 +341,7 @@ hardwares_path  DELETE  /hardwares/:id       HardwareZone.HardwaresController.de
 <h3>1 - Index action</h3>
 
 <p>Start by editing <code>hardwares_controller</code>:</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim web/controller/hardwares_controller.ex
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim web/controllers/hardwares_controller.ex
 </code></pre></div>
 <p>and paste in the following <code>index</code> action</p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">def</span> <span class="n">index</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">_params</span><span class="p">)</span> <span class="k">do</span>
@@ -425,7 +425,7 @@ hardwares_path  DELETE  /hardwares/:id       HardwareZone.HardwaresController.de
 <h3>2 - New Action</h3>
 
 <p>As usual, let&#39;s start by editing <code>hardwares_controller.ex</code>:</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim web/controller/hardwares_controller.ex
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim web/controllers/hardwares_controller.ex
 </code></pre></div>
 <p>Add in the following function: </p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">def</span> <span class="n">new</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">_params</span><span class="p">)</span> <span class="k">do</span>
@@ -506,7 +506,7 @@ hardwares_path  DELETE  /hardwares/:id       HardwareZone.HardwaresController.de
 <h4>3 - Create Action</h4>
 
 <p>Let&#39;s start with controller <code>hardwares_controller.ex</code>:</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim web/controller/hardwares_controller.ex
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim web/controllers/hardwares_controller.ex
 </code></pre></div>
 <p>and add in the following functions:</p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">def</span> <span class="n">create</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="p">%{</span><span class="s2">&quot;hardware&quot;</span> <span class="p">=&gt;</span> <span class="n">params</span><span class="p">})</span> <span class="k">do</span>
@@ -529,7 +529,7 @@ hardwares_path  DELETE  /hardwares/:id       HardwareZone.HardwaresController.de
 <h4>4 - Show Action</h4>
 
 <p>Again, let add the following <code>show</code> action in controller <code>web/controller/hardware_controller.ex</code></p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim web/controller/hardware_controller.ex
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim web/controllers/hardware_controller.ex
 </code></pre></div>
 <p>The <code>show</code> action code is as below:</p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">def</span> <span class="n">show</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="p">%{</span><span class="s2">&quot;id&quot;</span> <span class="p">=&gt;</span> <span class="n">id</span><span class="p">})</span> <span class="k">do</span>
