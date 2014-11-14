@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Quote | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/quote/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-11-07T07:12:48+08:00</updated>
+  <updated>2014-11-14T08:17:37+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -38,14 +38,14 @@
 
 <p>Ignoring the keyword list containing meta data, it can be understood as an abstract syntax tree, where the function name is the root node and the 2 arguments are the leaves of the tree</p>
 
-<p><img class="center" src="/images/quote<em>and</em>unquote/ast1.png&#8221; width=&#8221;250&#8221; height=&#8221;250&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
+<p>{% img center /images/quote<em>and</em>unquote/ast1.png 250 250 &#39;image&#39; &#39;images&#39; %}</p>
 
 <p>If now we try on a more complex expression <code>1 + 2 * 3</code>, it will present a more complex abstract syntax tree</p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">iex</span><span class="o">&gt;</span> <span class="k">quote</span> <span class="ss">do</span><span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">3</span>
 <span class="p">{</span><span class="ss">:+</span><span class="p">,</span> <span class="p">[</span><span class="ss">context</span><span class="p">:</span> <span class="nc">Elixir</span><span class="p">,</span> <span class="ss">import</span><span class="p">:</span> <span class="nc">Kernel</span><span class="p">],</span>
  <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="ss">:*</span><span class="p">,</span> <span class="p">[</span><span class="ss">context</span><span class="p">:</span> <span class="nc">Elixir</span><span class="p">,</span> <span class="ss">import</span><span class="p">:</span> <span class="nc">Kernel</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}]}</span>
 </code></pre></div>
-<p><img class="center" src="/images/quote<em>and</em>unquote/ast2.png&#8221; width=&#8221;325&#8221; height=&#8221;400&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
+<p>{% img center /images/quote<em>and</em>unquote/ast2.png 325 400 &#39;image&#39; &#39;images&#39; %}</p>
 
 <p>When evaluating this expression, Elixir compiler will travel upward starting from the most left leaf. For example, the AST tree above will be evaluated as <code>(2 * 3) + 1</code>. </p>
 

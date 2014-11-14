@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Phoenix | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/phoenix/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-11-07T07:12:48+08:00</updated>
+  <updated>2014-11-14T08:17:37+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -701,39 +701,24 @@ end
 <h4>toggle:item event</h4>
 
 <p>This event is triggered when a user clicks on an item check box to mark an item as done or undone. Once this event is received on the channel, the channel will then broadcast this event to everyone [Line 3]. The code for this event is presented below: 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">event</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">quot</span><span class="p">;</span><span class="n">toggle</span><span class="ss">:item</span><span class="o">&amp;</span><span class="n">quot</span><span class="p">;,</span> <span class="n">data</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">item</span> <span class="p">=</span> <span class="n">toggle</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">item</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">done</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">status</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">&amp;</span><span class="n">quot</span><span class="p">;</span><span class="n">item</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">id</span><span class="o">&amp;</span><span class="n">quot</span><span class="p">;])</span>
-</span><span class='line'>  <span class="k">if</span> <span class="n">item</span><span class="p">,</span> <span class="ss">do</span><span class="p">:</span> <span class="n">broadcast</span> <span class="n">socket</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">quot</span><span class="p">;</span><span class="n">toggle</span><span class="ss">:item</span><span class="o">&amp;</span><span class="n">quot</span><span class="p">;,</span> <span class="p">%{</span><span class="ss">item</span><span class="p">:</span> <span class="n">item</span><span class="p">}</span>
-</span><span class='line'>  <span class="n">socket</span>
-</span><span class='line'><span class="k">end</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">defp</span> <span class="n">toggle</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">item</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">done</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">status</span><span class="p">(</span><span class="n">item</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">id</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>  <span class="k">case</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="nc">Item</span><span class="p">,</span> <span class="nc">String</span><span class="p">.</span><span class="n">to</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">integer</span><span class="p">(</span><span class="n">item</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">id</span><span class="p">))</span>
-</span><span class='line'>    <span class="n">item</span> <span class="ow">when</span> <span class="n">is_map</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">item</span> <span class="p">=</span> <span class="p">%{</span><span class="n">item</span> <span class="p">|</span> <span class="ss">done</span><span class="p">:</span> <span class="o">!</span><span class="n">item</span><span class="p">.</span><span class="n">done</span><span class="p">}</span>
-</span><span class='line'>      <span class="nc">Repo</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">item</span>
-</span><span class='line'>    <span class="bp">_</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span>
-</span><span class='line'>      <span class="no">nil</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure></p>
+&#8220;`elixir
+def event(socket, &quot;toggle:item&quot;, data) do
+  item = toggle<em>item</em>done<em>status(data[&quot;item</em>id&quot;])
+  if item, do: broadcast socket, &quot;toggle:item&quot;, %{item: item}
+  socket 
+end</p>
+
+<p>defp toggle<em>item</em>done<em>status(item</em>id) do
+  case Repo.get(Item, String.to<em>integer(item</em>id))
+    item when is_map(item) -&gt;
+      item = %{item | done: !item.done}
+      Repo.update(item)
+      item
+    _ -&gt;
+      nil
+  end
+end
+&#8220;`</p>
 
 <p>Note that on line 9, we are negating <code>item.done</code> to toggle the current status of an item.</p>
 
@@ -1461,7 +1446,7 @@ I was trying to find on Internet a way to receive uploaded image and format the 
 </code></pre></div>
 <p>Now try to visit the new hardware page <a href="http://localhost:4000/hardwares/new">http://localhost:4000/hardwares/new</a>, select a random file and click save then check the server log. What you will see is the parameter as something similar to what is inside the below screenshot I took from my Mac:</p>
 
-<p><img class="center" src="/images/upload<em>image/upload</em>image_terminal.png&#8221; width=&#8221;637&#8221; height=&#8221;269&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
+<p>{% img center /images/upload<em>image/upload</em>image_terminal.png 637 269 &#39;image&#39; &#39;images&#39; %}</p>
 
 <p>Let&#39;s reformat the parameters for readable purpose:</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">Parameters: %<span class="o">{</span>
@@ -2089,7 +2074,7 @@ For a new web application framework, I always start with building a 7 actions RE
 
 <p>Anyway, here is the end result:</p>
 
-<p><img class="center" src="/images/7restful-action/screenshot.png" width="500" height="396" title="&#39;image&#39; &#39;images&#39;" ></p>
+<p>{% img center /images/7restful-action/screenshot.png 500 396 &#39;image&#39; &#39;images&#39; %}</p>
 
 <p>You are able to download the source code on github - </p>
 
@@ -2271,7 +2256,7 @@ hardwares_path  DELETE  /hardwares/:id       HardwareZone.HardwaresController.de
 <span class="o">(</span>module HardwareZone.HardwaresController is not available<span class="o">)</span>
 </code></pre></div>
 <p>The reason why is because we have not create any controller and index action to cater for root routes. Let&#39;s create <code>HardwareZone.HardwaresController</code> now</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim web/controller/hardwares_controller.ex
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim web/controllers/hardwares_controller.ex
 </code></pre></div>
 <p>and paste in the following initial code</p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">HardwareZone.HardwaresController</span> <span class="k">do</span>
