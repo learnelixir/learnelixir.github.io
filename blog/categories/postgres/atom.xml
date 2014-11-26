@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Postgres | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/postgres/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-11-14T08:19:07+08:00</updated>
+  <updated>2014-11-26T21:18:49+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -18,7 +18,9 @@
     <link href="http://learnelixir.com/blog/2014/10/05/build-web-app-with-elixir/"/>
     <updated>2014-10-05T23:22:42+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/05/build-web-app-with-elixir</id>
-    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 26th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
+    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 26th Nov 14: I have updated this article in order to work with Phoenix framework version 0.6.0. Previously the Phoenix framework used in this article was 0.5.0.
+<hr/><br/>
+<strong>UPDATE</strong> on 26th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
 <hr/><br/>
 In this article, let&#39;s go through the process of creating and build a simple web app which lists a set of books using Elixir, Phoenix, Postgres and Ecto. I hope you will enjoy :-)</p>
 
@@ -36,7 +38,7 @@ In this article, let&#39;s go through the process of creating and build a simple
 </code></pre></div>
 <p>Open the browser, and go to the url <code>http://localhost:4000</code></p>
 
-<p>{% img left /images/build-web-app-with-elixir/phoenix_page.png 800 510 &#39;image&#39; &#39;images&#39; %}</p>
+<p><img class="left" src="/images/build-web-app-with-elixir/phoenix_page.png" width="800" height="510" title="&#39;image&#39; &#39;images&#39;" ></p>
 
 <h3>Add Ecto To The Project</h3>
 
@@ -48,7 +50,7 @@ In this article, let&#39;s go through the process of creating and build a simple
 </ul>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
   <span class="p">[</span>
-    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.6.0&quot;</span><span class="p">},</span>
     <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
     <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.5&quot;</span><span class="p">},</span>
     <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">}</span>
@@ -185,11 +187,20 @@ Generated book_store.app
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">BookStore.Router</span> <span class="k">do</span>
   <span class="kn">use</span> <span class="nc">Phoenix.Router</span>
 
+  <span class="n">pipeline</span> <span class="ss">:browser</span> <span class="k">do</span>
+    <span class="n">plug</span> <span class="ss">:accepts</span><span class="p">,</span> <span class="sx">~w(html)</span>
+    <span class="n">plug</span> <span class="ss">:fetch_session</span>
+  <span class="k">end</span> 
+
+  <span class="n">pipeline</span> <span class="ss">:api</span> <span class="k">do</span>
+    <span class="n">plug</span> <span class="ss">:accepts</span><span class="p">,</span> <span class="sx">~w(json)</span>
+  <span class="k">end</span> 
+
   <span class="n">scope</span> <span class="s2">&quot;/&quot;</span> <span class="k">do</span>
-    <span class="n">pipe_through</span> <span class="ss">:browser</span>
+    <span class="n">pipe_through</span> <span class="ss">:browser</span> <span class="c1"># Use the default browser stack</span>
 
     <span class="n">get</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="nc">BookStore.BookController</span><span class="p">,</span> <span class="ss">:index</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:books</span>
-  <span class="k">end</span> 
+  <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div>
 <h3>Create BookController and get all books</h3>
@@ -202,7 +213,7 @@ Generated book_store.app
 
   <span class="kd">def</span> <span class="n">index</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">_params</span><span class="p">)</span> <span class="k">do</span>
     <span class="n">books</span> <span class="p">=</span> <span class="nc">BookStore.Queries</span><span class="p">.</span><span class="n">books_query</span>
-    <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="ss">books</span><span class="p">:</span> <span class="n">books</span> 
+    <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;index.html&quot;</span><span class="p">,</span> <span class="ss">books</span><span class="p">:</span> <span class="n">books</span> 
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div>
@@ -213,7 +224,7 @@ Generated book_store.app
 </code></pre></div>
 <p>Second, create a book view file - <code>web/views/book_view.ex</code> with the following content</p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">BookStore.BookView</span> <span class="k">do</span>
-  <span class="kn">use</span> <span class="nc">BookStore.Views</span>
+  <span class="kn">use</span> <span class="nc">Phoenix.View</span><span class="p">,</span> <span class="ss">root</span><span class="p">:</span> <span class="s2">&quot;web/templates&quot;</span>
 <span class="k">end</span>
 </code></pre></div>
 <p>Finally, create file <code>web/template/book/index.html.eex</code> and paste in the following code:</p>
@@ -244,7 +255,7 @@ Generated book_store.app
 </code></pre></div>
 <p>Refresh the browser and voila, this is what we will get:</p>
 
-<p>{% img left /images/build-web-app-with-elixir/complete.png 800 346 &#39;image&#39; &#39;images&#39; %}</p>
+<p><img class="left" src="/images/build-web-app-with-elixir/complete.png" width="800" height="346" title="&#39;image&#39; &#39;images&#39;" ></p>
 
 <h3>Common Pitfall</h3>
 
