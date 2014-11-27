@@ -4,7 +4,7 @@
   <title><![CDATA[Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-11-26T21:18:49+08:00</updated>
+  <updated>2014-11-27T22:00:28+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -18,7 +18,10 @@
     <link href="http://learnelixir.com/blog/2014/11/04/custom-mix-task-for-phoenix-app/"/>
     <updated>2014-11-04T23:35:23+08:00</updated>
     <id>http://learnelixir.com/blog/2014/11/04/custom-mix-task-for-phoenix-app</id>
-    <content type="html"><![CDATA[<p>Mix task is a powerful way to automate certain things from command line. It&#39;s especially helpful when dealing with code generator. In this article, we are going to write a custom mix task for Phoenix application to automate generation of Model, its Repo and Migration task. I usually have to generate these one by one manually at the moment.</p>
+    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 27 Nov 14: I have updated this article in order to work with Phoenix framework version 0.6.0. Previously the Phoenix framework used in this article was 0.5.0
+<hr/><br/></p>
+
+<p>Mix task is a powerful way to automate certain things from command line. It&#39;s especially helpful when dealing with code generator. In this article, we are going to write a custom mix task for Phoenix application to automate generation of Model, its Repo and Migration task. I usually have to generate these one by one manually at the moment.</p>
 
 <!-- more -->
 
@@ -51,7 +54,7 @@
 </span><span class='line'>
 </span><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
 </span><span class='line'>  <span class="p">[</span>
-</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.6.0&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.5&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">},</span>
@@ -289,7 +292,7 @@
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">embed_template</span> <span class="ss">:model</span><span class="p">,</span> <span class="sh">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="sh">defmodule &lt;%= @model_name %&gt; do</span>
+</span><span class='line'><span class="sh">defmodule &lt;%= inspect @model_name %&gt; do</span>
 </span><span class='line'><span class="sh">  use Ecto.Model</span>
 </span><span class='line'>
 </span><span class='line'><span class="sh">  schema &quot;&lt;%= @table_name %&gt;&quot; do</span>
@@ -569,7 +572,7 @@
 
 <p>That&#39;s all for now. You can get the complete source code for this task in the following URL:</p>
 
-<p><a href="https://raw.githubusercontent.com/learnelixir/hardware-zone/phoenix-0.5.0/lib/mix/tasks/g.ex">https://raw.githubusercontent.com/learnelixir/hardware-zone/phoenix-0.5.0/lib/mix/tasks/g.ex</a></p>
+<p><a href="https://raw.githubusercontent.com/learnelixir/hardware-zone/phoenix-0.6.0/lib/mix/tasks/g.ex">https://raw.githubusercontent.com/learnelixir/hardware-zone/phoenix-0.6.0/lib/mix/tasks/g.ex</a></p>
 
 <h3>Conclusion</h3>
 
@@ -584,7 +587,10 @@
     <link href="http://learnelixir.com/blog/2014/10/30/real-time-to-do-list-with-phoenix-channel/"/>
     <updated>2014-10-30T21:44:38+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/30/real-time-to-do-list-with-phoenix-channel</id>
-    <content type="html"><![CDATA[<p>Channel websocket is a pretty cool feature built in Phoenix framework. It is like a controller, but bidirectional and the connection stay alive after server response. The server can push information to the browser without browser asking for it unlike traditional web server. To fully understand and make use of this awesome feature, let&#39;s try to build a Real Time To Do List application in this article. This will be basically a To Do list but it can be shared among your team. Hence everytime a person inside your team check / uncheck a To Do Item, everyone will see that without refreshing the page. </p>
+    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 27 Nov 14: I have updated this article in order to work with Phoenix framework version 0.6.0. Previously the Phoenix framework used in this article was 0.5.0
+<hr/><br/></p>
+
+<p>Channel websocket is a pretty cool feature built in Phoenix framework. It is like a controller, but bidirectional and the connection stay alive after server response. The server can push information to the browser without browser asking for it unlike traditional web server. To fully understand and make use of this awesome feature, let&#39;s try to build a Real Time To Do List application in this article. This will be basically a To Do list but it can be shared among your team. Hence everytime a person inside your team check / uncheck a To Do Item, everyone will see that without refreshing the page. </p>
 
 <!-- more -->
 
@@ -641,7 +647,7 @@
 </span><span class='line'><span class="c1">#</span>
 </span><span class='line'><span class="c1"># type `mix help deps` for examples and options</span>
 </span><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
-</span><span class='line'>  <span class="p">[{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
+</span><span class='line'>  <span class="p">[{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.6.0&quot;</span><span class="p">},</span>
 </span><span class='line'>   <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0&quot;</span><span class="p">},</span>
 </span><span class='line'>   <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">},</span>
 </span><span class='line'>   <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.6.0&quot;</span><span class="p">}]</span>
@@ -772,9 +778,29 @@
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">RealTimeToDo.Router</span> <span class="k">do</span>
 </span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Router</span>
 </span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Router.Socket</span><span class="p">,</span> <span class="ss">mount</span><span class="p">:</span> <span class="s2">&quot;/ws&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">pipeline</span> <span class="ss">:browser</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">plug</span> <span class="ss">:accepts</span><span class="p">,</span> <span class="sx">~w(html)</span>
+</span><span class='line'>    <span class="n">plug</span> <span class="ss">:fetch_session</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">pipeline</span> <span class="ss">:api</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">plug</span> <span class="ss">:accepts</span><span class="p">,</span> <span class="sx">~w(json)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
 </span><span class='line'>  <span class="n">scope</span> <span class="s2">&quot;/&quot;</span> <span class="k">do</span>
 </span><span class='line'>    <span class="c1"># Use the default browser stack.</span>
 </span><span class='line'>    <span class="n">pipe_through</span> <span class="ss">:browser</span>
@@ -957,7 +983,7 @@
 </span><span class='line'>                            <span class="o">|&gt;</span> <span class="n">where</span><span class="p">([</span><span class="n">item</span><span class="p">],</span> <span class="n">item</span><span class="p">.</span><span class="n">done</span> <span class="o">==</span> <span class="no">true</span><span class="p">)</span>
 </span><span class='line'>                            <span class="o">|&gt;</span> <span class="n">order_by</span><span class="p">([</span><span class="n">item</span><span class="p">],</span> <span class="ss">asc</span><span class="p">:</span> <span class="n">item</span><span class="p">.</span><span class="n">position</span><span class="p">))</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="ss">to_do_items</span><span class="p">:</span> <span class="n">to_do_items</span><span class="p">,</span> <span class="ss">done_items</span><span class="p">:</span> <span class="n">done_items</span>
+</span><span class='line'>    <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;index.html&quot;</span><span class="p">,</span> <span class="ss">to_do_items</span><span class="p">:</span> <span class="n">to_do_items</span><span class="p">,</span> <span class="ss">done_items</span><span class="p">:</span> <span class="n">done_items</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
@@ -980,7 +1006,7 @@
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">RealTimeToDo.ToDosView</span> <span class="k">do</span>
-</span><span class='line'>  <span class="kn">use</span> <span class="nc">RealTimeToDo.Views</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">RealTimeToDo.View</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -1554,6 +1580,9 @@
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">listenToTogglingItemEvent</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>  <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 </span><span class='line'>  <span class="nx">channel</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;toggle:item&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
@@ -1566,7 +1595,10 @@
 </span><span class='line'>      <span class="nx">fromItemList</span> <span class="o">=</span> <span class="nx">app</span><span class="p">.</span><span class="nx">toDoList</span><span class="p">;</span>
 </span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="nx">fromItemList</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;#item_&quot;</span> <span class="o">+</span> <span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">parent</span><span class="p">().</span><span class="nx">fadeOut</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">itemCheckBoxDom</span> <span class="o">=</span> <span class="nx">fromItemList</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;#item_&quot;</span> <span class="o">+</span> <span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">itemCheckBoxDom</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="s2">&quot;checked&quot;</span><span class="p">,</span> <span class="nx">item</span><span class="p">.</span><span class="nx">done</span> <span class="o">==</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">itemCheckBoxDom</span><span class="p">.</span><span class="nx">parent</span><span class="p">().</span><span class="nx">fadeOut</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 </span><span class='line'>      <span class="nx">targetItemList</span><span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">fadeIn</span><span class="p">());</span>
 </span><span class='line'>    <span class="p">});</span>
 </span><span class='line'>  <span class="p">});</span>
@@ -2324,7 +2356,9 @@
     <link href="http://learnelixir.com/blog/2014/10/23/image-upload-in-phoenix-web-app/"/>
     <updated>2014-10-23T06:46:02+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/23/image-upload-in-phoenix-web-app</id>
-    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 30th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
+    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 27 Nov 14: I have updated this article in order to work with Phoenix framework version 0.6.0. Previously the Phoenix framework used in this article was 0.5.0
+<hr/><br/>
+<strong>UPDATE</strong> on 30th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
 <hr/><br/>
 I was trying to find on Internet a way to receive uploaded image and format the uploaded image in multiple styles for Elixir and Phoenix but unable to find one. Hence I decide to make a library to handle the image upload and blog about it. The end point that we would like to have in this article is the hardware gapplication that we have in the last article integrated with this library to allow user to upload a photo for each hardware. Here is the screenshot of the finished application:</p>
 
@@ -2333,7 +2367,7 @@ I was trying to find on Internet a way to receive uploaded image and format the 
 <!-- more -->
 
 <ul>
-<li>The source code is available on <a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0">https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0</a></li>
+<li>The source code is available on <a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.6.0">https://github.com/learnelixir/hardware-zone/tree/phoenix-0.6.0</a></li>
 <li>The updated application is also now lived at http://phoenix-hardware-zone.herokuapp.com</li>
 </ul>
 
@@ -2355,7 +2389,7 @@ I was trying to find on Internet a way to receive uploaded image and format the 
 <span class='line-number'>10</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
 </span><span class='line'>    <span class="p">[</span>
-</span><span class='line'>      <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.6.0&quot;</span><span class="p">},</span>
 </span><span class='line'>      <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
 </span><span class='line'>      <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.5&quot;</span><span class="p">},</span>
 </span><span class='line'>      <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">},</span>
@@ -3492,9 +3526,9 @@ I was trying to find on Internet a way to receive uploaded image and format the 
 </span><span class='line'>    <span class="p">[]</span> <span class="p">-&gt;</span>
 </span><span class='line'>      <span class="n">hardware</span> <span class="p">=</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span>
 </span><span class='line'>      <span class="n">upload_photo_attachment</span><span class="p">(</span><span class="n">hardware</span><span class="p">,</span> <span class="n">atomized_keys_params</span><span class="p">,</span> <span class="ss">:photo</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="nc">Router</span><span class="p">.</span><span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
 </span><span class='line'>    <span class="n">errors</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;new&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
+</span><span class='line'>      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;new.html&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span><span class='line'>
@@ -3509,12 +3543,12 @@ I was trying to find on Internet a way to receive uploaded image and format the 
 </span><span class='line'>        <span class="p">[]</span> <span class="p">-&gt;</span>
 </span><span class='line'>          <span class="nc">Repo</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span>
 </span><span class='line'>          <span class="n">upload_photo_attachment</span><span class="p">(</span><span class="n">hardware</span><span class="p">,</span> <span class="n">atomized_keys_params</span><span class="p">,</span> <span class="ss">:photo</span><span class="p">)</span>
-</span><span class='line'>          <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="nc">Router</span><span class="p">.</span><span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
 </span><span class='line'>        <span class="n">errors</span> <span class="p">-&gt;</span>
-</span><span class='line'>          <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
+</span><span class='line'>          <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;edit.html&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
 </span><span class='line'>      <span class="k">end</span>
 </span><span class='line'>    <span class="bp">_</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="nc">Router</span><span class="p">.</span><span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
@@ -3661,7 +3695,9 @@ I was trying to find on Internet a way to receive uploaded image and format the 
     <link href="http://learnelixir.com/blog/2014/10/18/seven-restful-actions-in-phoenix-web-app/"/>
     <updated>2014-10-18T23:20:53+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/18/seven-restful-actions-in-phoenix-web-app</id>
-    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 30th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
+    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 27th Nov 14: I have updated this article in order to work with Phoenix framework version 0.6.0. Previously the Phoenix framework used in this article was 0.5.0</p>
+
+<p><strong>UPDATE</strong> on 30th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
 <hr/><br/>
 For a new web application framework, I always start with building a 7 actions RESTful app to try out how good the framework is, and so far for Phoenix, it looks quite promising in term of code readability and the speed of churning out these 7 actions for a model entity. As these 7 RESTful actions are the backbone of the most web apps nowadays, it is crucial that we are familiar with the steps to create them.</p>
 
@@ -3675,11 +3711,11 @@ For a new web application framework, I always start with building a 7 actions RE
 
 <p>You are able to download the source code on github - </p>
 
-<p><a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0">https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0</a></p>
+<p><a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.6.0">https://github.com/learnelixir/hardware-zone/tree/phoenix-0.6.0</a></p>
 
 <p>as well as check the application online - deployed to Heroku Server at </p>
 
-<p><a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0">http://phoenix-hardware-zone.herokuapp.com</a></p>
+<p><a href="http://phoenix-hardware-zone.herokuapp.com">http://phoenix-hardware-zone.herokuapp.com</a></p>
 
 <p>Let&#39;s start with create an application for this. We will be building a public hardware parts posting site where user will be able to post a hardware and other users will be able to see it.</p>
 
@@ -3719,7 +3755,7 @@ For a new web application framework, I always start with building a 7 actions RE
 <span class='line-number'>8</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
 </span><span class='line'>  <span class="p">[</span>
-</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.6.0&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.5&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">}</span>
@@ -3959,8 +3995,26 @@ For a new web application framework, I always start with building a 7 actions RE
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">HardwareZone.Router</span> <span class="k">do</span>
 </span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Router</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">pipeline</span> <span class="ss">:browser</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">plug</span> <span class="ss">:accepts</span><span class="p">,</span> <span class="sx">~w(html)</span>
+</span><span class='line'>    <span class="n">plug</span> <span class="ss">:fetch_session</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">pipeline</span> <span class="ss">:api</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">plug</span> <span class="ss">:accepts</span><span class="p">,</span> <span class="sx">~w(json)</span>
+</span><span class='line'>  <span class="k">end</span>
 </span><span class='line'>
 </span><span class='line'>  <span class="n">scope</span> <span class="s2">&quot;/&quot;</span> <span class="k">do</span>
 </span><span class='line'>    <span class="n">pipe_through</span> <span class="ss">:browser</span>
@@ -4281,7 +4335,7 @@ For a new web application framework, I always start with building a 7 actions RE
 <span class='line-number'>4</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">index</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">_params</span><span class="p">)</span> <span class="k">do</span>
 </span><span class='line'>  <span class="n">hardwares</span> <span class="p">=</span> <span class="nc">HardwareZone.Queries</span><span class="p">.</span><span class="n">all_hardwares</span>
-</span><span class='line'>  <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="ss">hardwares</span><span class="p">:</span> <span class="n">hardwares</span>
+</span><span class='line'>  <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;index.html&quot;</span><span class="p">,</span> <span class="ss">hardwares</span><span class="p">:</span> <span class="n">hardwares</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -4297,7 +4351,7 @@ For a new web application framework, I always start with building a 7 actions RE
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">HardwareZone.HardwaresView</span> <span class="k">do</span>
-</span><span class='line'>  <span class="kn">use</span> <span class="nc">HardwareZone.Views</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">HardwareZone.View</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -4441,7 +4495,7 @@ For a new web application framework, I always start with building a 7 actions RE
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">new</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">_params</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;new&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="p">%</span><span class="nc">Hardware</span><span class="p">{}</span>
+</span><span class='line'>  <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;new.html&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="p">%</span><span class="nc">Hardware</span><span class="p">{}</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -4612,9 +4666,9 @@ For a new web application framework, I always start with building a 7 actions RE
 </span><span class='line'>  <span class="k">case</span> <span class="nc">Hardware</span><span class="p">.</span><span class="n">validate</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="k">do</span>
 </span><span class='line'>    <span class="p">[]</span> <span class="p">-&gt;</span>
 </span><span class='line'>      <span class="n">hardware</span> <span class="p">=</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
 </span><span class='line'>    <span class="n">errors</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;new&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
+</span><span class='line'>      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;new.html&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span><span class='line'>
@@ -4645,9 +4699,9 @@ For a new web application framework, I always start with building a 7 actions RE
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">show</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="p">%{</span><span class="s2">&quot;id&quot;</span> <span class="p">=&gt;</span> <span class="n">id</span><span class="p">})</span> <span class="k">do</span>
 </span><span class='line'>  <span class="k">case</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="nc">Hardware</span><span class="p">,</span> <span class="nc">String</span><span class="p">.</span><span class="n">to_integer</span><span class="p">(</span><span class="n">id</span><span class="p">))</span> <span class="k">do</span>
 </span><span class='line'>    <span class="n">hardware</span> <span class="ow">when</span> <span class="n">is_map</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span>
+</span><span class='line'>      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;show.html&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span>
 </span><span class='line'>    <span class="bp">_</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -4732,9 +4786,9 @@ For a new web application framework, I always start with building a 7 actions RE
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">def</span> <span class="n">edit</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="p">%{</span><span class="s2">&quot;id&quot;</span> <span class="p">=&gt;</span> <span class="n">id</span><span class="p">})</span> <span class="k">do</span>
 </span><span class='line'>  <span class="k">case</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="nc">Hardware</span><span class="p">,</span> <span class="nc">String</span><span class="p">.</span><span class="n">to_integer</span><span class="p">(</span><span class="n">id</span><span class="p">))</span> <span class="k">do</span>
 </span><span class='line'>    <span class="n">hardware</span> <span class="ow">when</span> <span class="n">is_map</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span>
+</span><span class='line'>      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;edit.html&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span>
 </span><span class='line'>    <span class="bp">_</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
@@ -4789,12 +4843,12 @@ For a new web application framework, I always start with building a 7 actions RE
 </span><span class='line'>      <span class="k">case</span> <span class="nc">Hardware</span><span class="p">.</span><span class="n">validate</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="k">do</span>
 </span><span class='line'>        <span class="p">[]</span> <span class="p">-&gt;</span>
 </span><span class='line'>          <span class="nc">Repo</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span>
-</span><span class='line'>          <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
 </span><span class='line'>        <span class="n">errors</span> <span class="p">-&gt;</span>
-</span><span class='line'>          <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
+</span><span class='line'>          <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;edit.html&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
 </span><span class='line'>      <span class="k">end</span>
 </span><span class='line'>    <span class="bp">_</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
@@ -4839,9 +4893,9 @@ For a new web application framework, I always start with building a 7 actions RE
 </span><span class='line'>  <span class="k">case</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="nc">Hardware</span><span class="p">,</span> <span class="nc">String</span><span class="p">.</span><span class="n">to_integer</span><span class="p">(</span><span class="n">id</span><span class="p">))</span> <span class="k">do</span>
 </span><span class='line'>    <span class="n">hardware</span> <span class="ow">when</span> <span class="n">is_map</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="p">-&gt;</span>
 </span><span class='line'>      <span class="nc">Repo</span><span class="p">.</span><span class="n">delete</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
 </span><span class='line'>    <span class="bp">_</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
@@ -4857,7 +4911,12 @@ For a new web application framework, I always start with building a 7 actions RE
     <link href="http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server/"/>
     <updated>2014-10-16T22:26:46+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server</id>
-    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 28th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. The source code is available on the following git URL:</p>
+    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 26th Nov 14: I have updated this article in order to work with Phoenix framework version 0.6.0. Previously the Phoenix framework used in this article was 0.5.0
+0</p>
+
+<p><strong>UPDATE</strong> on 28th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. </p>
+
+<p>The source code is available on the following git URL:</p>
 
 <p><a href="https://github.com/learnelixir/my-awesome-app">https://github.com/learnelixir/my-awesome-app</a>
 <hr/><br/>
@@ -4926,7 +4985,7 @@ In previous article, we have already learned how to deploy a Phoenix Application
 <span class='line-number'>7</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
 </span><span class='line'>  <span class="p">[</span>
-</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.6.0&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:exrm</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.14.11&quot;</span><span class="p">}</span>
 </span><span class='line'>  <span class="p">]</span>
@@ -5365,9 +5424,51 @@ In previous article, we have already learned how to deploy a Phoenix Application
 </span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>I leave the default port 4000 on my phoenix configuration. But you can change it inside your <code>config/prod.exs</code></p>
+<p>Note that you will need to specify a default port number in your <code>config/prod.exs</code>. Which is in this case port <strong>4000</strong>, refer to line 16 of the code below:</p>
 
-<p>Then link this file to the same file name in <code>/etc/nginx/sites-enabled</code>. Note that by using <code>ln</code> command, source file always come first.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kn">use</span> <span class="nc">Mix.Config</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># ## SSL Support</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># To get SSL working, you will need to set:</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1">#     https: [port: 443,</span>
+</span><span class='line'><span class="c1">#             keyfile: System.get_env(&quot;SOME_APP_SSL_KEY_PATH&quot;),</span>
+</span><span class='line'><span class="c1">#             certfile: System.get_env(&quot;SOME_APP_SSL_CERT_PATH&quot;)]</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># Where those two env variables point to a file on</span>
+</span><span class='line'><span class="c1"># disk for the key and cert.</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="nc">MyAwesomeApp.Router</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">url</span><span class="p">:</span> <span class="p">[</span><span class="ss">host</span><span class="p">:</span> <span class="s2">&quot;example.com&quot;</span><span class="p">],</span>
+</span><span class='line'>  <span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4000</span><span class="p">],</span>
+</span><span class='line'>  <span class="ss">secret_key_base</span><span class="p">:</span> <span class="s2">&quot;&lt;app_secret_key&gt;&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">config</span> <span class="ss">:logger</span><span class="p">,</span> <span class="ss">:console</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">level</span><span class="p">:</span> <span class="ss">:info</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Then link the nginx config file <code>/etc/nginx/sites-available/my-awesome-app.com</code> to the same file name in <code>/etc/nginx/sites-enabled</code>. Note that by using <code>ln</code> command, source file always come first.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -5402,7 +5503,9 @@ In previous article, we have already learned how to deploy a Phoenix Application
     <link href="http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/"/>
     <updated>2014-10-15T23:16:00+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server</id>
-    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 27th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. The source code is available on the following git URL:</p>
+    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 26th Nov 14: I have updated this article in order to work with Phoenix framework version 0.6.0. Previously the Phoenix framework used in this article was 0.5.0. The source code is available on the following git URL:</p>
+
+<p><strong>UPDATE</strong> on 27th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. The source code is available on the following git URL:</p>
 
 <p><a href="https://github.com/learnelixir/phoenix-heroku">https://github.com/learnelixir/phoenix-heroku</a>
 <hr/><br/>
@@ -5424,14 +5527,14 @@ Phoenix is a pretty cool web framework for Elixir. However, up to date, there ar
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ../phoenix-heroku
 </span></code></pre></td></tr></table></div></figure>
 
-<p>and change the phoenix deps to refer to ref <code>8cffae4</code> sha. There is an error in current Phoenix 0.5 version whereby the view layout file is touched even though it does not exists. This commit https://github.com/phoenixframework/phoenix/commit/86dee56b42da5f465c81cae6b0556942069a2165 has fixed that:</p>
+<p>Make sure your <code>mix.exs</code> has the following dependencies:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
-</span><span class='line'>  <span class="p">[{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">git</span><span class="p">:</span> <span class="s2">&quot;https://github.com/phoenixframework/phoenix.git&quot;</span><span class="p">,</span> <span class="ss">ref</span><span class="p">:</span> <span class="s2">&quot;8cffae4&quot;</span><span class="p">},</span>
+</span><span class='line'>  <span class="p">[{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.6.0&quot;</span><span class="p">},</span>
 </span><span class='line'>   <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0&quot;</span><span class="p">}]</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
@@ -5440,54 +5543,6 @@ Phoenix is a pretty cool web framework for Elixir. However, up to date, there ar
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>mix <span class="k">do</span> deps.get, compile
-</span></code></pre></td></tr></table></div></figure>
-
-<p>You will also need to modify the views to work with this phoenix version:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/views.ex
-</span></code></pre></td></tr></table></div></figure>
-
-<p>and change it to the following</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">PhoenixHeroku.Views</span> <span class="k">do</span>
-</span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.View</span><span class="p">,</span> <span class="ss">root</span><span class="p">:</span> <span class="s2">&quot;web/templates&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># Everything in this block is available runs in this</span>
-</span><span class='line'>  <span class="c1"># module and in other views that use MyApp.View</span>
-</span><span class='line'>  <span class="n">using</span> <span class="k">do</span>
-</span><span class='line'>    <span class="c1"># Import common functionality</span>
-</span><span class='line'>    <span class="kn">import</span> <span class="nc">PhoenixHeroku.I</span><span class="mi">18</span><span class="n">n</span>
-</span><span class='line'>    <span class="kn">import</span> <span class="nc">PhoenixHeroku.Router.Helpers</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># Use Phoenix.HTML to import all HTML functions (forms, tags, etc)</span>
-</span><span class='line'>    <span class="kn">use</span> <span class="nc">Phoenix.HTML</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># Common aliases</span>
-</span><span class='line'>    <span class="kn">alias</span> <span class="nc">Phoenix.Controller.Flash</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># Functions defined here are available to all other views/templates</span>
-</span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
 <p>This is a miminal number of steps to setup a phoenix application. Eventually, you will need to add more code to build it up. Moving forward, let&#39;s deploy this application. </p>
@@ -5556,7 +5611,7 @@ Phoenix is a pretty cool web framework for Elixir. However, up to date, there ar
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">erlang_version</span><span class="o">=</span>17.2
-</span><span class='line'><span class="nv">elixir_version</span><span class="o">=</span>1.0.1
+</span><span class='line'><span class="nv">elixir_version</span><span class="o">=</span>1.0.2
 </span><span class='line'><span class="nv">always_rebuild</span><span class="o">=</span><span class="nb">true</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -8149,7 +8204,7 @@ In this article, let&#39;s go through the process of creating and build a simple
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">BookStore.BookView</span> <span class="k">do</span>
-</span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.View</span><span class="p">,</span> <span class="ss">root</span><span class="p">:</span> <span class="s2">&quot;web/templates&quot;</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">BookStore.View</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 

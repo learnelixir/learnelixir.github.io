@@ -120,7 +120,10 @@
   </header>
 
 
-<div class="entry-content"><p>Mix task is a powerful way to automate certain things from command line. It&#39;s especially helpful when dealing with code generator. In this article, we are going to write a custom mix task for Phoenix application to automate generation of Model, its Repo and Migration task. I usually have to generate these one by one manually at the moment.</p>
+<div class="entry-content"><p><strong>UPDATE</strong> on 27 Nov 14: I have updated this article in order to work with Phoenix framework version 0.6.0. Previously the Phoenix framework used in this article was 0.5.0
+<hr/><br/></p>
+
+<p>Mix task is a powerful way to automate certain things from command line. It&#39;s especially helpful when dealing with code generator. In this article, we are going to write a custom mix task for Phoenix application to automate generation of Model, its Repo and Migration task. I usually have to generate these one by one manually at the moment.</p>
 
 <!-- more -->
 
@@ -153,7 +156,7 @@
 </span><span class='line'>
 </span><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
 </span><span class='line'>  <span class="p">[</span>
-</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.6.0&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.5&quot;</span><span class="p">},</span>
 </span><span class='line'>    <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">},</span>
@@ -391,7 +394,7 @@
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">embed_template</span> <span class="ss">:model</span><span class="p">,</span> <span class="sh">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="sh">defmodule &lt;%= @model_name %&gt; do</span>
+</span><span class='line'><span class="sh">defmodule &lt;%= inspect @model_name %&gt; do</span>
 </span><span class='line'><span class="sh">  use Ecto.Model</span>
 </span><span class='line'>
 </span><span class='line'><span class="sh">  schema &quot;&lt;%= @table_name %&gt;&quot; do</span>
@@ -671,7 +674,7 @@
 
 <p>That&#39;s all for now. You can get the complete source code for this task in the following URL:</p>
 
-<p><a href="https://raw.githubusercontent.com/learnelixir/hardware-zone/phoenix-0.5.0/lib/mix/tasks/g.ex">https://raw.githubusercontent.com/learnelixir/hardware-zone/phoenix-0.5.0/lib/mix/tasks/g.ex</a></p>
+<p><a href="https://raw.githubusercontent.com/learnelixir/hardware-zone/phoenix-0.6.0/lib/mix/tasks/g.ex">https://raw.githubusercontent.com/learnelixir/hardware-zone/phoenix-0.6.0/lib/mix/tasks/g.ex</a></p>
 
 <h3>Conclusion</h3>
 

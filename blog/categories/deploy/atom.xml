@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Deploy | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/deploy/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-11-26T21:18:49+08:00</updated>
+  <updated>2014-11-27T22:01:29+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -18,7 +18,12 @@
     <link href="http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server/"/>
     <updated>2014-10-16T22:26:46+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server</id>
-    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 28th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. The source code is available on the following git URL:</p>
+    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 26th Nov 14: I have updated this article in order to work with Phoenix framework version 0.6.0. Previously the Phoenix framework used in this article was 0.5.0
+0</p>
+
+<p><strong>UPDATE</strong> on 28th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. </p>
+
+<p>The source code is available on the following git URL:</p>
 
 <p><a href="https://github.com/learnelixir/my-awesome-app">https://github.com/learnelixir/my-awesome-app</a>
 <hr/><br/>
@@ -60,7 +65,7 @@ mix <span class="k">do</span> deps.get, compile
 <p>To start, you will need to add <code>exrm</code> into <code>mix.exs</code>  </p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
   <span class="p">[</span>   
-    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.6.0&quot;</span><span class="p">},</span>
     <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
     <span class="p">{</span><span class="ss">:exrm</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.14.11&quot;</span><span class="p">}</span>
   <span class="p">]</span>   
@@ -293,9 +298,29 @@ server <span class="o">{</span>
   error_log  /var/log/nginx/my_awesome_app.log<span class="p">;</span>
 <span class="o">}</span>
 </code></pre></div>
-<p>I leave the default port 4000 on my phoenix configuration. But you can change it inside your <code>config/prod.exs</code></p>
+<p>Note that you will need to specify a default port number in your <code>config/prod.exs</code>. Which is in this case port <strong>4000</strong>, refer to line 16 of the code below:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kn">use</span> <span class="nc">Mix.Config</span>
 
-<p>Then link this file to the same file name in <code>/etc/nginx/sites-enabled</code>. Note that by using <code>ln</code> command, source file always come first.</p>
+<span class="c1"># ## SSL Support</span>
+<span class="c1">#</span>
+<span class="c1"># To get SSL working, you will need to set:</span>
+<span class="c1">#</span>
+<span class="c1">#     https: [port: 443,</span>
+<span class="c1">#             keyfile: System.get_env(&quot;SOME_APP_SSL_KEY_PATH&quot;),</span>
+<span class="c1">#             certfile: System.get_env(&quot;SOME_APP_SSL_CERT_PATH&quot;)]</span>
+<span class="c1">#</span>
+<span class="c1"># Where those two env variables point to a file on</span>
+<span class="c1"># disk for the key and cert.</span>
+
+<span class="n">config</span> <span class="ss">:phoenix</span><span class="p">,</span> <span class="nc">MyAwesomeApp.Router</span><span class="p">,</span>
+  <span class="ss">url</span><span class="p">:</span> <span class="p">[</span><span class="ss">host</span><span class="p">:</span> <span class="s2">&quot;example.com&quot;</span><span class="p">],</span>
+  <span class="ss">http</span><span class="p">:</span> <span class="p">[</span><span class="ss">port</span><span class="p">:</span> <span class="nc">System</span><span class="p">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="mi">4000</span><span class="p">],</span>
+  <span class="ss">secret_key_base</span><span class="p">:</span> <span class="s2">&quot;&lt;app_secret_key&gt;&quot;</span>
+
+<span class="n">config</span> <span class="ss">:logger</span><span class="p">,</span> <span class="ss">:console</span><span class="p">,</span>
+  <span class="ss">level</span><span class="p">:</span> <span class="ss">:info</span>
+</code></pre></div>
+<p>Then link the nginx config file <code>/etc/nginx/sites-available/my-awesome-app.com</code> to the same file name in <code>/etc/nginx/sites-enabled</code>. Note that by using <code>ln</code> command, source file always come first.</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">sudo ln -nfs /etc/nginx/sites-available/my-awesome-app.com <span class="se">\</span>
              /etc/nginx/sites-enabled/my-awesome-app.com
 </code></pre></div>
@@ -309,7 +334,7 @@ server <span class="o">{</span>
 
 <p>Now after so many steps, finally I can enjoy my small victory by visiting the site and see it has been deployed up :-)</p>
 
-<p><img class="center" src="/images/deploy<em>app</em>to_server/ubuntu.png&#8221; width=&#8221;800&#8221; height=&#8221;509&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
+<p>{% img center /images/deploy<em>app</em>to_server/ubuntu.png 800 509 &#39;image&#39; &#39;images&#39; %}</p>
 
 <p>Happy Deploying!</p>
 ]]></content>
@@ -320,7 +345,9 @@ server <span class="o">{</span>
     <link href="http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server/"/>
     <updated>2014-10-15T23:16:00+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/15/deploy-phonenix-application-to-heroku-server</id>
-    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 27th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. The source code is available on the following git URL:</p>
+    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 26th Nov 14: I have updated this article in order to work with Phoenix framework version 0.6.0. Previously the Phoenix framework used in this article was 0.5.0. The source code is available on the following git URL:</p>
+
+<p><strong>UPDATE</strong> on 27th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1. The source code is available on the following git URL:</p>
 
 <p><a href="https://github.com/learnelixir/phoenix-heroku">https://github.com/learnelixir/phoenix-heroku</a>
 <hr/><br/>
@@ -336,38 +363,14 @@ Phoenix is a pretty cool web framework for Elixir. However, up to date, there ar
 <p>Enter this new application </p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">cd</span> ../phoenix-heroku
 </code></pre></div>
-<p>and change the phoenix deps to refer to ref <code>8cffae4</code> sha. There is an error in current Phoenix 0.5 version whereby the view layout file is touched even though it does not exists. This commit https://github.com/phoenixframework/phoenix/commit/86dee56b42da5f465c81cae6b0556942069a2165 has fixed that:</p>
+<p>Make sure your <code>mix.exs</code> has the following dependencies:</p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
-  <span class="p">[{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="ss">git</span><span class="p">:</span> <span class="s2">&quot;https://github.com/phoenixframework/phoenix.git&quot;</span><span class="p">,</span> <span class="ss">ref</span><span class="p">:</span> <span class="s2">&quot;8cffae4&quot;</span><span class="p">},</span>
+  <span class="p">[{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.6.0&quot;</span><span class="p">},</span>
    <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0&quot;</span><span class="p">}]</span>
 <span class="k">end</span>
 </code></pre></div>
 <p>Now, install all the depenencies</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">mix <span class="k">do</span> deps.get, compile
-</code></pre></div>
-<p>You will also need to modify the views to work with this phoenix version:</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>vim web/views.ex
-</code></pre></div>
-<p>and change it to the following</p>
-<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">PhoenixHeroku.Views</span> <span class="k">do</span>
-  <span class="kn">use</span> <span class="nc">Phoenix.View</span><span class="p">,</span> <span class="ss">root</span><span class="p">:</span> <span class="s2">&quot;web/templates&quot;</span>
-
-  <span class="c1"># Everything in this block is available runs in this</span>
-  <span class="c1"># module and in other views that use MyApp.View</span>
-  <span class="n">using</span> <span class="k">do</span>
-    <span class="c1"># Import common functionality</span>
-    <span class="kn">import</span> <span class="nc">PhoenixHeroku.I</span><span class="mi">18</span><span class="n">n</span>
-    <span class="kn">import</span> <span class="nc">PhoenixHeroku.Router.Helpers</span>
-
-    <span class="c1"># Use Phoenix.HTML to import all HTML functions (forms, tags, etc)</span>
-    <span class="kn">use</span> <span class="nc">Phoenix.HTML</span>
-
-    <span class="c1"># Common aliases</span>
-    <span class="kn">alias</span> <span class="nc">Phoenix.Controller.Flash</span>
-  <span class="k">end</span> 
-
-  <span class="c1"># Functions defined here are available to all other views/templates</span>
-<span class="k">end</span>
 </code></pre></div>
 <p>This is a miminal number of steps to setup a phoenix application. Eventually, you will need to add more code to build it up. Moving forward, let&#39;s deploy this application. </p>
 
@@ -412,7 +415,7 @@ Git remote heroku added
 
 <p>Create file <code>elixir_buildpack.config</code> inside the root of your application folder with the following content. Note that we will need to use Elixir 1.0.1 here as the Phoenix build at the point that I wrote this article requires that.</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">erlang_version</span><span class="o">=</span>17.2
-<span class="nv">elixir_version</span><span class="o">=</span>1.0.1
+<span class="nv">elixir_version</span><span class="o">=</span>1.0.2
 <span class="nv">always_rebuild</span><span class="o">=</span><span class="nb">true</span>
 </code></pre></div>
 <h4>Step 7: Commit everything and push</h4>
@@ -421,7 +424,7 @@ Git remote heroku added
 </code></pre></div>
 <p>It can be quite slow in this first time pushing to heroku master as there is a need to compile all the elixir depenencies on Heroku server, but subsequently it will be quite fast. Now I go to <code>http://phoenix-heroku-demo.herokuapp.com/</code> and hooray the phoenix home page is there</p>
 
-<p><img class="center" src="/images/deploy<em>app</em>to_server/heroku.png&#8221; width=&#8221;800&#8221; height=&#8221;509&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
+<p>{% img center /images/deploy<em>app</em>to_server/heroku.png 800 509 &#39;image&#39; &#39;images&#39; %}</p>
 
 <p>In subsequent deploys, you will just need to perform this step - step 7</p>
 

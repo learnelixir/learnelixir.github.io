@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Restful | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/restful/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-11-26T21:18:49+08:00</updated>
+  <updated>2014-11-27T22:01:29+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -18,7 +18,9 @@
     <link href="http://learnelixir.com/blog/2014/10/18/seven-restful-actions-in-phoenix-web-app/"/>
     <updated>2014-10-18T23:20:53+08:00</updated>
     <id>http://learnelixir.com/blog/2014/10/18/seven-restful-actions-in-phoenix-web-app</id>
-    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 30th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
+    <content type="html"><![CDATA[<p><strong>UPDATE</strong> on 27th Nov 14: I have updated this article in order to work with Phoenix framework version 0.6.0. Previously the Phoenix framework used in this article was 0.5.0</p>
+
+<p><strong>UPDATE</strong> on 30th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
 <hr/><br/>
 For a new web application framework, I always start with building a 7 actions RESTful app to try out how good the framework is, and so far for Phoenix, it looks quite promising in term of code readability and the speed of churning out these 7 actions for a model entity. As these 7 RESTful actions are the backbone of the most web apps nowadays, it is crucial that we are familiar with the steps to create them.</p>
 
@@ -28,15 +30,15 @@ For a new web application framework, I always start with building a 7 actions RE
 
 <p>Anyway, here is the end result:</p>
 
-<p><img class="center" src="/images/7restful-action/screenshot.png" width="500" height="396" title="&#39;image&#39; &#39;images&#39;" ></p>
+<p>{% img center /images/7restful-action/screenshot.png 500 396 &#39;image&#39; &#39;images&#39; %}</p>
 
 <p>You are able to download the source code on github - </p>
 
-<p><a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0">https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0</a></p>
+<p><a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.6.0">https://github.com/learnelixir/hardware-zone/tree/phoenix-0.6.0</a></p>
 
 <p>as well as check the application online - deployed to Heroku Server at </p>
 
-<p><a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0">http://phoenix-hardware-zone.herokuapp.com</a></p>
+<p><a href="http://phoenix-hardware-zone.herokuapp.com">http://phoenix-hardware-zone.herokuapp.com</a></p>
 
 <p>Let&#39;s start with create an application for this. We will be building a public hardware parts posting site where user will be able to post a hardware and other users will be able to see it.</p>
 
@@ -56,7 +58,7 @@ For a new web application framework, I always start with building a 7 actions RE
 <p>Add in line 5 and 6 in the following code to <code>deps</code> method</p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
   <span class="p">[</span>
-    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.6.0&quot;</span><span class="p">},</span>
     <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
     <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.5&quot;</span><span class="p">},</span>
     <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">}</span>
@@ -177,6 +179,15 @@ For a new web application framework, I always start with building a 7 actions RE
 <p>and paste in the source code below</p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">HardwareZone.Router</span> <span class="k">do</span>
   <span class="kn">use</span> <span class="nc">Phoenix.Router</span>
+
+  <span class="n">pipeline</span> <span class="ss">:browser</span> <span class="k">do</span>
+    <span class="n">plug</span> <span class="ss">:accepts</span><span class="p">,</span> <span class="sx">~w(html)</span>
+    <span class="n">plug</span> <span class="ss">:fetch_session</span>
+  <span class="k">end</span> 
+
+  <span class="n">pipeline</span> <span class="ss">:api</span> <span class="k">do</span>
+    <span class="n">plug</span> <span class="ss">:accepts</span><span class="p">,</span> <span class="sx">~w(json)</span>
+  <span class="k">end</span>
 
   <span class="n">scope</span> <span class="s2">&quot;/&quot;</span> <span class="k">do</span>
     <span class="n">pipe_through</span> <span class="ss">:browser</span>
@@ -346,7 +357,7 @@ hardwares_path  DELETE  /hardwares/:id       HardwareZone.HardwaresController.de
 <p>and paste in the following <code>index</code> action</p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">def</span> <span class="n">index</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">_params</span><span class="p">)</span> <span class="k">do</span>
   <span class="n">hardwares</span> <span class="p">=</span> <span class="nc">HardwareZone.Queries</span><span class="p">.</span><span class="n">all_hardwares</span>
-  <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="ss">hardwares</span><span class="p">:</span> <span class="n">hardwares</span>
+  <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;index.html&quot;</span><span class="p">,</span> <span class="ss">hardwares</span><span class="p">:</span> <span class="n">hardwares</span>
 <span class="k">end</span> 
 </code></pre></div>
 <p>In this <code>index</code> action, what we have done is querying all the hardwares from our database and render these structs objects inside <code>index</code> view using the <code>render</code> command. Since we do not have an <code>index</code> page at the moment, let&#39;s create one by first creating <code>hardware_view.ex</code> in <code>web/views</code> folder:</p>
@@ -354,7 +365,7 @@ hardwares_path  DELETE  /hardwares/:id       HardwareZone.HardwaresController.de
 </code></pre></div>
 <p>with the following code:</p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">HardwareZone.HardwaresView</span> <span class="k">do</span>
-  <span class="kn">use</span> <span class="nc">HardwareZone.Views</span>
+  <span class="kn">use</span> <span class="nc">HardwareZone.View</span>
 <span class="k">end</span>
 </code></pre></div>
 <p>Then create the hardwares template folder:</p>
@@ -429,7 +440,7 @@ hardwares_path  DELETE  /hardwares/:id       HardwareZone.HardwaresController.de
 </code></pre></div>
 <p>Add in the following function: </p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">def</span> <span class="n">new</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">_params</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;new&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="p">%</span><span class="nc">Hardware</span><span class="p">{}</span>
+  <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;new.html&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="p">%</span><span class="nc">Hardware</span><span class="p">{}</span>
 <span class="k">end</span> 
 </code></pre></div>
 <p>Next, create <code>new.html.eex</code> file:</p>
@@ -514,9 +525,9 @@ hardwares_path  DELETE  /hardwares/:id       HardwareZone.HardwaresController.de
   <span class="k">case</span> <span class="nc">Hardware</span><span class="p">.</span><span class="n">validate</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="k">do</span>
     <span class="p">[]</span> <span class="p">-&gt;</span>
       <span class="n">hardware</span> <span class="p">=</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span>
-      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
     <span class="n">errors</span> <span class="p">-&gt;</span>
-      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;new&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
+      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;new.html&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
   <span class="k">end</span> 
 <span class="k">end</span>
 
@@ -535,9 +546,9 @@ hardwares_path  DELETE  /hardwares/:id       HardwareZone.HardwaresController.de
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">def</span> <span class="n">show</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="p">%{</span><span class="s2">&quot;id&quot;</span> <span class="p">=&gt;</span> <span class="n">id</span><span class="p">})</span> <span class="k">do</span>
   <span class="k">case</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="nc">Hardware</span><span class="p">,</span> <span class="nc">String</span><span class="p">.</span><span class="n">to_integer</span><span class="p">(</span><span class="n">id</span><span class="p">))</span> <span class="k">do</span>
     <span class="n">hardware</span> <span class="ow">when</span> <span class="n">is_map</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="p">-&gt;</span>
-      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span>
+      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;show.html&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span>
     <span class="bp">_</span> <span class="p">-&gt;</span>  
-      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
 <span class="k">end</span>
 </code></pre></div>
 <p>The code above starts by checking for the existence of the hardware with given parameter name <code>id</code>. By using the <code>case</code> condition on line 2 and the guard condition <code>is_map(hardware)</code> on line 3, it is guaranteed that the hardware does exist to show on line 4. Otherwise, it will redirect to the hardware index page.</p>
@@ -582,9 +593,9 @@ hardwares_path  DELETE  /hardwares/:id       HardwareZone.HardwaresController.de
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">def</span> <span class="n">edit</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="p">%{</span><span class="s2">&quot;id&quot;</span> <span class="p">=&gt;</span> <span class="n">id</span><span class="p">})</span> <span class="k">do</span>
   <span class="k">case</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="nc">Hardware</span><span class="p">,</span> <span class="nc">String</span><span class="p">.</span><span class="n">to_integer</span><span class="p">(</span><span class="n">id</span><span class="p">))</span> <span class="k">do</span>
     <span class="n">hardware</span> <span class="ow">when</span> <span class="n">is_map</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="p">-&gt;</span>
-      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span>
+      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;edit.html&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span>
     <span class="bp">_</span> <span class="p">-&gt;</span>
-      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
   <span class="k">end</span> 
 <span class="k">end</span> 
 </code></pre></div>
@@ -611,12 +622,12 @@ hardwares_path  DELETE  /hardwares/:id       HardwareZone.HardwaresController.de
       <span class="k">case</span> <span class="nc">Hardware</span><span class="p">.</span><span class="n">validate</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="k">do</span>
         <span class="p">[]</span> <span class="p">-&gt;</span>  
           <span class="nc">Repo</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span>
-          <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+          <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
         <span class="n">errors</span> <span class="p">-&gt;</span>  
-          <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
+          <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;edit.html&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
       <span class="k">end</span> 
     <span class="bp">_</span> <span class="p">-&gt;</span>
-      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
   <span class="k">end</span> 
 <span class="k">end</span>
 </code></pre></div>
@@ -647,9 +658,9 @@ hardwares_path  DELETE  /hardwares/:id       HardwareZone.HardwaresController.de
   <span class="k">case</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="nc">Hardware</span><span class="p">,</span> <span class="nc">String</span><span class="p">.</span><span class="n">to_integer</span><span class="p">(</span><span class="n">id</span><span class="p">))</span> <span class="k">do</span>
     <span class="n">hardware</span> <span class="ow">when</span> <span class="n">is_map</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span> <span class="p">-&gt;</span>
       <span class="nc">Repo</span><span class="p">.</span><span class="n">delete</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span>
-      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
     <span class="bp">_</span> <span class="p">-&gt;</span>
-      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div>

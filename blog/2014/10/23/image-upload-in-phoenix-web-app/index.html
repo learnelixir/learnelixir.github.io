@@ -120,7 +120,9 @@
   </header>
 
 
-<div class="entry-content"><p><strong>UPDATE</strong> on 30th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
+<div class="entry-content"><p><strong>UPDATE</strong> on 27 Nov 14: I have updated this article in order to work with Phoenix framework version 0.6.0. Previously the Phoenix framework used in this article was 0.5.0
+<hr/><br/>
+<strong>UPDATE</strong> on 30th Oct 14: I have updated this article in order to work with Phoenix framework version 0.5.0. Previously the Phoenix framework used in this article was 0.4.1
 <hr/><br/>
 I was trying to find on Internet a way to receive uploaded image and format the uploaded image in multiple styles for Elixir and Phoenix but unable to find one. Hence I decide to make a library to handle the image upload and blog about it. The end point that we would like to have in this article is the hardware gapplication that we have in the last article integrated with this library to allow user to upload a photo for each hardware. Here is the screenshot of the finished application:</p>
 
@@ -129,7 +131,7 @@ I was trying to find on Internet a way to receive uploaded image and format the 
 <!-- more -->
 
 <ul>
-<li>The source code is available on <a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0">https://github.com/learnelixir/hardware-zone/tree/phoenix-0.5.0</a></li>
+<li>The source code is available on <a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.6.0">https://github.com/learnelixir/hardware-zone/tree/phoenix-0.6.0</a></li>
 <li>The updated application is also now lived at http://phoenix-hardware-zone.herokuapp.com</li>
 </ul>
 
@@ -151,7 +153,7 @@ I was trying to find on Internet a way to receive uploaded image and format the 
 <span class='line-number'>10</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
 </span><span class='line'>    <span class="p">[</span>
-</span><span class='line'>      <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.6.0&quot;</span><span class="p">},</span>
 </span><span class='line'>      <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
 </span><span class='line'>      <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.5&quot;</span><span class="p">},</span>
 </span><span class='line'>      <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">},</span>
@@ -1288,9 +1290,9 @@ I was trying to find on Internet a way to receive uploaded image and format the 
 </span><span class='line'>    <span class="p">[]</span> <span class="p">-&gt;</span>
 </span><span class='line'>      <span class="n">hardware</span> <span class="p">=</span> <span class="nc">Repo</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span>
 </span><span class='line'>      <span class="n">upload_photo_attachment</span><span class="p">(</span><span class="n">hardware</span><span class="p">,</span> <span class="n">atomized_keys_params</span><span class="p">,</span> <span class="ss">:photo</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="nc">Router</span><span class="p">.</span><span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
 </span><span class='line'>    <span class="n">errors</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;new&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
+</span><span class='line'>      <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;new.html&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span><span class='line'>
@@ -1305,12 +1307,12 @@ I was trying to find on Internet a way to receive uploaded image and format the 
 </span><span class='line'>        <span class="p">[]</span> <span class="p">-&gt;</span>
 </span><span class='line'>          <span class="nc">Repo</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">hardware</span><span class="p">)</span>
 </span><span class='line'>          <span class="n">upload_photo_attachment</span><span class="p">(</span><span class="n">hardware</span><span class="p">,</span> <span class="n">atomized_keys_params</span><span class="p">,</span> <span class="ss">:photo</span><span class="p">)</span>
-</span><span class='line'>          <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="nc">Router</span><span class="p">.</span><span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:show</span><span class="p">,</span> <span class="n">hardware</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
 </span><span class='line'>        <span class="n">errors</span> <span class="p">-&gt;</span>
-</span><span class='line'>          <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
+</span><span class='line'>          <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;edit.html&quot;</span><span class="p">,</span> <span class="ss">hardware</span><span class="p">:</span> <span class="n">hardware</span><span class="p">,</span> <span class="ss">errors</span><span class="p">:</span> <span class="n">errors</span>
 </span><span class='line'>      <span class="k">end</span>
 </span><span class='line'>    <span class="bp">_</span> <span class="p">-&gt;</span>
-</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="nc">Router</span><span class="p">.</span><span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>

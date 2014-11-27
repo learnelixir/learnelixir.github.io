@@ -120,7 +120,10 @@
   </header>
 
 
-<div class="entry-content"><p>Channel websocket is a pretty cool feature built in Phoenix framework. It is like a controller, but bidirectional and the connection stay alive after server response. The server can push information to the browser without browser asking for it unlike traditional web server. To fully understand and make use of this awesome feature, let&#39;s try to build a Real Time To Do List application in this article. This will be basically a To Do list but it can be shared among your team. Hence everytime a person inside your team check / uncheck a To Do Item, everyone will see that without refreshing the page. </p>
+<div class="entry-content"><p><strong>UPDATE</strong> on 27 Nov 14: I have updated this article in order to work with Phoenix framework version 0.6.0. Previously the Phoenix framework used in this article was 0.5.0
+<hr/><br/></p>
+
+<p>Channel websocket is a pretty cool feature built in Phoenix framework. It is like a controller, but bidirectional and the connection stay alive after server response. The server can push information to the browser without browser asking for it unlike traditional web server. To fully understand and make use of this awesome feature, let&#39;s try to build a Real Time To Do List application in this article. This will be basically a To Do list but it can be shared among your team. Hence everytime a person inside your team check / uncheck a To Do Item, everyone will see that without refreshing the page. </p>
 
 <!-- more -->
 
@@ -177,7 +180,7 @@
 </span><span class='line'><span class="c1">#</span>
 </span><span class='line'><span class="c1"># type `mix help deps` for examples and options</span>
 </span><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
-</span><span class='line'>  <span class="p">[{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.5.0&quot;</span><span class="p">},</span>
+</span><span class='line'>  <span class="p">[{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.6.0&quot;</span><span class="p">},</span>
 </span><span class='line'>   <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0&quot;</span><span class="p">},</span>
 </span><span class='line'>   <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">},</span>
 </span><span class='line'>   <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.6.0&quot;</span><span class="p">}]</span>
@@ -308,9 +311,29 @@
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">RealTimeToDo.Router</span> <span class="k">do</span>
 </span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Router</span>
 </span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Router.Socket</span><span class="p">,</span> <span class="ss">mount</span><span class="p">:</span> <span class="s2">&quot;/ws&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">pipeline</span> <span class="ss">:browser</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">plug</span> <span class="ss">:accepts</span><span class="p">,</span> <span class="sx">~w(html)</span>
+</span><span class='line'>    <span class="n">plug</span> <span class="ss">:fetch_session</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">pipeline</span> <span class="ss">:api</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">plug</span> <span class="ss">:accepts</span><span class="p">,</span> <span class="sx">~w(json)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
 </span><span class='line'>  <span class="n">scope</span> <span class="s2">&quot;/&quot;</span> <span class="k">do</span>
 </span><span class='line'>    <span class="c1"># Use the default browser stack.</span>
 </span><span class='line'>    <span class="n">pipe_through</span> <span class="ss">:browser</span>
@@ -493,7 +516,7 @@
 </span><span class='line'>                            <span class="o">|&gt;</span> <span class="n">where</span><span class="p">([</span><span class="n">item</span><span class="p">],</span> <span class="n">item</span><span class="p">.</span><span class="n">done</span> <span class="o">==</span> <span class="no">true</span><span class="p">)</span>
 </span><span class='line'>                            <span class="o">|&gt;</span> <span class="n">order_by</span><span class="p">([</span><span class="n">item</span><span class="p">],</span> <span class="ss">asc</span><span class="p">:</span> <span class="n">item</span><span class="p">.</span><span class="n">position</span><span class="p">))</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="ss">to_do_items</span><span class="p">:</span> <span class="n">to_do_items</span><span class="p">,</span> <span class="ss">done_items</span><span class="p">:</span> <span class="n">done_items</span>
+</span><span class='line'>    <span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;index.html&quot;</span><span class="p">,</span> <span class="ss">to_do_items</span><span class="p">:</span> <span class="n">to_do_items</span><span class="p">,</span> <span class="ss">done_items</span><span class="p">:</span> <span class="n">done_items</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
@@ -516,7 +539,7 @@
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">RealTimeToDo.ToDosView</span> <span class="k">do</span>
-</span><span class='line'>  <span class="kn">use</span> <span class="nc">RealTimeToDo.Views</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">RealTimeToDo.View</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -1090,6 +1113,9 @@
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">listenToTogglingItemEvent</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>  <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 </span><span class='line'>  <span class="nx">channel</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;toggle:item&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
@@ -1102,7 +1128,10 @@
 </span><span class='line'>      <span class="nx">fromItemList</span> <span class="o">=</span> <span class="nx">app</span><span class="p">.</span><span class="nx">toDoList</span><span class="p">;</span>
 </span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="nx">fromItemList</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;#item_&quot;</span> <span class="o">+</span> <span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">parent</span><span class="p">().</span><span class="nx">fadeOut</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">itemCheckBoxDom</span> <span class="o">=</span> <span class="nx">fromItemList</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;#item_&quot;</span> <span class="o">+</span> <span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">itemCheckBoxDom</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="s2">&quot;checked&quot;</span><span class="p">,</span> <span class="nx">item</span><span class="p">.</span><span class="nx">done</span> <span class="o">==</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">itemCheckBoxDom</span><span class="p">.</span><span class="nx">parent</span><span class="p">().</span><span class="nx">fadeOut</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 </span><span class='line'>      <span class="nx">targetItemList</span><span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">fadeIn</span><span class="p">());</span>
 </span><span class='line'>    <span class="p">});</span>
 </span><span class='line'>  <span class="p">});</span>
