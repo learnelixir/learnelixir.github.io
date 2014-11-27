@@ -1,0 +1,472 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Migrating Applications From Phoenix 0.5.0 to Phoenix 0.6.0 - Learn Elixir Language</title>
+  <meta name="google-site-verification" content="Csx5SF9iNZ6ktKEUFVVFcxhhHQQQRu5Eokma5T8Scls" />
+  <meta name="author" content="<a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>&#8221;>
+
+  
+  <meta name="description" content="Migrating Applications From Phoenix 0.5.0 to Phoenix 0.6.0" />
+
+  
+  <meta name="keywords" content="phoenix" />
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://learnelixir.com/blog/2014/11/27/migrating-applications-from-phoenix-0-dot-5-0-to-phoenix-0-dot-6-0">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Learn Elixir Language" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-55420151-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/"><div class='logo' title='Learn Elixir Language'></div></a></h1>
+  
+    <h2>Elixir Language, Phoenix Framework and Me.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscription">
+  <li><a href="https://github.com/learnelixir" rel="subscribe-github" title="@learnelixir on GitHub">GitHub</a></li>
+</ul>
+  
+  
+  
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:learnelixir.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Migrating Applications From Phoenix 0.5.0 to Phoenix 0.6.0</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+<time class='entry-date' datetime='2014-11-27T22:06:05+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:06 pm</span></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://learnelixir.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Phoenix 0.6.0 was released few days ago and it has increase requirement to only be supported by Elixir 1.0.2+. So before you start upgrading, you will need to make sure you have Elixir 1.0.2+ installed on your machine. There are also some note worthy backward incompatibility with Phoenix 0.5.0 that we would need to take care of. We will go through the details of those.</p>
+
+<p>The source code for the Phoenix application after upgrade to 0.6.0, which I applied inside this article is available at:</p>
+
+<p><a href="https://github.com/learnelixir/hardware-zone/tree/phoenix-0.6.0">https://github.com/learnelixir/hardware-zone/tree/phoenix-0.6.0</a></p>
+
+<!--more-->
+
+<p>To start, you will need to branch your application another branch, say phoenix-0.6.0:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout -b phoenix 0.6.0
+</span></code></pre></td></tr></table></div></figure>
+
+<h3>Before upgrading</h3>
+
+<p>Before we start any upgrading, it&#39;s important to note that Phoenix 0.6.0 will only run on Elixir 1.0.2 and it&#39;s not compatible with Elixir 1.0.1 and below. Hence you will need to upgrade your Elixir to 1.0.2 first if you have not done so. On your Mac, you can simply run the brew update and brew install command like followings:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>brew updatea
+</span><span class='line'><span class="nv">$ </span>brew unlink elixir
+</span><span class='line'><span class="nv">$ </span>brew install elixir
+</span></code></pre></td></tr></table></div></figure>
+
+<p>On Ubuntu server, you can refer to this updated article - <a href="http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server/">http://learnelixir.com/blog/2014/10/16/deploy-phoenix-application-to-a-ubuntu-server/</a> - Step Number 4 on how to bring up your Elixir to version 1.0.2</p>
+
+<h3>Upgrading to Phoenix 0.6.0</h3>
+
+<p>You will need to delete your Phoenix source folder and install the latest one by typing the following command on your terminal. This way, next time, when you generate a new Phoenix application, it will use Phoenix 0.6.0:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git clone https://github.com/phoenixframework/phoenix.git <span class="o">&amp;&amp;</span> <span class="se">\</span>
+</span><span class='line'>  <span class="nb">cd </span>phoenix <span class="o">&amp;&amp;</span> <span class="se">\</span>
+</span><span class='line'>  git checkout v0.6.0 <span class="o">&amp;&amp;</span> <span class="se">\</span>
+</span><span class='line'>  mix <span class="k">do</span> deps.get, compile
+</span></code></pre></td></tr></table></div></figure>
+
+<h3>Upgrading application running Phoenix 0.5.0 to Phoenix 0.6.0</h3>
+
+<p>Now enter the application folder that are still running Phoenix 0.5.0. For my case, I will upgrade the hardware zone app described in the <a href="http://learnelixir.com/blog/2014/10/18/seven-restful-actions-in-phoenix-web-app/">Seven RESTful Actions in Phoenix Web App</a>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ~/learn/elixir/hardware_zone
+</span></code></pre></td></tr></table></div></figure>
+
+<h4>Step 1 - Change Phoenix version to 0.6.0 in mix.exs</h4>
+
+<p>Open <code>mix.exs</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim mix.exs
+</span></code></pre></td></tr></table></div></figure>
+
+<ul>
+<li>On <code>def project</code> function, make sure your elixir is using <code>~&gt; 1.0.0</code>. </li>
+<li>On <code>defp deps</code> function, make sure phoenix version is now <code>0.6.0</code>.</li>
+</ul>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defp</span> <span class="n">deps</span> <span class="k">do</span>
+</span><span class='line'>  <span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:phoenix</span><span class="p">,</span> <span class="s2">&quot;0.6.0&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:cowboy</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.0.0&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:postgrex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.5&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.0&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:inflex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.2.5&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:mogrify</span><span class="p">,</span> <span class="s2">&quot;~&gt; 0.1&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="p">]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>After that, run <code>deps.get, compile</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mix <span class="k">do</span> deps.get, compile
+</span></code></pre></td></tr></table></div></figure>
+
+<h4>Step 2 - Upgrade Controller Files:</h4>
+
+<p>From Phoenix 0.6.0 onwards, we will need to supply an extension to the string template name. For example, we used to be able to do like following in phoenix 0.5.0 inside our controllers:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">render</span> <span class="n">conn</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>But now with Phoenix 0.6.0, we will need to use <code>index.html</code> if we want to render using <code>index.html.eex</code> file. With this, you can go to all the render command, and add in the extension. For my case, I will need to add in <code>.html</code> for all the template strings.</p>
+
+<p>Another change in Phoenix 0.6.0 is <code>redirect</code> function, you will need to use <code>to</code> for the url string that you would like to redirect to. For instance, on Phoenix 0.5.0, we can write:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>But for Phoenix 0.6.0, we will need to write:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">redirect</span> <span class="n">conn</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">hardwares_path</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>That&#39;s all for controller upgrade.</p>
+
+<h4>Step 3 - Upgrade Router file:</h4>
+
+<p>You will need to add in the following codes under <code>use Phoenix.Router</code> line inside <code>web/router</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim web/router.ex
+</span></code></pre></td></tr></table></div></figure>
+
+<p>And add in these lines</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">pipeline</span> <span class="ss">:browser</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">plug</span> <span class="ss">:accepts</span><span class="p">,</span> <span class="sx">~w(html)</span>
+</span><span class='line'>  <span class="n">plug</span> <span class="ss">:fetch_session</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">pipeline</span> <span class="ss">:api</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">plug</span> <span class="ss">:accepts</span><span class="p">,</span> <span class="sx">~w(json)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>That&#39;s all for router upgrade.</p>
+
+<h4>Step 4 - Change view files:</h4>
+
+<p>We will need to rename file <code>web/views.ex</code> to <code>web/view.ex</code> (without <code>s</code> in <code>view</code>) and replace the content of this new <code>web/view.ex</code> with the followings. Please note that you will need to update the Module name for your particular project:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">HardwareZone.View</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.View</span><span class="p">,</span> <span class="ss">root</span><span class="p">:</span> <span class="s2">&quot;web/templates&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># The quoted expression returned by this block is applied</span>
+</span><span class='line'>  <span class="c1"># to this module and all other views that use this module.</span>
+</span><span class='line'>  <span class="n">using</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">quote</span> <span class="k">do</span>
+</span><span class='line'>      <span class="c1"># Import common functionality</span>
+</span><span class='line'>      <span class="kn">import</span> <span class="nc">HardwareZone.I</span><span class="mi">18</span><span class="n">n</span>
+</span><span class='line'>      <span class="kn">import</span> <span class="nc">HardwareZone.Router.Helpers</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># Use Phoenix.HTML to import all HTML functions (forms, tags, etc)</span>
+</span><span class='line'>      <span class="kn">use</span> <span class="nc">Phoenix.HTML</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># Common aliases</span>
+</span><span class='line'>      <span class="kn">alias</span> <span class="nc">Phoenix.Controller.Flash</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># Functions defined here are available to all other views/templates</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>As you can see, the module name now is <code>HardwareZone.View</code> instead of <code>HardwareZone.Views</code> like before because of the file name changed. Since this module name is changed, we will need to update all the view files in side our <code>web/views</code> folder to reflect this change as well. You would need to remove the <code>s</code> character in all the <code>use</code> function call in all the view. For instance, my <code>web/views/hardwares_view.ex</code> file will now look like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">HardwareZone.HardwaresView</span> <span class="k">do</span>
+</span><span class='line'>  <span class="kn">use</span> <span class="nc">HardwareZone.View</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>That&#39;s all for upgrading views and that&#39;s all for upgrading to Phoenix 0.6.0.</p>
+
+<h3>Conclusion</h3>
+
+<p>It is quite a minor upgrade from Phoenix from 0.5.0 to 0.6.0 but there are also quite a bit of changes that we will need to take care of. I hope that you will always keep updating and support the latest Phoenix framework :-). If you want to see all the code changes for this particular project, you can use this link <a href="https://github.com/learnelixir/hardware-zone/commit/3b4f9a0e3022b622a301846cbb3d72e14dd9e81a">https://github.com/learnelixir/hardware-zone/commit/3b4f9a0e3022b622a301846cbb3d72e14dd9e81a</a>. It will show all the code changes when I did the update from Phoenix 0.5.0 to Phoenix 0.6.0 for this Hardware Zone app. Hope you enjoy the upgrading.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a>
+  
+  </span></span>
+
+
+      
+
+
+
+
+
+
+<time class='entry-date' datetime='2014-11-27T22:06:05+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:06 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/phoenix/'>phoenix</a>, <a class='category' href='/blog/categories/upgrade/'>upgrade</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://learnelixir.com/blog/2014/11/27/migrating-applications-from-phoenix-0-dot-5-0-to-phoenix-0-dot-6-0/" data-via="learnelixir" data-counturl="http://learnelixir.com/blog/2014/11/27/migrating-applications-from-phoenix-0-dot-5-0-to-phoenix-0-dot-6-0/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-layout="button_count" data-send="false" data-width="300" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/04/custom-mix-task-for-phoenix-app/" title="Previous Post: A custom Mix task for Phoenix App">&laquo; A custom Mix task for Phoenix App</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - <a href='mailto:learnelixir@gmail.com'>Learn Elixir</a> -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'learnelixir';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://learnelixir.com/blog/2014/11/27/migrating-applications-from-phoenix-0-dot-5-0-to-phoenix-0-dot-6-0/';
+        var disqus_url = 'http://learnelixir.com/blog/2014/11/27/migrating-applications-from-phoenix-0-dot-5-0-to-phoenix-0-dot-6-0/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

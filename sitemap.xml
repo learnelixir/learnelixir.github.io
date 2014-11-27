@@ -3,6 +3,14 @@
   
   
   <url>
+    <loc>http://learnelixir.com/blog/2014/11/27/migrating-applications-from-phoenix-0-dot-5-0-to-phoenix-0-dot-6-0/</loc>
+    
+    <lastmod>2014-11-27T22:06:05+08:00</lastmod>
+    
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://learnelixir.com/blog/2014/11/04/custom-mix-task-for-phoenix-app/</loc>
     
     <lastmod>2014-11-04T23:35:23+08:00</lastmod>
@@ -133,28 +141,28 @@
   
   <url>
     <loc>http://learnelixir.com/blog/archives/</loc>
-    <lastmod>2014-11-27T22:01:29+08:00</lastmod>
+    <lastmod>2014-11-27T22:55:49+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://learnelixir.com/about/</loc>
-    <lastmod>2014-11-27T22:01:29+08:00</lastmod>
+    <lastmod>2014-11-27T22:55:49+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://learnelixir.com/</loc>
-    <lastmod>2014-11-27T22:01:29+08:00</lastmod>
+    <lastmod>2014-11-27T22:55:49+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://learnelixir.com/posts/</loc>
-    <lastmod>2014-11-27T22:01:29+08:00</lastmod>
+    <lastmod>2014-11-27T22:55:49+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
