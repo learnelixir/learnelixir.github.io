@@ -334,7 +334,7 @@ server <span class="o">{</span>
 
 <p>Now after so many steps, finally I can enjoy my small victory by visiting the site and see it has been deployed up :-)</p>
 
-<p>{% img center /images/deploy<em>app</em>to_server/ubuntu.png 800 509 &#39;image&#39; &#39;images&#39; %}</p>
+<p><img class="center" src="/images/deploy<em>app</em>to_server/ubuntu.png&#8221; width=&#8221;800&#8221; height=&#8221;509&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
 
 <p>Happy Deploying!</p>
 ]]></content>
@@ -424,7 +424,7 @@ Git remote heroku added
 </code></pre></div>
 <p>It can be quite slow in this first time pushing to heroku master as there is a need to compile all the elixir depenencies on Heroku server, but subsequently it will be quite fast. Now I go to <code>http://phoenix-heroku-demo.herokuapp.com/</code> and hooray the phoenix home page is there</p>
 
-<p>{% img center /images/deploy<em>app</em>to_server/heroku.png 800 509 &#39;image&#39; &#39;images&#39; %}</p>
+<p><img class="center" src="/images/deploy<em>app</em>to_server/heroku.png&#8221; width=&#8221;800&#8221; height=&#8221;509&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
 
 <p>In subsequent deploys, you will just need to perform this step - step 7</p>
 

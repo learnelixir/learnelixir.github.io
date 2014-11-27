@@ -323,7 +323,7 @@ sys 2m53.117s
 
 <p>Here is the chart that shows the performance of Ecto vs Active Record through 3 runs:</p>
 
-<p>{% img center /images/ecto<em>vs</em>active<em>record/creation</em>chart.png 710 467 &#39;image&#39; &#39;images&#39; %}</p>
+<p><img class="center" src="/images/ecto<em>vs</em>active<em>record/creation</em>chart.png&#8221; width=&#8221;710&#8221; height=&#8221;467&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
 
 <p>Ecto is approximately <strong>62%</strong> faster than Active Record. Hence, Ecto is the winner in this round.</p>
 
@@ -401,7 +401,7 @@ sys 3m7.004s
 
 <p>Here is the chart showing the above elapsed time:</p>
 
-<p>{% img center /images/ecto<em>vs</em>active<em>record/update</em>chart.png 633 444 &#39;image&#39; &#39;images&#39; %}</p>
+<p><img class="center" src="/images/ecto<em>vs</em>active<em>record/update</em>chart.png&#8221; width=&#8221;633&#8221; height=&#8221;444&#8221; title=&#8221;&#39;image&#39; &#39;images&#39;&#8221; ></p>
 
 <h3>Conclusion</h3>
 
@@ -559,7 +559,7 @@ In this article, let&#39;s go through the process of creating and build a simple
 </code></pre></div>
 <p>Open the browser, and go to the url <code>http://localhost:4000</code></p>
 
-<p>{% img left /images/build-web-app-with-elixir/phoenix_page.png 800 510 &#39;image&#39; &#39;images&#39; %}</p>
+<p><img class="left" src="/images/build-web-app-with-elixir/phoenix_page.png" width="800" height="510" title="&#39;image&#39; &#39;images&#39;" ></p>
 
 <h3>Add Ecto To The Project</h3>
 
@@ -776,7 +776,7 @@ Generated book_store.app
 </code></pre></div>
 <p>Refresh the browser and voila, this is what we will get:</p>
 
-<p>{% img left /images/build-web-app-with-elixir/complete.png 800 346 &#39;image&#39; &#39;images&#39; %}</p>
+<p><img class="left" src="/images/build-web-app-with-elixir/complete.png" width="800" height="346" title="&#39;image&#39; &#39;images&#39;" ></p>
 
 <h3>Common Pitfall</h3>
 
