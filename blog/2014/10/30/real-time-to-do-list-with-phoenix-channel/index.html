@@ -321,6 +321,7 @@
 <span class='line-number'>18</span>
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
+<span class='line-number'>21</span>
 </pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="kd">defmodule</span> <span class="nc">RealTimeToDo.Router</span> <span class="k">do</span>
 </span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Router</span>
 </span><span class='line'>  <span class="kn">use</span> <span class="nc">Phoenix.Router.Socket</span><span class="p">,</span> <span class="ss">mount</span><span class="p">:</span> <span class="s2">&quot;/ws&quot;</span>
@@ -338,8 +339,9 @@
 </span><span class='line'>    <span class="c1"># Use the default browser stack.</span>
 </span><span class='line'>    <span class="n">pipe_through</span> <span class="ss">:browser</span>
 </span><span class='line'>    <span class="n">get</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="nc">RealTimeToDo.ToDosController</span><span class="p">,</span> <span class="ss">:index</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:root</span>
-</span><span class='line'>    <span class="n">channel</span> <span class="s2">&quot;to_dos&quot;</span><span class="p">,</span> <span class="nc">RealTimeToDo.ToDoChannel</span>
 </span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">channel</span> <span class="s2">&quot;to_dos&quot;</span><span class="p">,</span> <span class="nc">RealTimeToDo.ToDoChannel</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Channel | Learn Elixir Language]]></title>
   <link href="http://learnelixir.com/blog/categories/channel/atom.xml" rel="self"/>
   <link href="http://learnelixir.com/"/>
-  <updated>2014-12-01T20:46:57+08:00</updated>
+  <updated>2014-12-06T00:32:16+08:00</updated>
   <id>http://learnelixir.com/</id>
   <author>
     <name><![CDATA[Learn Elixir]]></name>
@@ -148,8 +148,9 @@
     <span class="c1"># Use the default browser stack.</span>
     <span class="n">pipe_through</span> <span class="ss">:browser</span>
     <span class="n">get</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="nc">RealTimeToDo.ToDosController</span><span class="p">,</span> <span class="ss">:index</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:root</span>
-    <span class="n">channel</span> <span class="s2">&quot;to_dos&quot;</span><span class="p">,</span> <span class="nc">RealTimeToDo.ToDoChannel</span>
-  <span class="k">end</span> 
+  <span class="k">end</span>
+
+  <span class="n">channel</span> <span class="s2">&quot;to_dos&quot;</span><span class="p">,</span> <span class="nc">RealTimeToDo.ToDoChannel</span>
 <span class="k">end</span>
 </code></pre></div>
 <p>We are done with router for now. Let&#39;s move to create a <code>Repo</code> and <code>Item</code> model</p>
